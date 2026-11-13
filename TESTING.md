@@ -12,9 +12,9 @@ benchmarks/0.2.3/bench.txt. Temporary files were removed; MPC was not restarted.
 
 The current official release.py / catalog_check.py package passes --catalog,
 --require-portable, --expect-id and --expect-repo with zero warnings. Gen2/ARM64
-scope is declared; only Live III has hardware evidence. 0.2.3 has no installed
-UI smoke-test claim yet. Root tested.json records the maintainer’s confirmed
-0.2.2 test (including the Sounds tile); that evidence is not relabeled 0.2.3.
+scope is declared; only Live III has hardware evidence. The maintainer confirmed installed Candidate 5 of 0.2.3, including the native
+model-overlay dismissal, and authorized submission. Root tested.json records the maintainer’s confirmed
+0.2.2 test (including the Sounds tile); a separate 0.2.3 record documents the newly confirmed candidate.
 
 Visible drive names now use neutral aliases; model order/files/weights stay
 unchanged. MODELS.md retains the original credits and names. No DSP behavior
@@ -37,8 +37,8 @@ The overlay contains a known native KnobOverlay for Focus Lost dismissal and
 37 original model-choice buttons inheriting the model Data handle. All page
 Q-Link rectangles are unchanged, and the field action is Show Overlay on model
 parameter 60. Structural checks confirm the bindings, choices, background and
-absence of a full-screen Image touch target. These checks do not establish the
-actual installed close behavior; that awaits maintainer confirmation. The ARM64
+absence of a full-screen Image touch target. The maintainer then confirmed the installed open/select/outside-tap-close
+behavior and authorized submission of Candidate 5. The ARM64
 DSP binary and its measured SHA-256 are unchanged across skin-only candidates.
 
 0.2.2 OpenMPC release ZIP passed portable catalog validation, integrity and

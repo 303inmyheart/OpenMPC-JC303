@@ -10,7 +10,7 @@ The project name is **OpenMPC JC303**. The installed instrument remains **JC303 
 
 ![OpenMPC JC303 — SYNTH page](docs/screenshots/synth.png)
 
-These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The 0.2.3 release candidate still needs its own installation smoke test.
+These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The maintainer also confirmed Candidate 5 of 0.2.3 on that device and authorized its release.
 
 ## Features
 
@@ -47,7 +47,7 @@ Native Sounds-browser artwork:
 
 Target: **Gen2 MPCs, aarch64, MPC OS 3.10.1+**. Hardware testing has been performed on **MPC Live III only**; other Gen2 models have not been individually tested. Gen1 ARM32 devices and desktop plugin formats are outside this port’s current support scope.
 
-Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the `*-OpenMPC.zip` into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. Release candidates are prepared as GitHub draft releases until the exact installer ZIP passes the device smoke test. See [STORE.md](STORE.md) for publication and catalog status.
+Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the `*-OpenMPC.zip` into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. Download the [0.2.3 Gen2 release](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3). This exact installer was confirmed by the maintainer on Live III / OS 3.10.1. See [STORE.md](STORE.md) for catalog status.
 
 Enable **Preferences → Enhancements → External Plugin Support** and select **JC303 MPC** under External VST Plugins.
 
@@ -73,8 +73,8 @@ Implemented through **0.2.3**: synth/mods/LFO, host-synchronized sequencer and r
 
 Next validation:
 
-- Confirm Candidate 5 native model-overlay opening and dismissal, then smoke-test the exact 0.2.3 installer ZIP, including project save/reload.
-- Publish its tested GitHub release and submit the prepared OpenMPC catalog entry.
+- Complete the OpenMPC catalog review/merge for the submitted entry.
+- Broaden multi-instance, parameter-sweep and long-session testing.
 - Measure multiple instances and parameter-change spikes; run longer stability sessions.
 
 The following original-desktop features are **deferred for now**:

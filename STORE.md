@@ -42,31 +42,23 @@ python3 ../mpc-vst-plugins-release-tools/tools/catalog_check.py build/releases/J
 Both pass. The installer validation reports zero warnings. This is distinct from
 the CPU **WARN**, which is disclosed in release notes as the OpenMPC procedure requires.
 
-## Remaining publication gate
+## Confirmed release artifact
 
-0.2.3 is an **unpublished release candidate**. Candidate 5 keeps all normal
-page frames and moves model selection into a real native overlay, above the
-page highlight. A native KnobOverlay supplies dismissal; our backdrop is painted
-as backgroundData rather than as a full-screen touch-consuming Image child.
-The installed open/select/outside-tap-close behavior still needs confirmation.
-Candidates 1–4 are superseded.
+The maintainer confirmed Candidate 5 of 0.2.3 on MPC Live III / MPC OS 3.10.1,
+including playback with and without amp, native model-overlay layering and
+outside-tap dismissal, and explicitly authorized submission. Root tested.json
+records this exact version separately from 0.2.2. Candidates 1–4 are superseded.
 
-Before publishing, test this exact ZIP: loading/playing, amp/models, every page
-and Q-Link, popup open/select/close, Sounds tile, project save/reload and removal.
-Only the owner may authorize installation/uninstallation or an MPC restart.
-The build tools do not perform them. Add a truthful 0.2.3 tested.json entry only
-after that test; an older 0.2.2 test is not a new-version test.
-
-Publish the draft's exact checked ZIP once that gate is complete. The catalog
-can list a valid stable release without a hardware record as Listed; an exact
-matching hardware record gives Verified Gen2. A prerelease alone is Experimental.
-Do not claim other Gen2 devices were hardware-tested.
+The published archive is byte-identical to the confirmed Candidate 5 desktop ZIP.
+Its SHA-256 is in the release's SHA256SUMS asset. No other Gen2 model is claimed
+as hardware-tested. No device installation or service restart was performed by
+the release-preparation tools.
 
 ## Submit to the catalog
 
-After publication, open a PR to open-mpc/mpc-vst-plugins adding only
+The catalog submission is a PR to open-mpc/mpc-vst-plugins adding only
 `catalog/plugins/jc303-mpc.json`, copied from this repository. No versions or
 checksums go in that registry file: they are discovered from GitHub releases.
 The catalog CI must validate the published release; drafts are not discoverable.
 Merging is up to OpenMPC's maintainers. Later releases are discovered nightly.
-No upstream catalog PR has been submitted by these preparation steps.
+See the GitHub pull requests in open-mpc/mpc-vst-plugins for the submission and maintainer review.

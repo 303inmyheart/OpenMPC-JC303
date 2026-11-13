@@ -5,5 +5,12 @@
     "firmware": "3.10.1",
     "date": "2026-11-13",
     "notes": "Maintainer confirmed controls, Q-Link frames, step selection and Sounds-browser tile on hardware."
+  },
+  {
+    "version": "0.2.3",
+    "device": "MPC Live III (Gen2)",
+    "firmware": "3.10.1",
+    "date": "2026-11-13",
+    "notes": "Maintainer confirmed Candidate 5 during playback with and without amp, native model-overlay layering and outside-tap dismissal; authorized submission of this exact release candidate."
   }
 ]

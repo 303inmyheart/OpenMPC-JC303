@@ -1,14 +1,13 @@
-# OpenMPC JC303 0.2.3 — Gen2 release candidate
+# OpenMPC JC303 0.2.3 — Gen2
 
 Native 303-style acid synth for **Gen2 MPCs (aarch64), MPC OS 3.10.1+**.
 Hardware testing has been performed on **MPC Live III only**.
 
-This candidate adds Gen2 package metadata, current catalog templates/checks,
+This release adds Gen2 package metadata, current catalog templates/checks,
 neutral visible drive-model names and native overlay model selection.
 The normal page frames remain present; the model list opens on a native overlay
 above the page. Candidate 5 removes a full-screen touch-consuming Image so that
-outside taps can reach native dismissal. Open/select/close still needs the final
-device UI check. Earlier 0.2.3 candidates are superseded.
+outside taps can reach native dismissal. The maintainer confirmed open/select/outside-tap-close on Live III / OS 3.10.1. Earlier 0.2.3 candidates are superseded.
 
 The synth, sequencer, 37 embedded drive models, twelve native presets, Acid skin,
 Sounds tile and project compatibility are retained. Model order, filenames,
@@ -46,11 +45,13 @@ Native ASan/UBSan/leak tests, actual ARM64 shared-object tests under QEMU,
 ZIP integrity and catalog validation pass. The catalog checker reports zero
 warnings; that does not change the separate CPU WARN result.
 
-## Before publishing
+## Hardware confirmation
 
-Smoke-test this exact candidate ZIP on the device, including popup layering and
-project save/reload. Record the actual test in tested.json before claiming
-Verified Gen2. A test of 0.2.2 does not establish 0.2.3 verification.
+The maintainer confirmed this exact Candidate 5 installer during playback on
+MPC Live III / MPC OS 3.10.1, including amp operation, overlay layering and
+outside-tap dismissal, and authorized release/submission. Root tested.json
+records that version separately from 0.2.2. Other Gen2 models are not claimed
+as hardware-tested.
 
 Source and full credits: https://github.com/303inmyheart/OpenMPC-JC303
 License: **GPL-3.0-only**, with retained third-party license notices.
