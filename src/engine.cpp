@@ -1,0 +1,299 @@
+// JC303 voice adapter. Audio stays in float; the vendored voice computes in double.
+// The wrapper serialises all calls per instance. Sequencer timing uses MPC's
+// transport; GuitarML remains a separate upcoming milestone.
+#include "params.h"
+extern "C" {
+#include "engine.h"
+}
+#include "dsp/open303/rosic_Open303.h"
+#include "sequencer/MpcSequence.h"
+#include "drive/Drive.h"
+#include <array>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <memory>
+#include <sstream>
+#include <string>
+
+namespace {
+constexpr int voiceParams = 22;
+enum Index { Wave, Tune, Cutoff, Resonance, EnvMod, Decay, Accent, Volume,
+    Mod, NormalDecay, AccentDecay, Feedback, Attack, Slide, Shaper, Filter,
+    FilterDrive, Bass, LfoWave, LfoRate, LfoDepth, LfoDest };
+static_assert(ENGINE_FLOAT32 == 1, "JC303 requires the float engine ABI");
+
+double linear(double x, double a, double b) { return a + x * (b - a); }
+double exponential(double x, double a, double b) { return a * std::pow(b / a, x); }
+
+struct Voice {
+    rosic::Open303 core;
+    MpcSequence sequence{core};
+    GuitarDrive drive;
+    static constexpr int presetParam=64, presetCount=12;
+    int preset=0,lastDriveStatus=0;
+    std::array<bool,NPARAMS> dirty{};
+    std::array<float, voiceParams> values{};
+    std::array<bool, 128> held{};
+    bool silenced = false;
+    bool sustainArmed = true;
+
+    Voice() {
+        core.setSampleRate(44100);
+        for (int i = 0; i < voiceParams; ++i) values[i] = PARAMS[i].def;
+        sequence.onVoiceNote([this]{silenced=false;});
+        applyAll();
+    }
+    void apply(int i) {
+        const double x = values[i];
+        const bool mod = values[Mod] >= 0.5f;
+        switch (i) {
+        case Wave: core.setWaveform(x); break;
+        case Tune: core.setTuning(linear(x, 400, 480)); break;
+        case Cutoff: core.setCutoff(exponential(x, 314, 2394)); break;
+        case Resonance: core.setResonance(100 * x); break;
+        case EnvMod: core.setEnvMod(100 * x); break;
+        case Decay: core.setDecay(exponential(x, mod ? 30 : 200, mod ? 3000 : 2000)); break;
+        case Accent: core.setAccent(100 * x); break;
+        case Volume: core.setVolume(linear(x, -60, 0)); break;
+        case NormalDecay: core.setAmpDecay(mod ? linear(x, 30, 3000) : 1230); break;
+        case AccentDecay: core.setAccentDecay(mod ? linear(x, 30, 3000) : 200); break;
+        case Feedback: core.setFeedbackHighpass(mod ? exponential(x, 350, 100) : 150); break;
+        case Attack: core.setNormalAttack(mod ? exponential(x, 0.3, 3000) : 3); break;
+        case Slide: core.setSlideTime(mod ? linear(x, 2, 1000) : 60); break;
+        case Shaper: core.setTanhShaperDrive(mod ? linear(x, 25, 80) : 36.9); break;
+        case Filter: core.setFilterType(mod ? static_cast<rosic::FilterType>(static_cast<int>(x)) : rosic::FILTER_TEEBEE); break;
+        case FilterDrive: core.setFilterDrive(mod ? 9 * x : 0); break;
+        case Bass: core.setPassbandCompensation(mod ? x : 0.1); break;
+        case LfoWave: core.setLfoWaveform(static_cast<int>(x)); break;
+        case LfoRate: core.setLfoRate(exponential(x, 0.1, 20)); break;
+        case LfoDepth: core.setLfoDepth(x); break;
+        case LfoDest: core.setLfoDestination(x); break;
+        case Mod:
+            core.setLfoOn(mod);
+            apply(Decay);
+            for (int j = NormalDecay; j <= Bass; ++j) apply(j);
+            break;
+        }
+    }
+    void applyAll() {
+        for (int i = 0; i < voiceParams; ++i) if (i != Mod) apply(i);
+        core.setLfoOn(values[Mod] >= 0.5f);
+    }
+    void stop(bool immediate = false) {
+        core.allNotesOff();
+        held.fill(false);
+        silenced = immediate;
+    }
+    void loadPreset(int index) {
+        if(index<0 || index>=presetCount || index==preset) return;
+        stop();sequence.legacyReset();drive.load({});
+        for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
+        switch(index) {
+        case 1: values[Wave]=0;values[Cutoff]=.35f;values[EnvMod]=.6f;values[Decay]=.45f;break;
+        case 2: values[Wave]=1;values[Cutoff]=.25f;values[Resonance]=.65f;values[EnvMod]=.65f;break;
+        case 3: values[Wave]=1;values[Cutoff]=0;values[Resonance]=.12f;values[EnvMod]=0;values[Volume]=.8f;break;
+        case 4: values[Wave]=0;values[Decay]=0;values[EnvMod]=.8f;values[Resonance]=.7f;break;
+        case 5: values[Wave]=0;values[Cutoff]=.65f;values[Resonance]=.97f;values[EnvMod]=.65f;break;
+        case 6: values[Mod]=1;values[Filter]=1;values[FilterDrive]=.8f;values[Cutoff]=.4f;values[Resonance]=.8f;break;
+        case 7: values[Mod]=1;values[LfoDepth]=.8f;values[LfoRate]=.45f;values[Cutoff]=.4f;break;
+        case 8: values[Wave]=0;values[Cutoff]=.4f;values[EnvMod]=.5f;drive.set(GuitarDrive::Enable,1);break;
+        case 9: values[Wave]=1;values[Cutoff]=.3f;values[Resonance]=.65f;
+            drive.set(GuitarDrive::Model,4);drive.set(GuitarDrive::Level,.45f);
+            drive.set(GuitarDrive::Mix,.5f);drive.set(GuitarDrive::Enable,1);break;
+        case 10:case 11:
+            values[Wave]=0;values[Cutoff]=.25f;values[EnvMod]=.65f;values[Resonance]=.85f;
+            sequence.set(MpcSequence::Length,16);
+            for(int i=0;i<16;++i) {
+                sequence.set(MpcSequence::Selected,static_cast<float>(i+1));
+                const int notes[]{36,36,43,36,48,36,46,43,36,39,43,46,48,43,39,36};
+                sequence.set(MpcSequence::Note,static_cast<float>(notes[i]));
+                sequence.set(MpcSequence::Rest,(i%4==3 && index==10) ? 1 : 0);
+                sequence.set(MpcSequence::Accent,i%4==0 ? 1 : 0);
+                sequence.set(MpcSequence::Slide,index==11 && i%2==0 ? 1 : 0);
+            }
+            sequence.set(MpcSequence::Selected,1);sequence.set(MpcSequence::Enable,1);break;
+        default:break;
+        }
+        applyAll();preset=index;
+        for(int i=0;i<=presetParam;++i)
+            if(!PARAMS[i].string_display && !PARAMS[i].momentary && i!=GuitarDrive::Status) dirty[i]=true;
+    }
+    int changed(char* key,int size) {
+        const int status=static_cast<int>(drive.get(GuitarDrive::Status));
+        if(status!=lastDriveStatus) {lastDriveStatus=status;dirty[GuitarDrive::Status]=true;}
+        for(int i=0;i<NPARAMS;++i) if(dirty[i]) {
+            dirty[i]=false;std::snprintf(key,size,"%s",PARAMS[i].key);return 1;
+        }
+        return sequence.changed(key,size);
+    }
+    void restore(const char* text) {
+        // Parse into a separate array so a malformed/truncated chunk changes nothing.
+        std::istringstream input(text);
+        std::string version;
+        input >> version;
+        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4") return;
+        auto restored = values;
+        for (int i = 0; i < voiceParams; ++i) {
+            std::string key;
+            float value;
+            if (!(input >> key >> value) || key != PARAMS[i].key || !valid(i, value)) return;
+            restored[i] = value;
+        }
+        MpcSequence::Snapshot pattern;
+        const bool hasSequence=version=="JC303-MPC-3" || version=="JC303-MPC-4";
+        if(hasSequence && !MpcSequence::parse(input,pattern)) return;
+        GuitarDrive::Settings driveSettings;
+        int restoredPreset=0;
+        if(version=="JC303-MPC-4") {
+            std::string tag;
+            if(!GuitarDrive::parse(input,driveSettings) || !(input>>tag>>restoredPreset) ||
+               tag!="preset" || restoredPreset<0 || restoredPreset>=presetCount) return;
+        }
+        std::string extra;
+        if (input >> extra) return;
+        if (version == "JC303-MPC-1") restored[Slide] *= 358.0f/998.0f;
+        stop();
+        if(hasSequence) sequence.load(pattern); else sequence.legacyReset();
+        drive.load(driveSettings);preset=restoredPreset;
+        values = restored;
+        applyAll();
+    }
+    static bool valid(int i, float x) {
+        const auto& p = PARAMS[i];
+        return std::isfinite(x) && x >= (p.nopts ? 0 : p.min) && x <= (p.nopts ? p.nopts - 1 : p.max) &&
+               (!p.nopts || x == std::round(x));
+    }
+};
+
+int indexOf(const char* key) {
+    for (int i = 0; i < NPARAMS; ++i) if (!std::strcmp(key, PARAMS[i].key)) return i;
+    return -1;
+}
+void* create(const char*) {
+    try { return new Voice; } catch (...) { return nullptr; }
+}
+void destroy(void* instance) { delete static_cast<Voice*>(instance); }
+void midi(void* instance, const uint8_t* msg, int length) {
+    if (!instance || !msg || length < 3) return;
+    auto& v = *static_cast<Voice*>(instance);
+    const int status = msg[0] & 0xf0, note = msg[1] & 127, velocity = msg[2] & 127;
+    if (status == 0x90 && velocity) {
+        const bool legato=std::any_of(v.held.begin(),v.held.end(),[](bool x){return x;});
+        v.sequence.recordNote(note,velocity,legato);
+        if(v.sequence.active()) { v.held[note]=true; return; }
+        // Repeated note-ons replace their old stack entry, avoiding stuck duplicates.
+        if (v.held[note]) v.core.noteOn(note, 0, 0);
+        v.held[note] = true;
+        v.silenced = false;
+        v.core.noteOn(note, velocity, 0); // third argument is detune, NOT a slide flag
+    } else if (status == 0x80 || (status == 0x90 && !velocity)) {
+        v.held[note] = false;
+        if(v.sequence.active()) return;
+        v.core.noteOn(note, 0, 0);
+    } else if (status == 0xb0 && (note == 120 || note == 123)) {
+        v.sequence.stop();
+        v.stop(note == 120);
+    } else if(status==0xb0 && note==64) {
+        if(velocity>=64 && v.sustainArmed) { v.sequence.recordRest(); v.sustainArmed=false; }
+        if(velocity<64) v.sustainArmed=true;
+    }
+}
+void set(void* instance, const char* key, const char* text) {
+    auto& v = *static_cast<Voice*>(instance);
+    if (!std::strcmp(key, "state")) { v.restore(text); return; }
+    if (!std::strcmp(key, "transport")) { if (text[0] == '0') v.stop(); return; }
+    const int i = indexOf(key);
+    if (i < 0) return;
+    char* end = nullptr;
+    float x = std::strtof(text, &end);
+    if (end == text || *end || !std::isfinite(x)) return;
+    x = std::max(PARAMS[i].nopts ? 0.0f : PARAMS[i].min,
+                 std::min(PARAMS[i].nopts ? static_cast<float>(PARAMS[i].nopts - 1) : PARAMS[i].max, x));
+    if (PARAMS[i].nopts) x = std::round(x);
+    if (PARAMS[i].int_display) x=std::round(x);
+    if(i==Voice::presetParam) {v.loadPreset(static_cast<int>(x));return;}
+    if(i>=GuitarDrive::First && i<=GuitarDrive::Status) {v.drive.set(i,x);return;}
+    if(i>=voiceParams) { v.sequence.set(i,x); return; }
+    if (x == v.values[i]) return;
+    v.values[i] = x;
+    v.apply(i);
+}
+int get(void* instance, const char* key, char* out, int size) {
+    if (!out || size < 1) return 0;
+    auto& v = *static_cast<Voice*>(instance);
+    if (!std::strcmp(key, "state")) {
+        std::ostringstream state;
+        state.precision(9);
+        state << "JC303-MPC-4\n";
+        for (int i = 0; i < voiceParams; ++i) state << PARAMS[i].key << ' ' << v.values[i] << '\n';
+        v.sequence.save(state);
+        v.drive.save(state);
+        state<<"preset "<<v.preset<<'\n';
+        const auto text = state.str();
+        if (text.size() >= static_cast<size_t>(size)) return 0;
+        std::memcpy(out, text.c_str(), text.size() + 1);
+        return static_cast<int>(text.size());
+    }
+    const int i = indexOf(key);
+    if(i==Voice::presetParam) return std::snprintf(out,size,"%d",v.preset);
+    if(i>=GuitarDrive::First && i<=GuitarDrive::Status) return std::snprintf(out,size,"%.9g",v.drive.get(i));
+    if (i >= voiceParams) return v.sequence.text(i,out,size);
+    if (i >= 0) return std::snprintf(out, size, "%.9g", v.values[i]);
+    const std::string name(key);
+    if(name.size()>3 && name.substr(name.size()-3)=="_on") {
+        const int j=indexOf(name.substr(0,name.size()-3).c_str());
+        if(j>=MpcSequence::TileFirst) return std::snprintf(out,size,"%d",v.sequence.tileOn(j));
+    }
+    if (name.size() > 8 && name.substr(name.size() - 8) == "_display") {
+        const int j = indexOf(name.substr(0, name.size() - 8).c_str());
+        if (j < 0) return 0;
+        if(j>=GuitarDrive::First && j<=GuitarDrive::Status) return v.drive.display(j,out,size);
+        if(j>=voiceParams) return v.sequence.display(j,out,size);
+        const double x = v.values[j];
+        switch (j) {
+        case Wave: return std::snprintf(out, size, "%.0f %%", 100*x);
+        case Tune: return std::snprintf(out, size, "%.1f Hz", linear(x, 400, 480));
+        case Cutoff: return std::snprintf(out, size, "%.0f Hz", exponential(x, 314, 2394));
+        case Decay: return std::snprintf(out, size, "%.0f ms", exponential(x, v.values[Mod] >= .5 ? 30 : 200, v.values[Mod] >= .5 ? 3000 : 2000));
+        case Volume: return std::snprintf(out, size, "%.1f dB", linear(x, -60, 0));
+        case NormalDecay: case AccentDecay: return std::snprintf(out, size, "%.0f ms", linear(x, 30, 3000));
+        case Feedback: return std::snprintf(out, size, "%.0f Hz", exponential(x, 350, 100));
+        case Attack: return std::snprintf(out, size, "%.1f ms", exponential(x, .3, 3000));
+        case Slide: return std::snprintf(out, size, "%.0f ms", linear(x, 2, 1000));
+        case Shaper: return std::snprintf(out, size, "%.1f dB", linear(x, 25, 80));
+        case FilterDrive:
+            if (v.values[Mod] < .5f) return std::snprintf(out, size, "Mods off");
+            if (static_cast<int>(v.values[Filter]) == rosic::FILTER_TEEBEE) return std::snprintf(out, size, "Diode only");
+            return std::snprintf(out, size, "%.1f dB", 9*x);
+        case LfoRate: return std::snprintf(out, size, "%.2f Hz", exponential(x, .1, 20));
+        default: return std::snprintf(out, size, "%.0f %%", 100*x);
+        }
+    }
+    return 0;
+}
+void render(void* instance, mpc_sample_t* out, int frames) {
+    auto& v = *static_cast<Voice*>(instance);
+    v.drive.beginRender();
+    for (int i = 0; i < frames; ++i) {
+        v.sequence.sample();
+        const float dry = static_cast<float>(v.core.getSample());
+        const float x=v.drive.process(v.silenced ? 0.0f : dry);
+        out[2*i] = out[2*i+1] = v.silenced ? 0.0f : x;
+    }
+}
+void position(void* instance,double ppq,double bpm,int playing,int frames) {
+    static_cast<Voice*>(instance)->sequence.begin(ppq,bpm,playing!=0,frames);
+}
+const mpc_engine_t api {create, destroy, midi, set, get, render, nullptr, position};
+} // namespace
+
+extern "C" const mpc_engine_t* mpc_engine() { return &api; }
+extern "C" void mpc_engine_cycle(void* instance,double start,double end,int active) {
+    static_cast<Voice*>(instance)->sequence.cycle(start,end,active!=0);
+}
+extern "C" int mpc_engine_changed(void* instance,char* key,int size) {
+    return static_cast<Voice*>(instance)->changed(key,size);
+}

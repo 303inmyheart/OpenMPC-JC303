@@ -1,0 +1,644 @@
+{
+  "name": "JC303 MPC",
+  "params": [
+    {
+      "key": "waveform",
+      "name": "Wave Morph",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "dynamic_display": true
+    },
+    {
+      "key": "tuning",
+      "name": "Tuning",
+      "min": 0,
+      "max": 1,
+      "default": 0.5,
+      "dynamic_display": true
+    },
+    {
+      "key": "cutoff",
+      "name": "Cutoff",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "resonance",
+      "name": "Resonance",
+      "min": 0,
+      "max": 1,
+      "default": 0.92,
+      "dynamic_display": true
+    },
+    {
+      "key": "envmod",
+      "name": "Env Mod",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "decay",
+      "name": "Decay",
+      "min": 0,
+      "max": 1,
+      "default": 0.29,
+      "dynamic_display": true
+    },
+    {
+      "key": "accent",
+      "name": "Accent",
+      "min": 0,
+      "max": 1,
+      "default": 0.78,
+      "dynamic_display": true
+    },
+    {
+      "key": "volume",
+      "name": "Volume",
+      "min": 0,
+      "max": 1,
+      "default": 0.75,
+      "dynamic_display": true
+    },
+    {
+      "key": "switchModState",
+      "name": "Mods",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0,
+      "refresh_display": true
+    },
+    {
+      "key": "normalDecay",
+      "name": "Amp Decay",
+      "min": 0,
+      "max": 1,
+      "default": 0.3,
+      "dynamic_display": true
+    },
+    {
+      "key": "accentDecay",
+      "name": "Accent Decay",
+      "min": 0,
+      "max": 1,
+      "default": 0.03,
+      "dynamic_display": true
+    },
+    {
+      "key": "feedbackFilter",
+      "name": "Feedback HP",
+      "min": 0,
+      "max": 1,
+      "default": 0.63,
+      "dynamic_display": true
+    },
+    {
+      "key": "softAttack",
+      "name": "Soft Attack",
+      "min": 0,
+      "max": 1,
+      "default": 0.26,
+      "dynamic_display": true
+    },
+    {
+      "key": "slideTime",
+      "name": "Slide Time",
+      "min": 0,
+      "max": 1,
+      "default": 0.11837675350701403,
+      "dynamic_display": true
+    },
+    {
+      "key": "sqrDriver",
+      "name": "Square Drive",
+      "min": 0,
+      "max": 1,
+      "default": 0.25,
+      "dynamic_display": true
+    },
+    {
+      "key": "filterType",
+      "name": "Filter",
+      "options": [
+        "TeeBee",
+        "Diode Octave",
+        "Diode"
+      ],
+      "default": 0,
+      "refresh_display": true
+    },
+    {
+      "key": "filterDrive",
+      "name": "Filter Drive",
+      "min": 0,
+      "max": 1,
+      "default": 0.5,
+      "dynamic_display": true
+    },
+    {
+      "key": "bassComp",
+      "name": "Bass Comp",
+      "min": 0,
+      "max": 1,
+      "default": 0.1,
+      "dynamic_display": true
+    },
+    {
+      "key": "lfoWaveform",
+      "name": "LFO Wave",
+      "options": [
+        "Triangle",
+        "Saw Up",
+        "Saw Down",
+        "Square",
+        "Random",
+        "Pink Noise"
+      ],
+      "default": 0
+    },
+    {
+      "key": "lfoRate",
+      "name": "LFO Rate",
+      "min": 0,
+      "max": 1,
+      "default": 0.25,
+      "dynamic_display": true
+    },
+    {
+      "key": "lfoDepth",
+      "name": "LFO Depth",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "lfoDestination",
+      "name": "Destination",
+      "options": [
+        "Cutoff",
+        "Volume",
+        "Pitch"
+      ],
+      "default": 0
+    },
+    {
+      "key": "seqEnabled",
+      "name": "Sequencer",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0,
+      "refresh_display": true
+    },
+    {
+      "key": "seqLength",
+      "name": "Length",
+      "min": 1,
+      "max": 16,
+      "default": 16,
+      "display": "int",
+      "refresh_display": true
+    },
+    {
+      "key": "seqTranspose",
+      "name": "Transpose",
+      "min": -24,
+      "max": 24,
+      "default": 0,
+      "display": "int"
+    },
+    {
+      "key": "seqSelected",
+      "name": "Edit Step",
+      "min": 1,
+      "max": 16,
+      "default": 1,
+      "display": "int",
+      "refresh_display": true
+    },
+    {
+      "key": "seqNote",
+      "name": "Note",
+      "min": 0,
+      "max": 127,
+      "default": 36,
+      "display": "int",
+      "dynamic_display": true,
+      "refresh_display": true
+    },
+    {
+      "key": "seqRest",
+      "name": "Rest",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0
+    },
+    {
+      "key": "seqAccent",
+      "name": "Accent",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0
+    },
+    {
+      "key": "seqSlide",
+      "name": "Slide",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0
+    },
+    {
+      "key": "seqTie",
+      "name": "Tie",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0
+    },
+    {
+      "key": "seqGenerate",
+      "name": "Generate",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "refresh_display": true
+    },
+    {
+      "key": "seqClear",
+      "name": "Clear",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "refresh_display": true
+    },
+    {
+      "key": "seqRecord",
+      "name": "Record",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0,
+      "refresh_display": true
+    },
+    {
+      "key": "seqFill",
+      "name": "Fill",
+      "min": 0,
+      "max": 100,
+      "default": 80,
+      "display": "int"
+    },
+    {
+      "key": "seqGenAccent",
+      "name": "Accent Prob",
+      "min": 0,
+      "max": 100,
+      "default": 50,
+      "display": "int"
+    },
+    {
+      "key": "seqGenSlide",
+      "name": "Slide Prob",
+      "min": 0,
+      "max": 100,
+      "default": 30,
+      "display": "int"
+    },
+    {
+      "key": "seqGenTie",
+      "name": "Tie Prob",
+      "min": 0,
+      "max": 100,
+      "default": 100,
+      "display": "int"
+    },
+    {
+      "key": "seqTones",
+      "name": "Tones",
+      "min": 1,
+      "max": 12,
+      "default": 4,
+      "display": "int"
+    },
+    {
+      "key": "seqLow",
+      "name": "Low Note",
+      "min": 0,
+      "max": 127,
+      "default": 36,
+      "display": "int"
+    },
+    {
+      "key": "seqRange",
+      "name": "Note Range",
+      "min": 0,
+      "max": 127,
+      "default": 24,
+      "display": "int"
+    },
+    {
+      "key": "seqCurrent",
+      "name": "Playing Step",
+      "min": 0,
+      "max": 16,
+      "default": 0,
+      "display": "int",
+      "live": true,
+      "dynamic_display": true
+    },
+    {
+      "key": "seqStatus",
+      "name": "Transport",
+      "options": [
+        "Off",
+        "Waiting",
+        "Playing"
+      ],
+      "default": 0,
+      "live": true
+    },
+    {
+      "key": "seqStep_1",
+      "name": "Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_2",
+      "name": "Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_3",
+      "name": "Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_4",
+      "name": "Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_5",
+      "name": "Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_6",
+      "name": "Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_7",
+      "name": "Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_8",
+      "name": "Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_9",
+      "name": "Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_10",
+      "name": "Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_11",
+      "name": "Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_12",
+      "name": "Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_13",
+      "name": "Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_14",
+      "name": "Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_15",
+      "name": "Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "seqStep_16",
+      "name": "Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": true
+    },
+    {
+      "key": "driveEnabled",
+      "name": "GuitarML",
+      "options": [
+        "Off",
+        "On"
+      ],
+      "default": 0,
+      "refresh_display": true
+    },
+    {
+      "key": "driveModel",
+      "name": "Model",
+      "options": [
+        "Ibanez TS9",
+        "Ibanez Mostortion Clone",
+        "Mooer CaliMkIV",
+        "Boss MT2",
+        "Pro Co RAT Distortion",
+        "MXR 78",
+        "Ibanez TS808",
+        "RevvG3 Pedal GainKnob",
+        "Jeckyl and Hyde Distortion DriveKnob",
+        "Friedman BEOD Pedal GainKnob",
+        "BlackstarHT40 AmpClean",
+        "MesaMiniRec HighGain DirectOut",
+        "Splawn OD Fractal FM3 HighGain",
+        "EthosLeadChan GainKnob",
+        "PrincetonAmp Clean",
+        "DumbleKit HighG DirectOut",
+        "BlackstarHT40 GainKnob SM57mic",
+        "TRexMudhoney plus PorkLoin HighGain",
+        "PrinceOfTone Clone OD Knob",
+        "PorkLoinPedal LowGain",
+        "PrinceOfToneClone Dist Knob",
+        "AguilarAgro Bright Bass",
+        "AguilarAgro Dark Bass",
+        "BadCat50 MedGain PREAMP",
+        "ShiftTwin Clean2 PREAMP",
+        "Sovtek50 MedGain DIRECT",
+        "ShiftTwin StampedeDT PREAMP",
+        "Sovtek50 DodFX56B DIRECT",
+        "ENGL E645 Clean EdoardoNapoli",
+        "Filmosound with cab",
+        "ENGL E430 Clean EdoardoNapoli",
+        "ElCoyote Trainwreck Crunch",
+        "Supro Bold DriveKnob",
+        "GoatPedal HighGain",
+        "ProteinBlue pedal DriveKnob",
+        "LittleBigMuff HighGainPedal",
+        "BigMuff V6 T3 S5"
+      ],
+      "default": 0,
+      "dynamic_display": true,
+      "refresh_display": true
+    },
+    {
+      "key": "driveLevel",
+      "name": "Drive",
+      "min": 0,
+      "max": 1,
+      "default": 0.15,
+      "dynamic_display": true
+    },
+    {
+      "key": "driveMix",
+      "name": "Dry Wet",
+      "min": 0,
+      "max": 1,
+      "default": 0.35,
+      "dynamic_display": true
+    },
+    {
+      "key": "driveStatus",
+      "name": "Drive Status",
+      "options": [
+        "Bypass",
+        "Loading",
+        "Ready",
+        "Error"
+      ],
+      "default": 0,
+      "live": true
+    },
+    {
+      "key": "preset",
+      "name": "Preset",
+      "options": [
+        "Init",
+        "Classic Acid",
+        "Rubber Square",
+        "Deep Sub",
+        "Short Pluck",
+        "Squelch Lead",
+        "Diode Bite",
+        "LFO Wobble",
+        "TS Drive",
+        "Rat Bass",
+        "Acid Steps",
+        "Slide Steps"
+      ],
+      "default": 0,
+      "refresh_display": true
+    }
+  ]
+}

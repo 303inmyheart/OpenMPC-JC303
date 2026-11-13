@@ -1,0 +1,234 @@
+{
+  "device": "MPC Live III",
+  "architecture": "aarch64",
+  "kernel": "6.18.44-imb-2026-08-10-rt6",
+  "cpu_core": 4,
+  "cpu_mhz": 2400,
+  "sample_rate": 44100,
+  "block_size": 128,
+  "repeats": 3,
+  "audio_seconds_per_repeat": 12,
+  "timer": "CLOCK_THREAD_CPUTIME_ID",
+  "priority": "helper nice 19; MPC process unchanged",
+  "before_version": "0.2.0",
+  "after_version": "0.2.1",
+  "before_sha256": "326fb588f02dd36bc21c6fe52aba1528523cb9c150f41b4b79087c185f04fefd",
+  "after_sha256": "ae3f481556de0cfb9d6f7fc1d754f5322c53923c4eedb3ace76a8b11cab58d80",
+  "scenarios": [
+    {
+      "scenario": "Blackstar HT40 SM57 + sequence",
+      "before": [
+        {
+          "mean_pct": 17.7575,
+          "p99_pct": 17.9673,
+          "max_pct": 18.3592,
+          "workers": 0.0099,
+          "peak": 0.684416
+        },
+        {
+          "mean_pct": 17.7705,
+          "p99_pct": 17.9774,
+          "max_pct": 18.2486,
+          "workers": 0.0099,
+          "peak": 0.700134
+        },
+        {
+          "mean_pct": 17.7651,
+          "p99_pct": 17.9673,
+          "max_pct": 18.1381,
+          "workers": 0.0098,
+          "peak": 0.63318
+        }
+      ],
+      "after": [
+        {
+          "mean_pct": 6.7827,
+          "p99_pct": 6.9538,
+          "max_pct": 7.2754,
+          "workers": 0.0037,
+          "peak": 0.684416
+        },
+        {
+          "mean_pct": 6.782,
+          "p99_pct": 6.9538,
+          "max_pct": 7.1347,
+          "workers": 0.0035,
+          "peak": 0.700134
+        },
+        {
+          "mean_pct": 6.7826,
+          "p99_pct": 6.9538,
+          "max_pct": 7.1246,
+          "workers": 0.0035,
+          "peak": 0.63318
+        }
+      ],
+      "mean_before_pct": 17.764366666666668,
+      "mean_after_pct": 6.7824333333333335,
+      "saving_pct": 61.8200104703986
+    },
+    {
+      "scenario": "Blackstar HT40 SM57 stopped",
+      "before": [
+        {
+          "mean_pct": 16.4368,
+          "p99_pct": 16.5906,
+          "max_pct": 16.7112,
+          "workers": 0.0083,
+          "peak": 1.4e-05
+        },
+        {
+          "mean_pct": 16.443,
+          "p99_pct": 16.5906,
+          "max_pct": 16.7012,
+          "workers": 0.0085,
+          "peak": 1.2e-05
+        },
+        {
+          "mean_pct": 16.4446,
+          "p99_pct": 16.5906,
+          "max_pct": 16.661,
+          "workers": 0.0083,
+          "peak": 1.3e-05
+        }
+      ],
+      "after": [
+        {
+          "mean_pct": 5.454,
+          "p99_pct": 5.5771,
+          "max_pct": 5.7077,
+          "workers": 0.0028,
+          "peak": 1.4e-05
+        },
+        {
+          "mean_pct": 5.4547,
+          "p99_pct": 5.5771,
+          "max_pct": 5.6475,
+          "workers": 0.0028,
+          "peak": 1.2e-05
+        },
+        {
+          "mean_pct": 5.4555,
+          "p99_pct": 5.567,
+          "max_pct": 5.6374,
+          "workers": 0.0029,
+          "peak": 1.3e-05
+        }
+      ],
+      "mean_before_pct": 16.441466666666667,
+      "mean_after_pct": 5.454733333333333,
+      "saving_pct": 66.82331665463745
+    },
+    {
+      "scenario": "TS9 + sequence",
+      "before": [
+        {
+          "mean_pct": 17.7626,
+          "p99_pct": 17.9673,
+          "max_pct": 18.2487,
+          "workers": 0.0096,
+          "peak": 0.674789
+        },
+        {
+          "mean_pct": 17.7865,
+          "p99_pct": 17.9874,
+          "max_pct": 18.108,
+          "workers": 0.0097,
+          "peak": 0.669656
+        },
+        {
+          "mean_pct": 17.7567,
+          "p99_pct": 17.9572,
+          "max_pct": 18.1683,
+          "workers": 0.0096,
+          "peak": 0.698595
+        }
+      ],
+      "after": [
+        {
+          "mean_pct": 6.806,
+          "p99_pct": 6.9839,
+          "max_pct": 7.406,
+          "workers": 0.0036,
+          "peak": 0.674789
+        },
+        {
+          "mean_pct": 6.8056,
+          "p99_pct": 6.9739,
+          "max_pct": 7.1749,
+          "workers": 0.0037,
+          "peak": 0.669656
+        },
+        {
+          "mean_pct": 6.8061,
+          "p99_pct": 6.9739,
+          "max_pct": 7.1246,
+          "workers": 0.0036,
+          "peak": 0.698595
+        }
+      ],
+      "mean_before_pct": 17.7686,
+      "mean_after_pct": 6.8059,
+      "saving_pct": 61.69703859617528
+    },
+    {
+      "scenario": "RAT + sequence",
+      "before": [
+        {
+          "mean_pct": 17.4309,
+          "p99_pct": 17.6156,
+          "max_pct": 17.897,
+          "workers": 0.0096,
+          "peak": 0.852654
+        },
+        {
+          "mean_pct": 17.428,
+          "p99_pct": 17.6156,
+          "max_pct": 17.7462,
+          "workers": 0.0094,
+          "peak": 0.852449
+        },
+        {
+          "mean_pct": 17.4332,
+          "p99_pct": 17.6056,
+          "max_pct": 17.7462,
+          "workers": 0.0094,
+          "peak": 0.859304
+        }
+      ],
+      "after": [
+        {
+          "mean_pct": 6.6813,
+          "p99_pct": 6.8533,
+          "max_pct": 7.3959,
+          "workers": 0.0035,
+          "peak": 0.852654
+        },
+        {
+          "mean_pct": 6.6817,
+          "p99_pct": 6.8433,
+          "max_pct": 6.9538,
+          "workers": 0.0035,
+          "peak": 0.852449
+        },
+        {
+          "mean_pct": 6.6819,
+          "p99_pct": 6.8533,
+          "max_pct": 6.9538,
+          "workers": 0.0036,
+          "peak": 0.859304
+        }
+      ],
+      "mean_before_pct": 17.4307,
+      "mean_after_pct": 6.681633333333333,
+      "saving_pct": 61.667441162240564
+    }
+  ],
+  "blackstar_audio_comparison": {
+    "samples": 262144,
+    "max_error": 0,
+    "bit_identical": true
+  },
+  "device_functional_tests": "host and voice suites passed on temporary .so; all 37 models",
+  "device_mutations": "own files under /tmp only, removed; no install or MPC restart"
+}

@@ -1,25 +1,10 @@
-# build artifacts
-build*/
-Build*/
-Builds*/
-lib*/
-bin/
-*_Packaged
-*.exe
-*.dmg
-vstsdk2.4/
-src/JuceLibraryCode/JuceHeader.h
-src/JuceLibraryCode/ReadMe.txt
+build/
+.tools/
+__pycache__/
 
-# ide settings
-.vscode/
-.idea/
-
-# Mac extras
-.DS_Store
-
-# tex artifacts
-*.log
-*.aux
-*.out
-*.synctex*
+# Local operator preferences and device/network details stay private.
+AGENTS.md
+.env
+.env.*
+*.pem
+*.key

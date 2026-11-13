@@ -27,12 +27,16 @@
  *   StartMode::NoteTriggered   – starts on the first incoming MIDI NoteOn
  *
  * ── Thread safety ─────────────────────────────────────────────────────────────
- * All UI-thread setters that touch pattern data acquire _dataLock (SpinLock).
+ * MPC port: all setters, clock ticks and reads use the wrapper engine lock.
  * The note stack and step-location are audio-thread-only.
  * _mute and _running are std::atomic.
  */
 
-#include <JuceHeader.h>
+#include <atomic>
+#include <algorithm>
+#include <chrono>
+
+template<class T> T jc303Clip(T low,T high,T value) { return std::max(low,std::min(high,value)); }
 #include <cstdint>
 #include <cstring>
 #include <cmath>
@@ -124,7 +128,7 @@ public:
     // ── Constructor ──────────────────────────────────────────────────────────
     AcidSequencer303()
     {
-        _rng.seed (static_cast<uint32_t>(juce::Time::currentTimeMillis()));
+        _rng.seed (static_cast<uint32_t>(std::chrono::steady_clock::now().time_since_epoch().count()));
         init();
     }
 
@@ -137,7 +141,7 @@ public:
     void init()
     {
         {
-            juce::SpinLock::ScopedLockType lk (_dataLock);
+            
             _data.shift      = 0;
             _data.stepLength = SEQ303_STEP_MAX;
             _data.transpose  = 0;
@@ -198,7 +202,7 @@ public:
         // Stored atomically; _samplesPerTick is recomputed on the audio thread
         // at the top of processBlock() so a UI-thread change can't tear the
         // double the audio thread reads while clocking.
-        _internalBpm.store (juce::jlimit (20.f, 300.f, bpm), std::memory_order_relaxed);
+        _internalBpm.store (jc303Clip (20.f, 300.f, bpm), std::memory_order_relaxed);
     }
     float getTempo() const { return _internalBpm.load (std::memory_order_relaxed); }
 
@@ -236,80 +240,27 @@ public:
      * @param bpm               Current host BPM (Host sync; ignored in Internal).
      * @param shufflePulses     Signed pulse offset applied to gate length.
      */
-    void processBlock (const juce::MidiBuffer& midiIn,
-                       int    numSamples,
-                       bool   hostIsPlaying,
-                       double ppqAtBufferStart,
-                       double bpm,
-                       int    shufflePulses = 0)
-    {
-        // Apply any tempo queued from the UI thread before clocking.
-        // _samplesPerTick is only ever written on the audio thread from here.
-        updateSamplesPerTick();
-
-        // ── MIDI transport + note-triggered start ─────────────────────────────
-        for (const auto meta : midiIn)
-        {
-            const auto msg       = meta.getMessage();
-            const int  samplePos = meta.samplePosition;
-
-            if (_syncMode == SyncMode::MidiClock)
-            {
-                if (msg.isMidiStart())
-                {
-                    _tickCounter  = 0;
-                    _sampleAccum  = 0.0;
-                    _lastHostTick = -1;
-                    if (_startMode == StartMode::TransportStart)
-                        start();
-                }
-                else if (msg.isMidiStop())
-                {
-                    stop();
-                }
-                else if (msg.isMidiClock() && _running)
-                {
-                    tickMidiClock (samplePos, shufflePulses);
-                }
-            }
-
-            if (_startMode == StartMode::NoteTriggered && ! _running && msg.isNoteOn())
-                start();
-        }
-
-        // ── Clock advancement ─────────────────────────────────────────────────
-        switch (_syncMode)
-        {
-            case SyncMode::Internal:
-                processInternalClock (numSamples, shufflePulses);
-                break;
-
-            case SyncMode::Host:
-                processHostClock (numSamples, hostIsPlaying, ppqAtBufferStart, bpm, shufflePulses);
-                break;
-
-            case SyncMode::MidiClock:
-                break; // handled above per-message
-        }
-    }
+    // The MPC port owns clocking and calls this at the exact sample boundary.
+    void tick96(uint32_t tick) { if (_running) fireTick(tick, 0, 0); }
+    void seed(uint32_t value) { _rng.seed(value); }
 
     // =========================================================================
     // ── Per-step setters / getters — UI-thread-safe ───────────────────────────
     // =========================================================================
 
     /** rest(step, state) — mirrors Engine303::rest() */
-    void setRest   (int step, bool v) { juce::SpinLock::ScopedLockType lk(_dataLock); _data.step[step].rest   = v; }
+    void setRest   (int step, bool v) {  _data.step[step].rest   = v; }
     /** setAccent(step, state) */
-    void setAccent (int step, bool v) { juce::SpinLock::ScopedLockType lk(_dataLock); _data.step[step].accent = v; }
+    void setAccent (int step, bool v) {  _data.step[step].accent = v; }
     /** setSlide(step, state) */
-    void setSlide  (int step, bool v) { juce::SpinLock::ScopedLockType lk(_dataLock); _data.step[step].slide  = v; }
+    void setSlide  (int step, bool v) {  _data.step[step].slide  = v; }
     /** setTie(step, state) */
-    void setTie    (int step, bool v) { juce::SpinLock::ScopedLockType lk(_dataLock); _data.step[step].tie    = v; }
+    void setTie    (int step, bool v) {  _data.step[step].tie    = v; }
 
     /** setStepData(step, note) — mirrors Engine303::setStepData() */
     void setStepData (int step, uint8_t note)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         _data.step[step].note = note;
     }
 
@@ -320,7 +271,7 @@ public:
         const uint8_t raw = _data.step[step].note;
         if (_data.tune > 0)
         {
-            juce::SpinLock::ScopedLockType lk (_dataLock);
+            
             return _harmonizer.harmonize (raw) + static_cast<uint8_t>(_data.tune - 1);
         }
         return raw;
@@ -345,7 +296,7 @@ public:
     /** setShiftPos / getShiftPos */
     void   setShiftPos (int8_t shift)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         _data.shift = shift;
     }
     int8_t getShiftPos() const { return _data.shift; }
@@ -355,7 +306,7 @@ public:
      *  1+N = harmonize note then add N semitones of offset */
     void    setTune (uint8_t tune)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         _data.tune = tune;
     }
     uint8_t getTune() const { return _data.tune; }
@@ -363,7 +314,7 @@ public:
     /** setTranspose / getTranspose — global semitone offset applied at note-on */
     void   setTranspose (int8_t t)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         _data.transpose = t;
     }
     int8_t getTranspose() const { return _data.transpose; }
@@ -375,8 +326,8 @@ public:
     /** setTrackLength / getTrackLength — active number of steps (1…SEQ303_STEP_MAX) */
     void    setTrackLength (uint8_t length)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
-        _data.stepLength = juce::jlimit<uint8_t> (1, SEQ303_STEP_MAX, length);
+        
+        _data.stepLength = jc303Clip<uint8_t> (1, SEQ303_STEP_MAX, length);
     }
     uint8_t getTrackLength() const { return _data.stepLength; }
 
@@ -396,7 +347,7 @@ public:
      *  Resets every step to the default note; optionally fills all as rests. */
     void clearStepData (bool fillWithRests)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         clearStepDataInternal (fillWithRests);
     }
 
@@ -408,7 +359,7 @@ public:
         setMute (true);
         clearStackInternal (true);
         {
-            juce::SpinLock::ScopedLockType lk (_dataLock);
+            
             clearStepDataInternal (true);
         }
         setMute (false);
@@ -429,7 +380,7 @@ public:
      *  recorded note was still held down. */
     void recNote (uint8_t note, bool accent, bool legato)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         const uint8_t st = _recStep.load (std::memory_order_relaxed);
         auto& s = _data.step[st];
         s.note   = note;
@@ -445,7 +396,7 @@ public:
      *  on-screen keyboard, where the note is the whole input. */
     void recNoteKeepFlags (uint8_t note)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         const uint8_t st = _recStep.load (std::memory_order_relaxed);
         auto& s = _data.step[st];
         s.note = note;
@@ -457,7 +408,7 @@ public:
      *  length). Same effect as the REST button / sustain-pedal tap. */
     void recRest()
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         const uint8_t st = _recStep.load (std::memory_order_relaxed);
         auto& s = _data.step[st];
         s.rest   = true;
@@ -494,7 +445,7 @@ public:
 
         if (stepsHolded == 0) return;
 
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         for (uint16_t i = firstTied; i < static_cast<uint16_t>(firstTied + stepsHolded); ++i)
         {
             const uint8_t idx = static_cast<uint8_t>(i % stepSize);
@@ -555,7 +506,7 @@ public:
         clearTrack();
 
         {
-            juce::SpinLock::ScopedLockType lk (_dataLock);
+            
 
             for (int i = 0; i < SEQ303_STEP_MAX; ++i)
             {
@@ -579,7 +530,7 @@ public:
 
                 // ON step — pick a note
                 const uint8_t highNote = static_cast<uint8_t>(
-                    juce::jlimit (0, 127, static_cast<int>(lowerNote) + rangeNote));
+                    jc303Clip (0, 127, static_cast<int>(lowerNote) + rangeNote));
 
                 const uint8_t noteRange = (highNote > lowerNote)
                                             ? static_cast<uint8_t>(highNote - lowerNote)
@@ -591,7 +542,7 @@ public:
                 if (numberOfTones > 0)
                 {
                     const int fixed = static_cast<int>(note) + fixTones[note % 12];
-                    note = static_cast<uint8_t>(juce::jlimit (0, 127, fixed));
+                    note = static_cast<uint8_t>(jc303Clip (0, 127, fixed));
                 }
 
                 _data.step[i].note   = note;
@@ -610,7 +561,7 @@ public:
 
     void        setTemperament   (uint8_t id)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         _harmonizer.setTemperament (id);
     }
     uint8_t     getTemperamentId()              const { return _harmonizer.getTemperamentId();      }
@@ -629,14 +580,14 @@ public:
     /** Thread-safe snapshot copy of the full pattern (for serialisation). */
     void copyTrackData (TrackData303& dest) const
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         std::memcpy (&dest, &_data, sizeof (TrackData303));
     }
 
     /** Thread-safe full replace of the pattern (for deserialisation / preset load). */
     void loadTrackData (const TrackData303& src)
     {
-        juce::SpinLock::ScopedLockType lk (_dataLock);
+        
         std::memcpy (&_data, &src, sizeof (TrackData303));
     }
 
@@ -754,7 +705,7 @@ private:
             {
                 // Sample offset of tick t within this buffer
                 const double tickSampleF = static_cast<double>(t - tickAtStart) * sampPerTick;
-                const int    tickSample  = juce::jlimit (0, numSamples - 1,
+                const int    tickSample  = jc303Clip (0, numSamples - 1,
                                                static_cast<int>(tickSampleF));
                 fireTick (static_cast<uint32_t>(t), tickSample, shufflePulses);
             }
@@ -799,12 +750,13 @@ private:
 
     inline void fireTick (uint32_t tick, int sampleOffset, int shufflePulses)
     {
+        // Expire previously held gates first. Decrementing a gate immediately
+        // after creating it made the nominal 12-tick half-step last only 11.
+        onTick (sampleOffset);
         // Step boundary: every _ticksPerStep (= 24) ticks
         if ((tick % static_cast<uint32_t>(_ticksPerStep)) == 0)
             onStep (tick / static_cast<uint32_t>(_ticksPerStep), sampleOffset, shufflePulses);
 
-        // Note-off stack: check every tick (1-pulse resolution, same as original)
-        onTick (sampleOffset);
     }
 
     // ── onStep — fires once per 16th-note step (every 24 ticks) ──────────────
@@ -964,7 +916,7 @@ private:
 
     // Pattern data — UI-thread writes under _dataLock, audio-thread reads
     TrackData303           _data;
-    mutable juce::SpinLock _dataLock;
+    // Calls are serialised by the MPC wrapper engine lock.
 
     // Note stack — audio thread only, no lock needed
     NoteStackEntry303      _stack[SEQ303_NOTE_STACK_SIZE];
@@ -1015,5 +967,6 @@ private:
     // RNG (portable std::mt19937 replaces Arduino random())
     std::mt19937           _rng;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AcidSequencer303)
+    AcidSequencer303(const AcidSequencer303&)=delete;
+    AcidSequencer303& operator=(const AcidSequencer303&)=delete;
 };

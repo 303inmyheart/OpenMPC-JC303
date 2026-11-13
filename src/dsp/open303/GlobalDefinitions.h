@@ -2,6 +2,8 @@
 #define GlobalDefinitions_h
 
 #include <float.h>
+#include <bit>
+#include <cstdint>
 
 /** This file contains a bunch of useful macros which are not wrapped into the
 rosic namespace to facilitate their global use. */
@@ -48,7 +50,7 @@ typedef signed long long INT64;
 #ifdef _MSC_VER
 typedef unsigned __int32 UINT32;
 #else
-typedef unsigned long UINT32;
+typedef std::uint32_t UINT32;
 #endif
 
 // ...constants for numerical precision issues, denorm, etc.:
@@ -87,8 +89,8 @@ inline double dummyFunction(double x) { return x; }
 // bit twiddling:
 
 //extract the exponent from a IEEE 754 floating point number (single and double precision):
-#define EXPOFFLT(value) (((*((reinterpret_cast<UINT32 *>(&value)))&0x7FFFFFFF)>>23)-127)
-#define EXPOFDBL(value) (((*((reinterpret_cast<UINT64 *>(&value)))&0x7FFFFFFFFFFFFFFFULL)>>52)-1023)
+#define EXPOFFLT(value) (((std::bit_cast<std::uint32_t>(value)&0x7FFFFFFF)>>23)-127)
+#define EXPOFDBL(value) (((std::bit_cast<std::uint64_t>(value)&0x7FFFFFFFFFFFFFFFULL)>>52)-1023)
   // ULL indicates an unsigned long long literal constant
 
 #endif

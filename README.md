@@ -1,205 +1,109 @@
-# JC-303 Plugin
+> **100% AI-generated MPC port and design — tested by the maintainer on a real MPC Live III.**
+>
+> The MPC-specific integration, interface, artwork tooling, optimizations and documentation were developed with Codex. The original JC303, Open303, Aciduino, GuitarML models and bundled libraries are existing upstream work by their respective authors; the AI statement does not claim authorship of those components.
 
-This is a Free Roland TB-303 clone plugin. A Cmake JUCE port of [Robin Schmidt`s Open303](https://github.com/RobinSchmidt/Open303) with added features.
+# OpenMPC JC303
 
-![JC-303 Screenshot](https://raw.githubusercontent.com/midilab/jc303/main/img/jc303.png)
+An Acid / TB-303-style instrument for **MPC Live III**, based on [midilab/jc303](https://github.com/midilab/jc303). It runs as a native ARM64 VST2 plugin on **MPC OS 3.10.1 or newer**, with a touchscreen interface, Q-Links, MPC presets and project save/restore.
 
-This software is licensed under the GNU General Public License version 3 (GPLv3).
+The project name is **OpenMPC JC303**. The installed instrument remains **JC303 MPC**, with its existing plugin identifier, so projects made with this port keep recognizing it. It is a separate plugin from other Open303 ports.
 
-The Open303 engine part of this software is also licensed under the MIT License.
+![OpenMPC JC303 — SYNTH page](docs/screenshots/synth.png)
 
-## Download
+These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer tested the port on a real Live III; the latest 0.2.2 frame/banner changes still need on-device UI confirmation.
 
-Supports Windows, Linux and MacOS. You may find CLAP, VST3, LV2 and AU formats available to download. For VST2 plugin you need to compile it by your own self using vst2 sdk from Steinberg - vstsdk2.4.
+## Features
 
-MacOS Universal - Intel and ARM: [jc303-macos_universal-plugins.zip](https://github.com/midilab/jc303/releases/download/v0.13.0/jc303-0.13.0-macos_universal-plugins.zip)
+- Open303-based mono voice with waveform morph, tuning, cutoff, resonance, envelope modulation, decay, accent and output level.
+- TeeBee, Diode Octave and Diode filters, plus the JC303 modifications and LFO.
+- Extended Slide Time up to **1 second**, with migration of older saved slide durations.
+- **16-step sequencer** synchronized to MPC tempo/transport: adjustable length, notes, rests, accents, slides, ties and transpose.
+- Pattern generator with fill, accent/slide/tie probabilities, pitch-class count and note-range controls.
+- MIDI/pad step recording: velocity 100+ records accent; overlapping notes record slide; sustain-pedal down enters a rest.
+- **37 embedded GuitarML drive models**, with level/gain, equal-power dry/wet mixing, background model preparation and fades during model changes.
+- **12 factory programs** in the native MPC preset browser, including dry **Init** and two sequenced patches. New instances start with Drive and Sequencer off.
+- Six native pages: **SYNTH, MODS, LFO, SEQUENCE, GENERATE, DRIVE**, with Q-Link mappings and complete sound/pattern/drive project state.
+- Custom 303-style panels, rotary knobs, switches and Acid smiley. Step selection uses a bright border that leaves its caption visible.
+- A **Sounds → Plugin** browser tile and a loadable **Init `.xpl`** preset.
+- OpenMPC Installer-compatible packaging with installation scripts, manifests and checksums.
 
-Windows Intel x64: [jc303-windows_x64-plugins.zip](https://github.com/midilab/jc303/releases/download/v0.13.0/jc303-0.13.0-windows_x64-plugins.zip)
+## Screenshots
 
-Linux Intel x64: [jc303-linux_x64-plugins.zip](https://github.com/midilab/jc303/releases/download/v0.13.0/jc303-0.13.0-linux_x64-plugins.zip)  
+| MODS | LFO |
+|---|---|
+| ![Circuit modifications](docs/screenshots/mods.png) | ![LFO](docs/screenshots/lfo.png) |
 
-Linux ARM64: Soon...  
+![16-step sequencer with selected-step border](docs/screenshots/sequence.png)
 
-## Installation
+| GENERATE | DRIVE |
+|---|---|
+| ![Pattern generator and step recording](docs/screenshots/generate.png) | ![GuitarML drive model selection](docs/screenshots/drive.png) |
 
-The platform zip pack will contain a folder per plugin format, just pick the format you want to install and copy the content of the folder to your OS plugin format folder.
+Native Sounds-browser artwork:
 
-**MacOs De-Quarantine**: MacOs users needs to de-quarantine plugin before load it into any DAW.  
-Open a terminal window and do the following
-```shell
-$ sudo xattr -rd com.apple.quarantine /Library/Audio/Plug-Ins/Components/JC303.component
-```
-This de-quarantine example is for AU, please do the same for other formats you'll be using
+![JC303 / ACID BASS browser tile](art/browser-tile.png)
 
-## Step Sequencer
+## Installation and use
 
-JC303 ships with a full acid step sequencer ported from [Aciduino V2](https://midilab.co/aciduino). It is a 16-step monophonic sequencer clocked sample-accurately from the audio thread, playing the built-in 303 engine and sending MIDI out to the host. Note length is the authentic 303 half-step (50%) gate, and slide/tie bridge correctly from the last step back to the first. The sequencer panel and manual below target the `midilabv2` GUI theme.
+Target: **MPC Live III only, aarch64, MPC OS 3.10.1+**. Other devices and desktop plugin formats are outside this port's current support scope.
 
-### Layout
+Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the `*-OpenMPC.zip` into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. This source publication does not yet provide a downloadable binary release.
 
-Each of the 16 steps is a column of controls:
+Enable **Preferences → Enhancements → External Plugin Support** and select **JC303 MPC** under External VST Plugins.
 
-| Row | Control | Meaning |
-|--|--|--|
-| `step` | LED | Selects the step to edit; also shows the playing step and the active pattern length |
-| `rest` | toggle | Note ON (toggle up) or rest (toggle down) |
-| `accent` | micro-toggle | Step plays with accent |
-| `slide` | micro-toggle | Step slides into the next one |
-| `tie` | micro-toggle | Step ties into the previous note |
+Play from pads, keys or MIDI clips. Overlapping notes slide and velocities of 100 or more accent. Enable **MODS** to engage the extra circuit/LFO settings. Filter Drive affects the diode filter's input saturator; its display indicates when MODS is off or a non-diode filter is selected.
 
-Below the grid are the transport buttons (`PLAY/STOP`, `REC`, `REST`, `CLEAR`, `gen`), the generative mod knobs, and the on-screen octave keyboard.
+On **SEQUENCE**, enable SEQUENCER and press MPC Play. Tap a step or use EDIT STEP, then edit NOTE, REST, ACCENT, SLIDE and TIE. The SEQUENCER switch is beside TIE. On **GENERATE**, set probabilities/range and generate a pattern, or enable RECORD for step input. GENERATE and CLEAR replace pattern data and currently have no undo.
 
-### Editing steps
+On **DRIVE**, enable the effect and choose a model. LEVEL / GAIN controls the second input of conditioned models or the input gain of fixed models, following JC303's original mapping. Models are embedded; no model files or downloads are needed at runtime. Bypass returns to dry audio.
 
-- **Left-click a step LED** to select the step to edit. The selected step blinks; the step currently playing is highlighted. Clicking a step at or beyond the active pattern length snaps the selection to the last active step.
-- **Note/rest toggle**: each step is a note by default; toggle it off to make it a rest, on to re-activate it.
-- **Accent / Slide / Tie** are per-step toggles. A tie carries the previous note over, and handles wrap-around from the last step to the first.
-- The keyboard always shows the note of the selected step.
+## Performance and validation
 
-### Setting the pattern length
+Native ASan/UBSan/leak tests and ARM64 shared-object tests under QEMU pass. Isolated ARM64 host/voice tests also passed on the real Live III. These are separate from the maintainer's hands-on tests of the installed instrument.
 
-- **Right-click any step LED** to set the pattern length from 1 to 16 (the clicked step becomes the last step of the pattern). Steps beyond the length are kept but stay silent.
-- Length can also be set with the `Length` item in the `SEQ` menu page.
+The 0.2.1 optimization reduced measured audio-thread CPU for **Blackstar HT40 GainKnob SM57mic + sequencer from 17.76% to 6.78% of one fast CPU core**. The stopped case went from 16.44% to 5.45%. TS9 and RAT showed similar improvements. Captured Blackstar audio was bit-identical before/after. These isolated benchmark percentages are **not the MPC's overall CPU meter**.
 
-### Seq keyboard
-
-- **Click a key** to set the note of the selected step.
-- **Mouse wheel over the keyboard** transposes the note of the selected step by one octave per notch (the octave of the keyboard follows the note).
-- In record mode the rec cursor is the target for both actions.
-
-### Record mode
-
-Turn `REC` on to enter serial (step-by-step) entry. The record cursor starts at the currently selected step and advances one step per entered event, wrapping at the pattern length.
-
-- **Keyboard**: press a key to record its note and advance. Existing accent/slide/tie flags on the step are kept.
-- **External MIDI**: velocity **100 or above** records the step with accent; striking a second note while one is still held records a slide (legato); tapping the sustain pedal (CC64, 127 on) records a rest.
-- **`REST` button**: in record mode it records a rest and advances the cursor; outside record mode it turns the selected step into a rest and moves the selection to the next step.
-- **`CLEAR` button** resets the whole track to rests (all accents, slides and ties removed).
-
-### Generative
-
-The `gen` button generates a random pattern across all 16 steps using:
-
-| Knob | Range (default) | Meaning |
-|--|--|--|
-| `FILL` | 0–100 (80) | % chance each step is ON (not a rest) |
-| `ACC` | 0–100 (50) | % chance of accent on an ON step |
-| `SLIDE` | 0–100 (30) | % chance of slide on an ON step |
-| `TIE` | 0–100 (100) | % chance of tie on a rest step |
-| `TONES` | 1–12 (4) | Number of pitch classes to snap to (1 = single note) |
-| `LOW` | 0–127 (20) | Lowest MIDI note in the random pitch range |
-| `RANGE` | 0–127 (48) | Range above `LOW` of the random pitches |
-
-The sequencer is briefly muted while a pattern is generated so no stray notes play. Generating keeps the pattern length intact but overwrites the steps within it.
-
-### Transport and clock
-
-- **`PLAY/STOP`** starts and stops the sequencer.
-- The `SEQ` menu page in the LCD exposes:
-  - **Length** — pattern length (1–16).
-  - **Tempo** — internal BPM (20–300); active only in `Internal` sync mode.
-  - **Sync Mode** — `Internal` (free-running at Tempo), `Host` (follows the DAW transport position and tempo), or `Midi Clock` (follows external MIDI Start/Stop/Clock messages).
-  - **Start Mode** — `Transport` (starts on host transport or MIDI Start) or `Note Trigger` (starts automatically on the first incoming note, even while stopped).
-
-## Build
-
-Generate the cmake project build files first for the OS of your choice.  
-
-#### cmake options
-
-| Variable | Description | Default |
-|--|--|--|
-| GUI | Select GUI theme interface to use | midilabv2 |
-  
-Available themes: midilabv2 | amadeusp | midilab
-  
-To change JC303 GUI theme add the following to the first cmake call: -D GUI=midilabv2  
-  
-### Apple Xcode
-
-To generate an **Xcode** project, run:
-
-```sh
-cmake -B build -G Xcode -D CMAKE_OSX_ARCHITECTURES=arm64\;x86_64 -D CMAKE_OSX_DEPLOYMENT_TARGET=10.13
-```
-
-The `-D CMAKE_OSX_ARCHITECTURES=arm64\;x86_64` flag is required to build universal binaries.
-
-The `-D CMAKE_OSX_DEPLOYMENT_TARGET=10.13` flag sets the minimum MacOS version to be supported.
-
-### Windows Visual Studio
-
-We suggest to install [Cygwin](https://cygwin.com/install.html) with git and a terminal to compile JC303.  
-  
-Find the PATH of your visual studio compiler and cmake installation and add to your .profile  
-  
-```sh
-# Visual Studio 18 / MSVC 14.51
-export PATH="$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/18/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin"
-export PATH="$PATH:/cygdrive/c/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/MSVC/14.51.36231/bin/Hostx64/x64"
-```
-  
-```sh
-source .profile
-```
-  
-To generate a **Visual Studio 2026 (18)** project, run:  
-  
-```sh
-cmake -B build -G "Visual Studio 18" -A x64
-```
-
-### GNU Linux
-
-Install the dependecies:
-
-#### Ubuntu
-
-```sh
-sudo apt install build-essential gcc cmake libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libfreetype6-dev libasound2-dev
-```
-
-To generate a **Linux CMake** project, run:
-
-```sh
-cmake -B build
-```
-
-## Compile
-
-To compiled from the command line, run:
-
-```sh
-cmake --build build --config Release
-```
-
-## Docker build
-
-Build x86_64 release (default behavior)
-```sh
-docker build --build-arg RELEASE_ARCH=X86_64 -t jc303-linux-builder-x86_64 .
-```
-
-Build arm64 release
-```sh
-docker build --build-arg RELEASE_ARCH=ARM64 -t jc303-linux-builder-arm64 .
-```
-
-Run – mounts current directory → /jc303
-```sh
-docker run -it --rm -v "$(pwd):/jc303" jc303-linux-builder
-```
-
-#### VST2 Plugin
-
-No distribution of VST2 plugin binaries is allowed without a license, but if you have the sdk and the license to use it just copy the vstsdk2.4/ SDK folder to the root of this project before run cmake.
+Details, limits and reproducible measurement data: [PERFORMANCE.md](PERFORMANCE.md), [TESTING.md](TESTING.md), [benchmarks](benchmarks/live-iii-0.2.1.json). Multiple wet instances, parameter-sweep spikes and extended project stability still need broader testing.
 
 ## Roadmap
 
-1. ~~Binary release for MacOS, Windows and Linux~~
-2. ~~Graphical User Interface~~
-3. ~~Internal parameters for engine tunning -Inspired on Devilfish Mod~~
-4. ~~Overdrive~~
-5. ~~Step Sequencer~~
-6. Sequencer Patterns
-5. Preset Support
+Implemented through **0.2.2**: synth/mods/LFO, host-synchronized sequencer and recording/generator, 37 drive models, native preset bank, Acid interface, CPU optimization, complete Q-Link frames, border-only step selection and Sounds-browser artwork.
+
+Next validation:
+
+- Confirm the 0.2.2 Q-Link frames, step selection and Sounds-browser tile on the device.
+- Measure multiple instances and parameter-change spikes; run longer stability sessions.
+
+The following original-desktop features are **deferred for now**:
+
+- Desktop JC303 preset import and custom drive-model import.
+- Sequencer MIDI output to other instruments.
+- Internal clock, direct MIDI-clock synchronization and note-trigger start. Currently the sequencer follows MPC transport.
+- The desktop on-screen keyboard is replaced by MPC pads and the NOTE control.
+
+Other planned ports, in order: **Geonkick → Fire → Wolf Shaper → BYOD feasibility review → Surge**. BYOD first requires an assessment of whether effect-chain navigation/editing works well on MPC. Full project queue and status: [ROADMAP.md](ROADMAP.md).
+
+## Source and build
+
+The default **`mpc-live-iii`** branch contains this port. The fork's **`main`** branch preserves the original JC303 source. This port is based on upstream commit `25d0ed1dab6d0edffc0e28c7d68c170a8af71aee`.
+
+The MPC adapter uses the [OpenMPC toolchain](https://github.com/open-mpc/mpc-vst-plugins), pinned to `ef05a26c6e59f1bfd3ef2023e6a9d8b371b61310` with the included [float/host integration patch](patches/mpc-float32.patch). DSP/model dependencies are vendored. A C++20 compiler, ARM64 cross compiler, Python and Pillow are required. See [BUILDING.md](BUILDING.md) for checkout, build, tests and packaging.
+
+## License and credits
+
+The complete MPC port is **GPL-3.0-only**. See [LICENSE](LICENSE) for the full license text. Source and modifications must be distributed in accordance with the applicable licenses; the AI-generated development process does not replace upstream licensing or credits.
+
+| Component | License / notice |
+|---|---|
+| JC303 and MPC adaptation | [GPL-3.0](LICENSE); original [JC303 by midilab and contributors](https://github.com/midilab/jc303) |
+| Open303 engine | [MIT](src/dsp/open303/LICENSE), Robin Schmidt and contributors |
+| Aciduino sequencer/harmonizer | [MIT](src/sequencer/LICENSE), Romulo Silva and contributors |
+| OpenMPC wrapper/toolchain | [MIT](https://github.com/open-mpc/mpc-vst-plugins/blob/main/LICENSE) |
+| RTNeural | [BSD-3-Clause](vendor/RTNeural/LICENSE) |
+| xsimd | [BSD-3-Clause](vendor/xsimd/LICENSE) |
+| math_approx | [BSD-3-Clause](vendor/math_approx/LICENSE) |
+| nlohmann JSON | MIT, [bundled header notice](vendor/RTNeural/modules/json/json.hpp) |
+| ChowDSP-derived RNN integration | GPL-3.0; [notice](src/drive/CHOWDSP-LICENSE.md) |
+| DejaVu artwork font | [DejaVu/Bitstream notice](art/FONT-LICENSE.txt) |
+
+The 37 model files are taken from the pinned JC303 distribution. Original identities, names, credits and dependency notices are retained. Exact provenance and local DSP/library changes are recorded in [src/VENDORED.md](src/VENDORED.md).

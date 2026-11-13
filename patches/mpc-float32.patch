@@ -1,0 +1,443 @@
+diff --git a/.claude/skills/mpc-vst-plugin/SKILL.md b/.claude/skills/mpc-vst-plugin/SKILL.md
+index 05dbc59..a40cdb6 100644
+--- a/.claude/skills/mpc-vst-plugin/SKILL.md
++++ b/.claude/skills/mpc-vst-plugin/SKILL.md
+@@ -15,6 +15,9 @@ because it takes the screen down.
+ Stop any separately attached audio engines first.
+ 
+ ## Pipeline
++Float engines may set `"defines": {"ENGINE_FLOAT32": 1}` and implement render/process with `mpc_sample_t`
++buffers. Include generated `params.h` before `engine.h` in every source that uses the engine interface.
++Both wrappers preserve float precision/headroom; default int16 ports are unchanged.
+ 1. **Engine**: anything providing `mpc_engine()` (`wrapper/engine.h`: create/destroy/midi/set_param/get_param/
+    render, 44.1 kHz int16 stereo in 128-frame blocks, the Force's own period) links against `wrapper/vst2_wrap.c`
+    + generated `params.h` → one `.so` exporting `VSTPluginMain`. Compile out host-specific quirks with a
+@@ -49,6 +52,10 @@ Stop any separately attached audio engines first.
+    VST3). docs/DESKTOP_VST3.md.
+ 
+ ## Gotchas
++- Q-Link writes to options are fractional. After settling, report the accepted exact
++  normalized value with audioMasterAutomate from the audio callback; otherwise the
++  host's cached value can leave switches/radio buttons stale. An exact echoed value
++  must not queue another notification (JC303 voice_test hostUiSync regression).
+ - Integer DSP params: set `"display": "int"`. The wrapper then rounds, and `settle()` moves an option list or a whole-number
+   param one step per data wheel click or Q-Link event (else it sticks between two values), and a drag or sweep without flicker.
+   MPC sends a wheel click and a Q-Link event alike (the read-back value plus 0.01 / 1/128 of the range: docs/NOTES.md "Stepping of
+@@ -93,6 +100,9 @@ Switches/buttons/menus/sliders/labels (`btnBypass`, `comboBox`, `slider`, `Label
+ **locally** in stock skins (e.g. Bassline); copy those definitions into our `localComponentDefinitions`.
+ 
+ ## MIDI-generating plugins (sequencers/arps)
++With HAS_SONG_POS, `mpc_engine_cycle(inst,start,end,active)` is an optional weak
++hook for host loop metadata, called before song_pos() in both wrappers. Invalid
++host timing stops the engine clock through song_pos(-1,0,0,frames).
+ MPC OS ignores VST MIDI output (`audioMasterProcessEvents` goes nowhere). Instead, open an ALSA seq port from
+ the plugin (`poc/midiport.c`: `snd_seq_open` → `snd_seq_create_simple_port` READ|SUBS_READ → `snd_seq_event_output_direct`,
+ link `-lasound`; build needs `apt install libasound2-dev` in the arm32v7/gcc:11-bullseye container). MPC hot-detects the
+diff --git a/README.md b/README.md
+index 51456d2..e3b373b 100644
+--- a/README.md
++++ b/README.md
+@@ -48,6 +48,7 @@ MPC lists every plugin folder in a **`VST2 Plugins`** folder at the root of any
+ - **Ports of existing engines**: describe the parameters in one small `vst.json` and the tools build the plugin, its page and
+   its Q-Link map. Engines written for Ableton Move's [Schwung](https://github.com/charlesvestal/schwung) host build unchanged
+   through an adapter.
++  Engines can opt into float audio with `ENGINE_FLOAT32=1`; the default engine format is int16 (see PORTING.md).
+ - **MIDI generators**: sequencers and arpeggiators that play other tracks, synced to MPC's tempo.
+ - **App-like plugins** that use the network (HTTP/HTTPS), read and write files or run helper programs, such as a record-digging streamer.
+ - **Native pages**: knobs, faders, switches, buttons, option selectors, pop-up lists, live text readouts and your own artwork
+diff --git a/docs/COMPATIBILITY.md b/docs/COMPATIBILITY.md
+index 302e9ec..834d9d4 100644
+--- a/docs/COMPATIBILITY.md
++++ b/docs/COMPATIBILITY.md
+@@ -1,5 +1,8 @@
+ # Compatibility, limits and device details
+ 
++Engine audio is int16 by default. `ENGINE_FLOAT32=1` opts into interleaved float buffers in both VST wrappers,
++preserving quiet signals and headroom. All engine sources must include generated `params.h` before `engine.h`.
++
+ Reference material moved out of the README (2026-11-05). Verified facts with dates are in [NOTES.md](NOTES.md); the
+ MPC OS 2.x skin plan is in [OS2_SKINS.md](OS2_SKINS.md); Gen2 is in [GEN2.md](GEN2.md).
+ 
+diff --git a/docs/NOTES.md b/docs/NOTES.md
+index fb4336a..b2da441 100644
+--- a/docs/NOTES.md
++++ b/docs/NOTES.md
+@@ -6,6 +6,40 @@ from the Force and may differ on MPC Live/One/X/Key (e.g. `Force Documents` vs `
+ 
+ ## Facts (verified)
+ 
++- **2026-11-13, offline, JC303 sequencer 0.1.0:** optional weak engine hook
++  `mpc_engine_cycle(inst,start,end,active)` supplies valid loop endpoints before
++  song_pos(). VST2 requests cycle positions; VST3 uses ProcessContext cycle
++  fields. Missing timing calls song_pos with invalid position/stopped state.
++  Native ASan/UBSan and ARM64 QEMU tests compare exact audio to an independently
++  scheduled voice through a loop ending within a host block (maximum error 0),
++  and check tempo changes, jitter, gates, ties, project pattern state, record
++  and generator limits. This is not a device CPU or GUI verification.
++
++- **2026-11-12, offline JC303 0.0.3 regression:** accepted stepped-value feedback
++  introduced a second interaction: an exact host echo reset last_pos during a
++  fractional absolute sweep, making the next increasing value look decreasing.
++  VST2 now records the stepped values it reports and recognises matching host
++  acknowledgements without changing gesture history. Tests cover all six LFO
++  waves forward/backward, independent wheel clicks, synchronous and delayed
++  echoes, and ordinary exact touch writes. Native ASan/UBSan and ARM64 QEMU pass;
++  device confirmation is pending.
++
++- **2026-11-12, offline regression plus user report, JC303 Live III:** fractional VST2
++  Q-Link writes were settled to an exact option in the engine but never reported back
++  to the host. The host could retain e.g. 1/128 while a switch was already on, leaving
++  touchscreen buttons and radio selections stale. `set_param_now()` now queues
++  audioMasterAutomate for a stepped value it changes. Housekeeping reports the accepted
++  value outside setParameter; a host echo of the exact value queues no further report.
++  JC303's regression reproduces the stale cached host value before the fix and covers
++  MODS, filter, LFO wave/destination and feedback echoes after it. Hardware confirmation
++  of this correction is pending; the user's report concerns the previous build.
++
++- **2026-11-12, offline only, JC303 milestone 1:** `ENGINE_FLOAT32=1` selects interleaved float engine
++  buffers in both wrappers; existing ports keep int16. The engine includes generated `params.h` before
++  `engine.h`. Native VST2 tests under ASan/UBSan compared three JC303 filters against a direct voice
++  with an event at sample 37 and host blocks of 1–511 frames: maximum absolute error < 2e-9.
++  The existing int16 inputprobe host test also passes. No MPC hardware test or CPU claim.
++
+ - **The host processes in place**: an effect's `processReplacing` gets the same buffers as input and output, so read each
+   frame's input before writing its output. Until 2026-10-31 the wrapper's effect path did not, for block sizes that are not a
+   multiple of 128 (Preferences block size 32, 64, 96 or 192): the effect heard its own output instead of the track. Fixed in
+diff --git a/docs/PORTING.md b/docs/PORTING.md
+index 66b546a..f6510ff 100644
+--- a/docs/PORTING.md
++++ b/docs/PORTING.md
+@@ -47,6 +47,16 @@ a future re-vendor from a newer upstream is a real diff, not archaeology (see `m
+ for the pattern). This applies to every future port, not just ones that hit the problem the hard way.
+ 
+ ## 1. Engine
++- Host-synchronised engines may additionally implement the weak
++  `mpc_engine_cycle(inst,start,end,active)` hook. With `HAS_SONG_POS=1`, both
++  wrappers call it before `song_pos()` to describe a valid active host loop.
++  Use it to split a render block at a loop end; invalid/missing time stops the
++  clock through `song_pos(-1,0,0,frames)`. JC303's 0.1.0 host tests cover this
++  offline with an end inside a block; actual MPC verification is still required.
++- [ ] Optional float audio: `"defines": {"ENGINE_FLOAT32": 1}` selects interleaved `float` samples in
++      `mpc_engine_t.render/process` (`mpc_sample_t`, `wrapper/audio_format.h`), in VST2 and desktop VST3.
++      Include generated `params.h` before `engine.h` in the engine; all translation units must agree.
++      The default remains int16. Float keeps low-level precision and headroom; no int16 clipping is applied.
+ - [ ] Third-party DSP source (not written in this repo) is vendored -- committed into the port's own repo,
+       not fetched at build time. See the Quick Start section above for exactly how and why.
+ - [ ] Builds for armhf with glibc ≤ the device's (`arm32v7/gcc:11-bullseye`, glibc 2.31, is what `build_port.sh` uses; bookworm images bind pthread_create to GLIBC_2.34 and do not load on MPC OS 2.x), exporting only `VSTPluginMain`.
+@@ -110,6 +120,9 @@ for the pattern). This applies to every future port, not just ones that hit the
+       3.10+ has none from this project.
+ 
+ ## 2. Parameters
++- VST2 stepped controls report their accepted value to the host on the next audio
++  callback when a Q-Link/wheel write was fractional. This keeps touchscreen switches
++  and option highlights consistent with the engine. Echoed exact values do not loop.
+ - [ ] Stable order (the VST index is what skins and projects bind to). Append only; never reorder a shipped plugin.
+       `gen_vst.py` writes `params.lock` next to `vst.json` on the first build: commit it. A build fails when an existing key
+       changes index; `GEN_VST_RELOCK=1` accepts the break (before a first release only). Rebuild the skin after any change.
+diff --git a/tools/gen_vst.py b/tools/gen_vst.py
+index 5ace380..f758798 100644
+--- a/tools/gen_vst.py
++++ b/tools/gen_vst.py
+@@ -27,6 +27,8 @@ vst.json (paths are relative to the vst.json's folder):
+                                                  #   (both on by default; cc_lines() below)
+       "custom_skin": true,                       # optional: params.h + plugin-list entry only; the port makes the skin itself
+       "defines": {"HAS_LFO_BPM": 1},             # optional extra #defines in params.h
++                                                 #   ENGINE_FLOAT32=1: interleaved float engine audio instead of int16;
++                                                 #   include params.h before engine.h in the engine (both wrappers support it)
+                                                  #   (HAS_LFO_BPM: host tempo as "lfo_bpm"; HAS_TRANSPORT: play/stop as "transport";
+                                                  #   HAS_SONG_POS: the engine's song_pos(ppq, bpm, playing, frames) every block, for a MIDI generator)
+                                                  #   (HAS_DISPLAY_REV: the DSP changes values by itself; the wrapper polls its "display_rev" and
+diff --git a/wrapper/engine.h b/wrapper/engine.h
+index a837ef9..606a611 100644
+--- a/wrapper/engine.h
++++ b/wrapper/engine.h
+@@ -1,5 +1,7 @@
+ /* The engine interface vst2_wrap.c drives: any synth/effect core that provides mpc_engine().
+- * Contract: 44100 Hz, interleaved int16 stereo, rendered in 128-frame blocks. Parameters are
++ * Contract: 44100 Hz, interleaved stereo, rendered in 128-frame blocks. Samples default to int16;
++ * ENGINE_FLOAT32=1 opts into float (include generated params.h before this header in the engine).
++ * Both wrappers and every engine source must agree on this compile-time format. Parameters are
+  * string key/value pairs; the keys and their ranges come from the port's generated params.h.
+  * An engine written for another host plugs in through a small adapter (see adapters/).
+  * The desktop VST3 wrapper (vst3_wrap.c, docs/DESKTOP_VST3.md) keeps this contract at any host rate: it resamples to and from 44100.
+@@ -11,6 +13,7 @@
+  * duration: keep such work a discrete trigger, or hand it to a worker thread. */
+ #pragma once
+ #include <stdint.h>
++#include "audio_format.h"
+ 
+ typedef struct {
+     void *(*create)(const char *data_dir);    /* data_dir: MODULE_DIR define, or NULL */
+@@ -18,13 +21,13 @@ typedef struct {
+     void (*midi)(void *inst, const uint8_t *msg, int len);
+     void (*set_param)(void *inst, const char *key, const char *val);
+     int (*get_param)(void *inst, const char *key, char *buf, int buf_len);   /* > 0 on success */
+-    void (*render)(void *inst, int16_t *out_lr, int frames);
++    void (*render)(void *inst, mpc_sample_t *out_lr, int frames);
+     /* Effects only (a port built with "effect": true in vst.json): filter one block of the host's audio, same format as
+-     * render (interleaved int16 stereo, 128 frames); in_lr may not alias out_lr. NULL for synths (add it last: engines
++     * render (interleaved mpc_sample_t stereo, 128 frames); in_lr may not alias out_lr. NULL for synths (add it last: engines
+      * initialise this struct positionally).
+  * A port that sets "defines": {"SAMPLE_ACCURATE": 1} in vst.json (instruments only) has render() called with any
+  * frame count from 1 to 128, so MIDI can start at its in-block position: the engine must not assume 128. */
+-    void (*process)(void *inst, const int16_t *in_lr, int16_t *out_lr, int frames);
++    void (*process)(void *inst, const mpc_sample_t *in_lr, mpc_sample_t *out_lr, int frames);
+     /* Only with "defines": {"HAS_SONG_POS": 1}: called once per host block, before that block's render()/process(), with the
+      * host's song position in beats (ppqPos at the block start) and tempo, whether the transport is playing, and the block's
+      * frame count (the block ends at ppq + frames * bpm / 60 / 44100). ppq is -1 and bpm 0 when the host gave no position.
+@@ -34,6 +37,10 @@ typedef struct {
+ 
+ const mpc_engine_t *mpc_engine(void);
+ 
++/* Optional transport loop metadata, called before song_pos() when HAS_SONG_POS
++ * is enabled. active is false when the host supplies no valid cycle. */
++void mpc_engine_cycle(void *inst, double start, double end, int active) __attribute__((weak));
++
+ /* Optional: an engine that changes its own parameters (from MIDI it reads on an ALSA port of its own, say) reports them
+  * here, one key per call, into `key` (`len` bytes), and returns 0 once none are left. The wrapper asks once per host
+  * block, under the engine lock, and tells the host as it does for a MIDI CC's change (audioMasterAutomate, at most every
+diff --git a/wrapper/vst2_wrap.c b/wrapper/vst2_wrap.c
+index 82e9cd6..76ca8ce 100644
+--- a/wrapper/vst2_wrap.c
++++ b/wrapper/vst2_wrap.c
+@@ -124,14 +124,16 @@ typedef struct {
+     AEffect fx;
+     audioMasterCallback master;
+     void *dsp;
+-    int16_t block[DSP_BLOCK * 2];
++    mpc_sample_t block[DSP_BLOCK * 2];
+     int pos;                 /* read position in block; DSP_BLOCK = empty */
+-    int16_t inb[DSP_BLOCK * 2];   /* effect: the host audio being collected for the engine */
++    mpc_sample_t inb[DSP_BLOCK * 2];   /* effect: the host audio being collected for the engine */
+     int inpos;
+     double bpm;
+     volatile int holdFrames[NPARAMS];  /* momentary params: frames left before reporting back to 0 (hold_ms) */
+     long long press_ms[NPARAMS];       /* momentary params: when the last press that was acted on arrived (CLOCK_MONOTONIC ms), see set_param_now */
+     volatile char changed[NPARAMS];  /* params the plugin changed itself (step_of on an option), to report */
++    int stepped_echo_pending[NPARAMS]; /* accepted stepped values awaiting an optional host echo */
++    float stepped_echo_value[NPARAMS];
+     float last_pos[NPARAMS]; /* stepped params: the last position the host asked for, in steps (-1 = none yet) */
+     float qacc[NPARAMS];     /* qlink_ticks: turn events counted toward the next step (see setParameter) */
+     signed char last_on[NPARAMS];  /* last "<key>_on" value told to the host, +1 (0 = unknown, -1 = the engine has no such key) */
+@@ -192,11 +194,11 @@ static int eng_get(wrap_t *w, const char *k, char *buf, int n) {
+ static void eng_midi(wrap_t *w, const uint8_t *m, int n) {
+     pthread_mutex_lock(&w->lock); g_api->midi(w->dsp, m, n); pthread_mutex_unlock(&w->lock);
+ }
+-static void eng_render(wrap_t *w, int16_t *out, int n) {
++static void eng_render(wrap_t *w, mpc_sample_t *out, int n) {
+     pthread_mutex_lock(&w->lock); g_api->render(w->dsp, out, n); pthread_mutex_unlock(&w->lock);
+ }
+ #ifdef PLUG_EFFECT
+-static void eng_process(wrap_t *w, const int16_t *in, int16_t *out, int n) {
++static void eng_process(wrap_t *w, const mpc_sample_t *in, mpc_sample_t *out, int n) {
+     pthread_mutex_lock(&w->lock); g_api->process(w->dsp, in, out, n); pthread_mutex_unlock(&w->lock);
+ }
+ #endif
+@@ -264,6 +266,7 @@ static void set_param_now(AEffect *e, int32_t i, float n) {
+     char buf[64];
+     if (i < 0 || i >= NPARAMS) return;
+     const param_t *p = &PARAMS[i];
++    const float requested_n = n;
+     int nudge = 0;
+     /* One tap on a drawn button reaches us as two presses 30 to 140 ms apart, with no release between (the finger going down and lifting;
+      * Live III, 2026-10-30, docs/NOTES.md), so "Program >" stepped two programs and a keyboard key typed twice. A momentary param ignores a
+@@ -382,6 +385,13 @@ static void set_param_now(AEffect *e, int32_t i, float n) {
+     }
+     norm_to_str(p, n, buf, sizeof buf);
+     eng_set(w, PARAMS[i].key, buf);
++    /* Q-Link writes are fractional even for switches/options. The host caches that
++     * fraction for its skin, while settle() selects a different, exact engine value.
++     * Send the accepted value from the next audio callback so buttons and radio
++     * selections follow the engine. An echo of that exact value schedules nothing,
++     * avoiding recursion and feedback loops. Ordinary continuous writes stay quiet. */
++    if ((p->nopts > 1 || p->int_display) && fabsf(n - requested_n) > 1e-6f)
++        w->changed[i] = 1;
+     if (PARAMS[i].momentary && n > 0.5f) w->holdFrames[i] = PARAMS[i].hold_ms > 0 ? (int)(PARAMS[i].hold_ms * 44.1f) : 1;
+     if (!nudge) popup_picked(w->open, w->holdFrames, i);   /* a list pick closes it; a Q-Link nudge doesn't */
+     /* No UpdateDisplay for a plain host write: the host knows the value it sent, and MPC answers every UpdateDisplay by
+@@ -408,6 +418,15 @@ static void flush_pend0(AEffect *e) {
+ 
+ static void setParameter(AEffect *e, int32_t i, float n) {
+     wrap_t *w = e->object;
++    /* An acknowledgement of our accepted stepped value is not a new turn.
++     * Feeding it into settle() overwrites the fractional gesture history and
++     * reverses the next absolute knob event. Track only values actually reported
++     * to the host, so a normal exact touch/automation write still resets history. */
++    if (i >= 0 && i < NPARAMS && __atomic_exchange_n(&w->stepped_echo_pending[i], 0, __ATOMIC_ACQ_REL)) {
++        float reported;
++        __atomic_load(&w->stepped_echo_value[i], &reported, __ATOMIC_RELAXED);
++        if (fabsf(n - reported) < 1e-6f && fabsf(get_norm(w, i) - reported) < 1e-6f) return;
++    }
+     if (i == 0 && NPARAMS > 0) {
+         if (!__atomic_load_n(&w->has_pend0, __ATOMIC_ACQUIRE)) { float f = get_norm(w, 0); __atomic_store(&w->pend0_from, &f, __ATOMIC_RELAXED); }
+         __atomic_store(&w->pend0, &n, __ATOMIC_RELAXED);
+@@ -439,10 +458,20 @@ static void update_transport(wrap_t *w, const VstTimeInfo *ti) {
+ 
+ static void update_tempo(wrap_t *w, int32_t n) {
+     VstTimeInfo *ti = (VstTimeInfo *)w->master(&w->fx, audioMasterGetTime, 0,
+-                                              kVstTempoValid | ((HAS_TRANSPORT || HAS_SONG_POS) ? kVstPpqPosValid : 0), 0, 0);
+-    if (!ti) return;
++                                              kVstTempoValid | ((HAS_TRANSPORT || HAS_SONG_POS) ? kVstPpqPosValid : 0) |
++                                              (HAS_SONG_POS ? (1 << 12) : 0), 0, 0);
++    if (!ti) {
++        if (HAS_SONG_POS) eng_song_pos(w, -1.0, 0.0, 0, n);
++        return;
++    }
+     if (HAS_TRANSPORT) update_transport(w, ti);
+     if (HAS_SONG_POS) {   /* ppq < 0 tells the engine the host gave no position */
++        if (mpc_engine_cycle) {
++            pthread_mutex_lock(&w->lock);
++            mpc_engine_cycle(w->dsp, ti->cycleStartPos, ti->cycleEndPos,
++                             (ti->flags & (1 << 12)) && (ti->flags & (1 << 2)));
++            pthread_mutex_unlock(&w->lock);
++        }
+         int ok = (ti->flags & kVstPpqPosValid) && (ti->flags & kVstTempoValid) && ti->tempo > 0;
+         eng_song_pos(w, ok ? ti->ppqPos : -1.0, ok ? ti->tempo : 0.0, (ti->flags & kVstTransportPlaying) != 0, n);
+     }
+@@ -464,7 +493,7 @@ static void render_frames(wrap_t *w, float **out, int32_t n, int accumulate) {
+             eng_render(w, w->block, DSP_BLOCK);
+             w->pos = 0;
+         }
+-        float l = w->block[w->pos * 2] * (1.0f / 32768.0f), r = w->block[w->pos * 2 + 1] * (1.0f / 32768.0f);
++        float l = w->block[w->pos * 2] * MPC_AUDIO_SCALE, r = w->block[w->pos * 2 + 1] * MPC_AUDIO_SCALE;
+         if (accumulate) { out[0][i] += l; out[1][i] += r; }
+         else { out[0][i] = l; out[1][i] = r; }
+         w->pos++;
+@@ -500,7 +529,7 @@ static void render_events(wrap_t *w, float **out, int32_t n, int accumulate) {
+             int len = end - i > DSP_BLOCK ? DSP_BLOCK : (int)(end - i);
+             eng_render(w, w->block, len);
+             for (int j = 0; j < len; j++) {
+-                float l = w->block[j * 2] * (1.0f / 32768.0f), r = w->block[j * 2 + 1] * (1.0f / 32768.0f);
++                float l = w->block[j * 2] * MPC_AUDIO_SCALE, r = w->block[j * 2 + 1] * MPC_AUDIO_SCALE;
+                 if (accumulate) { out[0][i + j] += l; out[1][i + j] += r; }
+                 else { out[0][i + j] = l; out[1][i + j] = r; }
+             }
+@@ -552,7 +581,15 @@ static void housekeeping(AEffect *e, int32_t n) {
+     for (int i = 0; i < NPARAMS; i++)
+         if (w->holdFrames[i] > 0 && (w->holdFrames[i] -= n) <= 0) { w->holdFrames[i] = 0; w->master(&w->fx, audioMasterAutomate, i, 0, 0, 0.0f); }
+     for (int i = 0; i < NPARAMS; i++)
+-        if (w->changed[i]) { w->changed[i] = 0; w->master(&w->fx, audioMasterAutomate, i, 0, 0, get_norm(w, i)); }
++        if (w->changed[i]) {
++            w->changed[i] = 0;
++            float value = get_norm(w, i);
++            if (PARAMS[i].nopts > 1 || PARAMS[i].int_display) {
++                __atomic_store(&w->stepped_echo_value[i], &value, __ATOMIC_RELAXED);
++                __atomic_store_n(&w->stepped_echo_pending[i], 1, __ATOMIC_RELEASE);
++            }
++            w->master(&w->fx, audioMasterAutomate, i, 0, 0, value);
++        }
+     /* Text params are polled, not only read after a screen tap, because MIDI alone can change them (a pad plays
+      * a chord, nothing on screen touched):
+      * - list-tile selection ("<key>_on"), every 10 ms: the host doesn't re-read a button's value on UpdateDisplay,
+@@ -647,7 +684,7 @@ static void page_apply(wrap_t *w);   /* sample_page.h */
+ #endif
+ 
+ #ifdef PLUG_EFFECT
+-static int16_t f2s(float f) { f *= 32768.0f; return f >= 32767.0f ? 32767 : f <= -32768.0f ? -32768 : (int16_t)lrintf(f); }
++static mpc_sample_t f2s(float f) { return mpc_from_float(f); }
+ 
+ /* An effect: whole 128-frame host blocks go straight through the engine (MPC's period is 128, so no added latency);
+  * any other block size is collected and processed one block late. */
+@@ -668,7 +705,7 @@ static void run_block(AEffect *e, float **in, float **out, int32_t n, int accumu
+             for (int j = 0; j < DSP_BLOCK; j++) { w->inb[2 * j] = have_in ? f2s(in[0][i + j]) : 0; w->inb[2 * j + 1] = have_in ? f2s(in[1][i + j]) : 0; }
+             eng_process(w, w->inb, w->block, DSP_BLOCK);
+             for (int j = 0; j < DSP_BLOCK; j++) {
+-                float l = w->block[2 * j] * (1.0f / 32768.0f), r = w->block[2 * j + 1] * (1.0f / 32768.0f);
++                float l = w->block[2 * j] * MPC_AUDIO_SCALE, r = w->block[2 * j + 1] * MPC_AUDIO_SCALE;
+                 if (accumulate) { out[0][i + j] += l; out[1][i + j] += r; } else { out[0][i + j] = l; out[1][i + j] = r; }
+             }
+             i += DSP_BLOCK;
+@@ -677,7 +714,7 @@ static void run_block(AEffect *e, float **in, float **out, int32_t n, int accumu
+         /* MPC processes in place (in == out): take this frame's input before writing its output. */
+         w->inb[2 * w->inpos] = have_in ? f2s(in[0][i]) : 0; w->inb[2 * w->inpos + 1] = have_in ? f2s(in[1][i]) : 0;
+         float l = 0, r = 0;
+-        if (w->pos < DSP_BLOCK) { l = w->block[w->pos * 2] * (1.0f / 32768.0f); r = w->block[w->pos * 2 + 1] * (1.0f / 32768.0f); w->pos++; }
++        if (w->pos < DSP_BLOCK) { l = w->block[w->pos * 2] * MPC_AUDIO_SCALE; r = w->block[w->pos * 2 + 1] * MPC_AUDIO_SCALE; w->pos++; }
+         if (accumulate) { out[0][i] += l; out[1][i] += r; } else { out[0][i] = l; out[1][i] = r; }
+         if (++w->inpos == DSP_BLOCK) { eng_process(w, w->inb, w->block, DSP_BLOCK); w->pos = 0; w->inpos = 0; }
+         i++;
+diff --git a/wrapper/vst3_wrap.c b/wrapper/vst3_wrap.c
+index c5cc93b..97c141e 100644
+--- a/wrapper/vst3_wrap.c
++++ b/wrapper/vst3_wrap.c
+@@ -95,7 +95,7 @@ typedef struct {
+     int active;
+     uint32_t latency;                 /* effect: host frames of delay through the FIFOs and converters */
+     rs_t *rs_in, *rs_out;             /* host -> engine (effect input), engine -> host */
+-    int16_t inb[DSP_BLOCK * 2], outb[DSP_BLOCK * 2];
++    mpc_sample_t inb[DSP_BLOCK * 2], outb[DSP_BLOCK * 2];
+     int inpos;                        /* effect: engine-rate input frames collected in inb */
+     float fl[DSP_BLOCK], fr[DSP_BLOCK];
+     float *ofifo[2];                  /* effect: host-rate output waiting to go out (latency-padded) */
+@@ -314,7 +314,14 @@ static void send_midi(v3_t *w, const uint8_t *msg) {
+ 
+ /* ---- transport ------------------------------------------------------------ */
+ static void update_context(v3_t *w, const ProcessContext *c, int frames) {
+-    if (!c) return;
++    if (!c) {
++        if (HAS_SONG_POS && g_api->song_pos) {
++            pthread_mutex_lock(&w->lock);
++            g_api->song_pos(w->dsp, -1, 0, 0, frames);
++            pthread_mutex_unlock(&w->lock);
++        }
++        return;
++    }
+     double eng_frames = frames * ENGINE_RATE / w->rate;
+     int tempo_ok = (c->state & kTempoValid) && c->tempo > 0, ppq_ok = (c->state & kProjectTimeMusicValid) != 0;
+     int playing = (c->state & kPlaying) != 0;
+@@ -324,6 +331,9 @@ static void update_context(v3_t *w, const ProcessContext *c, int frames) {
+     }
+     if (HAS_SONG_POS && g_api->song_pos) {
+         pthread_mutex_lock(&w->lock);
++        if (mpc_engine_cycle)
++            mpc_engine_cycle(w->dsp, c->cycleStartMusic, c->cycleEndMusic,
++                             (c->state & (1 << 12)) && (c->state & (1 << 2)));
+         g_api->song_pos(w->dsp, ppq_ok && tempo_ok ? c->projectTimeMusic : -1.0, tempo_ok ? c->tempo : 0.0, playing,
+                         (int)lround(eng_frames));
+         pthread_mutex_unlock(&w->lock);
+@@ -340,7 +350,7 @@ static void update_context(v3_t *w, const ProcessContext *c, int frames) {
+ 
+ /* ---- audio ---------------------------------------------------------------- */
+ #ifdef PLUG_EFFECT
+-static int16_t f2s(float f) { f *= 32768.0f; return f >= 32767.0f ? 32767 : f <= -32768.0f ? -32768 : (int16_t)lrintf(f); }
++static mpc_sample_t f2s(float f) { return mpc_from_float(f); }
+ #endif
+ 
+ static void free_audio(v3_t *w) {
+@@ -388,10 +398,10 @@ static int init_audio(v3_t *w) {   /* all or nothing: a failure leaves no buffer
+     return 0;
+ }
+ 
+-/* engine output (int16 block) -> output converter -> output FIFO */
++/* engine output (selected sample format) -> output converter -> output FIFO */
+ static void push_out(v3_t *w, int frames) {
+     float l[DSP_BLOCK], r[DSP_BLOCK];
+-    for (int j = 0; j < frames; j++) { l[j] = w->outb[2 * j] * (1.0f / 32768.0f); r[j] = w->outb[2 * j + 1] * (1.0f / 32768.0f); }
++    for (int j = 0; j < frames; j++) { l[j] = w->outb[2 * j] * MPC_AUDIO_SCALE; r[j] = w->outb[2 * j + 1] * MPC_AUDIO_SCALE; }
+     rs_push(w->rs_out, l, r, frames);
+     int room = w->ocap - w->olen;
+     if (room > 0) w->olen += rs_pull(w->rs_out, w->ofifo[0] + w->olen, w->ofifo[1] + w->olen, room);
+diff --git a/wrapper/audio_format.h b/wrapper/audio_format.h
+new file mode 100644
+index 0000000..db592c3
+--- /dev/null
++++ b/wrapper/audio_format.h
+@@ -0,0 +1,18 @@
++/* Engine audio format. All translation units must use the same ENGINE_FLOAT32 setting
++ * (include the generated params.h before engine.h). Existing ports default to int16.
++ * Float ports keep headroom and quiet signals without clipping or quantisation. */
++#pragma once
++#include <stdint.h>
++#include <math.h>
++#if defined(ENGINE_FLOAT32) && ENGINE_FLOAT32
++typedef float mpc_sample_t;
++#define MPC_AUDIO_SCALE 1.0f
++static inline mpc_sample_t mpc_from_float(float f) { return f; }
++#else
++typedef int16_t mpc_sample_t;
++#define MPC_AUDIO_SCALE (1.0f / 32768.0f)
++static inline mpc_sample_t mpc_from_float(float f) {
++    f *= 32768.0f;
++    return f >= 32767.0f ? 32767 : f <= -32768.0f ? -32768 : (int16_t)lrintf(f);
++}
++#endif
