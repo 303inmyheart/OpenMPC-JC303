@@ -1,4 +1,4 @@
-# Build OpenMPC JC303
+# Build JC303 MPC
 
 The supported target is Gen2 MPC / ARM64, MPC OS 3.10.1 or newer.
 Hardware tests are recorded for MPC Live III only.

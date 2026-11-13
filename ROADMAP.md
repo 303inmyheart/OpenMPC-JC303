@@ -3,7 +3,7 @@
 Target: Gen2 MPCs, aarch64, MPC OS 3.10.1+. Hardware tested: MPC Live III only.
 Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
 
-1. **JC303** — active project.
+1. **JC303 MPC** — released; remaining feature-parity work deferred.
    - Synth voice, filter models, mods and LFO: implemented, user testing ongoing.
    - Stabilise rotary/selection synchronisation; extend slide time to 1 second.
    - 0.1.0: host-synchronised 16-step sequencer, pattern editing, accents,
@@ -23,13 +23,13 @@ Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
      Sounds-browser banner with a real Init .xpl. Confirmed by the maintainer
      on Live III / OS 3.10.1, including the Sounds tile.
    - 0.2.3: Gen2 scope, neutral drive-model labels, current catalog packaging,
-     official CPU benchmark (WARN, p99 16.5%, max 24.6%), catalog entry and draft release.
-   - Remaining validation: exact 0.2.3 installer smoke test, multiple instances, parameter
+     official CPU benchmark (WARN, p99 16.5%, max 24.6%), catalog entry and published release. Candidate 5 was confirmed on Live III; catalog PR #845 is merged.
+   - Remaining validation: multiple instances, parameter
      sweep spikes and extended stability. Feature-parity work stays deferred.
-2. **Geonkick** — explicitly requested as the next target after JC303.
+2. **Geonkick MPC** — active next port after JC303 MPC.
    - Upstream: https://github.com/quamplex/geonkick
    - Start with source/build/license/dependency review and ARM64 feasibility.
-   - Implementation starts after JC303; no port or compatibility claim yet.
+   - 0.0.1 local single-instrument prototype exists: three layers, nine oscillators, native pages and OpenMPC Installer ZIP. Native sanitizer and ARM64 QEMU tests pass; hardware tests are pending.
 3. **Fire** — queued after Geonkick from the user's follow-up link.
    - Upstream: https://github.com/jerryuhoo/Fire
    - Source/build/license/dependency review and ARM64 feasibility are pending.

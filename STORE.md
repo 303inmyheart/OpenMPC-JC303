@@ -54,11 +54,12 @@ Its SHA-256 is in the release's SHA256SUMS asset. No other Gen2 model is claimed
 as hardware-tested. No device installation or service restart was performed by
 the release-preparation tools.
 
-## Submit to the catalog
+## Catalog status
 
-The catalog submission is a PR to open-mpc/mpc-vst-plugins adding only
-`catalog/plugins/jc303-mpc.json`, copied from this repository. No versions or
-checksums go in that registry file: they are discovered from GitHub releases.
-The catalog CI must validate the published release; drafts are not discoverable.
-Merging is up to OpenMPC's maintainers. Later releases are discovered nightly.
-See the GitHub pull requests in open-mpc/mpc-vst-plugins for the submission and maintainer review.
+The catalog submission [PR #845](https://github.com/open-mpc/mpc-vst-plugins/pull/845)
+was merged. Following the maintainer review, the registry display name is
+**JC303**, while the project and installed instrument are **JC303 MPC**.
+The repository URL remains https://github.com/303inmyheart/OpenMPC-JC303.
+No versions or checksums go in the registry file: future valid GitHub releases
+are discovered by the nightly catalog build. This naming update changes no
+published installer bytes, plugin UID, parameter indices or installed paths.

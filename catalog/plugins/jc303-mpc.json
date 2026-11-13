@@ -1,6 +1,6 @@
 {
   "id": "jc303-mpc",
-  "name": "OpenMPC JC303",
+  "name": "JC303",
   "author": "303inmyheart",
   "repo": "303inmyheart/OpenMPC-JC303",
   "kind": "instrument",
@@ -14,6 +14,6 @@
     "analog",
     "gen2"
   ],
-  "screenshot": "https://raw.githubusercontent.com/303inmyheart/OpenMPC-JC303/4b2775ed443c887ce6c073275f575204a3c2f20f/docs/screenshots/synth.png",
+  "screenshot": "https://raw.githubusercontent.com/303inmyheart/OpenMPC-JC303/ee2f43bb9bd04855eb25ff25323399afb2e6cb39/docs/screenshots/synth.png",
   "asset_pattern": "JC303-MPC-*-mpc-aarch64.zip"
 }

@@ -2,13 +2,13 @@
 >
 > The MPC-specific integration, interface, artwork tooling, optimizations and documentation were developed with Codex. The original JC303, Open303, Aciduino, GuitarML models and bundled libraries are existing upstream work by their respective authors; the AI statement does not claim authorship of those components.
 
-# OpenMPC JC303
+# JC303 MPC
 
 An Acid / TB-303-style instrument for **Gen2 MPCs (ARM64)**, based on [midilab/jc303](https://github.com/midilab/jc303). It runs as a native ARM64 VST2 plugin on **MPC OS 3.10.1 or newer**, with a touchscreen interface, Q-Links, MPC presets and project save/restore.
 
-The project name is **OpenMPC JC303**. The installed instrument remains **JC303 MPC**, with its existing plugin identifier, so projects made with this port keep recognizing it. It is a separate plugin from other Open303 ports.
+The project and installed instrument are named **JC303 MPC**. The catalog display name is **JC303**. The repository URL and existing plugin identifier remain unchanged, so projects made with this port keep recognizing it. It is a separate plugin from other Open303 ports.
 
-![OpenMPC JC303 — SYNTH page](docs/screenshots/synth.png)
+![JC303 MPC — SYNTH page](docs/screenshots/synth.png)
 
 These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The maintainer also confirmed Candidate 5 of 0.2.3 on that device and authorized its release.
 
@@ -47,7 +47,7 @@ Native Sounds-browser artwork:
 
 Target: **Gen2 MPCs, aarch64, MPC OS 3.10.1+**. Hardware testing has been performed on **MPC Live III only**; other Gen2 models have not been individually tested. Gen1 ARM32 devices and desktop plugin formats are outside this port’s current support scope.
 
-Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the `*-OpenMPC.zip` into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. Download the [0.2.3 Gen2 release](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3). This exact installer was confirmed by the maintainer on Live III / OS 3.10.1. See [STORE.md](STORE.md) for catalog status.
+Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the release ZIP into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. Download the [0.2.3 Gen2 release](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3). This exact installer was confirmed by the maintainer on Live III / OS 3.10.1. See [STORE.md](STORE.md) for catalog status.
 
 Enable **Preferences → Enhancements → External Plugin Support** and select **JC303 MPC** under External VST Plugins.
 
@@ -73,7 +73,7 @@ Implemented through **0.2.3**: synth/mods/LFO, host-synchronized sequencer and r
 
 Next validation:
 
-- Complete the OpenMPC catalog review/merge for the submitted entry.
+- The [catalog entry was accepted](https://github.com/open-mpc/mpc-vst-plugins/pull/845); future releases are discovered by the catalog build.
 - Broaden multi-instance, parameter-sweep and long-session testing.
 - Measure multiple instances and parameter-change spikes; run longer stability sessions.
 
@@ -84,7 +84,7 @@ The following original-desktop features are **deferred for now**:
 - Internal clock, direct MIDI-clock synchronization and note-trigger start. Currently the sequencer follows MPC transport.
 - The desktop on-screen keyboard is replaced by MPC pads and the NOTE control.
 
-Other planned ports, in order: **Geonkick → Fire → Wolf Shaper → BYOD feasibility review → Surge**. BYOD first requires an assessment of whether effect-chain navigation/editing works well on MPC. Full project queue and status: [ROADMAP.md](ROADMAP.md).
+Other planned ports, in order: **Geonkick MPC → Fire MPC → Wolf Shaper MPC → BYOD MPC feasibility review → Surge MPC**. BYOD first requires an assessment of whether effect-chain navigation/editing works well on MPC. Full project queue and status: [ROADMAP.md](ROADMAP.md).
 
 ### Drive-model naming
 

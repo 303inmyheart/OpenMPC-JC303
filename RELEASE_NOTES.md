@@ -1,4 +1,4 @@
-# OpenMPC JC303 0.2.3 — Gen2
+# JC303 MPC 0.2.3 — Gen2
 
 Native 303-style acid synth for **Gen2 MPCs (aarch64), MPC OS 3.10.1+**.
 Hardware testing has been performed on **MPC Live III only**.
