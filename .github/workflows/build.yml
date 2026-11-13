@@ -1,0 +1,59 @@
+name: Gen2 build and catalog checks
+on:
+  push:
+    branches: [mpc-live-iii]
+  pull_request:
+    branches: [mpc-live-iii]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  gen2:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: port
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: open-mpc/mpc-vst-plugins
+          ref: ef05a26c6e59f1bfd3ef2023e6a9d8b371b61310
+          path: mpc-vst-plugins
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: open-mpc/mpc-vst-plugins
+          ref: a2dd2b78a19c4cd46257c09eb9a485a155ab2968
+          path: mpc-vst-plugins-release-tools
+          persist-credentials: false
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential python3-pil g++-13-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user
+      - name: Apply the tested engine/host patch
+        working-directory: mpc-vst-plugins
+        run: git apply ../port/patches/mpc-float32.patch
+      - name: Build native, ARM64 and native MPC skin
+        working-directory: port
+        run: python3 tools/build.py all
+      - name: Native sanitizer tests
+        working-directory: port
+        run: python3 tools/test.py > build/test.log 2>&1
+      - name: Actual ARM64 shared-object tests under QEMU
+        working-directory: port
+        run: python3 tools/test_arm64.py > build/arm-test.log 2>&1
+      - name: Package with current catalog rules
+        working-directory: port
+        run: python3 tools/package.py --no-desktop
+      - name: Validate the prepared registry entry
+        run: python3 mpc-vst-plugins-release-tools/tools/catalog_build.py --registry port/catalog/plugins --check-registry
+      - name: Upload installer and skin previews for device testing
+        uses: actions/upload-artifact@v4
+        with:
+          name: jc303-gen2-candidate
+          path: |
+            port/build/releases/*-mpc-aarch64.zip
+            port/build/preview_*.png
+          retention-days: 14

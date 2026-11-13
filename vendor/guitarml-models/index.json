@@ -1,150 +1,187 @@
 [
   {
     "file": "TS9_DriveKnob.json",
-    "name": "Ibanez TS9"
+    "name": "Green Overdrive",
+    "original_name": "Ibanez TS9"
   },
   {
     "file": "Ibanez_Mostortion_Clone_GainKnob.json",
-    "name": "Ibanez Mostortion Clone"
+    "name": "MOS Overdrive",
+    "original_name": "Ibanez Mostortion Clone"
   },
   {
     "file": "Mooer_CaliMkIV_GainKnob.json",
-    "name": "Mooer CaliMkIV"
+    "name": "Californian Lead",
+    "original_name": "Mooer CaliMkIV"
   },
   {
     "file": "BossMT2_PedalHighGain.json",
-    "name": "Boss MT2"
+    "name": "Metal Distortion",
+    "original_name": "Boss MT2"
   },
   {
     "file": "ProcoRatPedal_HighGain.json",
-    "name": "Pro Co RAT Distortion"
+    "name": "Rodent Distortion",
+    "original_name": "Pro Co RAT Distortion"
   },
   {
     "file": "MXR78_pedal_DistKnob.json",
-    "name": "MXR 78"
+    "name": "Vintage Crunch",
+    "original_name": "MXR 78"
   },
   {
     "file": "Ibanez808TubeScreamer.json",
-    "name": "Ibanez TS808"
+    "name": "Classic Green OD",
+    "original_name": "Ibanez TS808"
   },
   {
     "file": "RevvG3_Pedal_GainKnob.json",
-    "name": "RevvG3 Pedal GainKnob"
+    "name": "Modern High Gain",
+    "original_name": "RevvG3 Pedal GainKnob"
   },
   {
     "file": "Jeckyl_and_Hyde_Distortion_DriveKnob.json",
-    "name": "Jeckyl and Hyde Distortion DriveKnob"
+    "name": "Dual Distortion",
+    "original_name": "Jeckyl and Hyde Distortion DriveKnob"
   },
   {
     "file": "Friedman_BEOD_Pedal_GainKnob.json",
-    "name": "Friedman BEOD Pedal GainKnob"
+    "name": "British Drive",
+    "original_name": "Friedman BEOD Pedal GainKnob"
   },
   {
     "file": "BlackstarHT40_AmpClean.json",
-    "name": "BlackstarHT40 AmpClean"
+    "name": "Valve Combo Clean",
+    "original_name": "BlackstarHT40 AmpClean"
   },
   {
     "file": "MesaMiniRec_HighGain_DirectOut.json",
-    "name": "MesaMiniRec HighGain DirectOut"
+    "name": "Compact High-Gain Amp",
+    "original_name": "MesaMiniRec HighGain DirectOut"
   },
   {
     "file": "Splawn_OD_FractalFM3_HighGain.json",
-    "name": "Splawn OD Fractal FM3 HighGain"
+    "name": "Hot-Rod High Gain",
+    "original_name": "Splawn OD Fractal FM3 HighGain"
   },
   {
     "file": "EthosLeadChan_GainKnob.json",
-    "name": "EthosLeadChan GainKnob"
+    "name": "Lead Channel Drive",
+    "original_name": "EthosLeadChan GainKnob"
   },
   {
     "file": "PrincetonAmp_Clean.json",
-    "name": "PrincetonAmp Clean"
+    "name": "Small Combo Clean",
+    "original_name": "PrincetonAmp Clean"
   },
   {
     "file": "DumbleKit_HighG_DirectOut.json",
-    "name": "DumbleKit HighG DirectOut"
+    "name": "Boutique Lead",
+    "original_name": "DumbleKit HighG DirectOut"
   },
   {
     "file": "BlackstarHT40_GainKnob_SM57mic.json",
-    "name": "BlackstarHT40 GainKnob SM57mic"
+    "name": "Valve Combo / Dynamic Mic",
+    "original_name": "BlackstarHT40 GainKnob SM57mic"
   },
   {
     "file": "TRexMudhoney_plus_PorkLoin_HighGain.json",
-    "name": "TRexMudhoney plus PorkLoin HighGain"
+    "name": "Dual-Pedal High Gain",
+    "original_name": "TRexMudhoney plus PorkLoin HighGain"
   },
   {
     "file": "PrinceOfToneClone_OD_Knob.json",
-    "name": "PrinceOfTone Clone OD Knob"
+    "name": "Royal Overdrive",
+    "original_name": "PrinceOfTone Clone OD Knob"
   },
   {
     "file": "PorkLoinPedal_LowGain.json",
-    "name": "PorkLoinPedal LowGain"
+    "name": "Blend Overdrive",
+    "original_name": "PorkLoinPedal LowGain"
   },
   {
     "file": "PrinceOfToneClone_Dist_Knob.json",
-    "name": "PrinceOfToneClone Dist Knob"
+    "name": "Royal Distortion",
+    "original_name": "PrinceOfToneClone Dist Knob"
   },
   {
     "file": "AguilarAgro_Bright_Bass.json",
-    "name": "AguilarAgro Bright Bass"
+    "name": "Bass Drive / Bright",
+    "original_name": "AguilarAgro Bright Bass"
   },
   {
     "file": "AguilarAgro_Dark_Bass.json",
-    "name": "AguilarAgro Dark Bass"
+    "name": "Bass Drive / Dark",
+    "original_name": "AguilarAgro Dark Bass"
   },
   {
     "file": "BadCat50_MedGain_PREAMP.json",
-    "name": "BadCat50 MedGain PREAMP"
+    "name": "Class-A Preamp",
+    "original_name": "BadCat50 MedGain PREAMP"
   },
   {
     "file": "ShiftTwin_Clean2_PREAMP.json",
-    "name": "ShiftTwin Clean2 PREAMP"
+    "name": "Twin Clean Preamp",
+    "original_name": "ShiftTwin Clean2 PREAMP"
   },
   {
     "file": "Sovtek50_MedGain_DIRECT.json",
-    "name": "Sovtek50 MedGain DIRECT"
+    "name": "Valve Head / Mid Gain",
+    "original_name": "Sovtek50 MedGain DIRECT"
   },
   {
     "file": "ShiftTwin_StampedeDT_PREAMP.json",
-    "name": "ShiftTwin StampedeDT PREAMP"
+    "name": "Twin Drive Preamp",
+    "original_name": "ShiftTwin StampedeDT PREAMP"
   },
   {
     "file": "Sovtek50_DodFX56B_DIRECT.json",
-    "name": "Sovtek50 DodFX56B DIRECT"
+    "name": "Valve Head / Heavy Gain",
+    "original_name": "Sovtek50 DodFX56B DIRECT"
   },
   {
     "file": "ENGL_E645_Clean_EdoardoNapoli.json",
-    "name": "ENGL E645 Clean EdoardoNapoli"
+    "name": "Modern Clean Combo",
+    "original_name": "ENGL E645 Clean EdoardoNapoli"
   },
   {
     "file": "Filmosound_with_cab.json",
-    "name": "Filmosound with cab"
+    "name": "Projector Amp / Cabinet",
+    "original_name": "Filmosound with cab"
   },
   {
     "file": "ENGL_E430_Clean_EdoardoNapoli.json",
-    "name": "ENGL E430 Clean EdoardoNapoli"
+    "name": "Modern Clean Preamp",
+    "original_name": "ENGL E430 Clean EdoardoNapoli"
   },
   {
     "file": "ElCoyote_Trainwreck_Crunch.json",
-    "name": "ElCoyote Trainwreck Crunch"
+    "name": "Express Crunch",
+    "original_name": "ElCoyote Trainwreck Crunch"
   },
   {
     "file": "Supro_Bold_DriveKnob.json",
-    "name": "Supro Bold DriveKnob"
+    "name": "Bold Combo Drive",
+    "original_name": "Supro Bold DriveKnob"
   },
   {
     "file": "GoatPedal_HighGain.json",
-    "name": "GoatPedal HighGain"
+    "name": "Heavy Pedal Drive",
+    "original_name": "GoatPedal HighGain"
   },
   {
     "file": "ProteinBlue_pedal_DriveKnob.json",
-    "name": "ProteinBlue pedal DriveKnob"
+    "name": "Blue Overdrive",
+    "original_name": "ProteinBlue pedal DriveKnob"
   },
   {
     "file": "LittleBigMuff_HighGainPedal.json",
-    "name": "LittleBigMuff HighGainPedal"
+    "name": "Compact Fuzz",
+    "original_name": "LittleBigMuff HighGainPedal"
   },
   {
     "file": "BigMuff_V6_T3_S5.json",
-    "name": "BigMuff V6 T3 S5"
+    "name": "Vintage Fuzz",
+    "original_name": "BigMuff V6 T3 S5"
   }
 ]

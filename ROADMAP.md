@@ -1,6 +1,6 @@
 # MPC Live III porting queue
 
-Target device: MPC Live III, aarch64, MPC OS 3.10.1+.
+Target: Gen2 MPCs, aarch64, MPC OS 3.10.1+. Hardware tested: MPC Live III only.
 Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
 
 1. **JC303** — active project.
@@ -20,8 +20,11 @@ Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
      reduced from 17.76% to 6.78%, with bit-identical captured audio. TS9/RAT
      show similar savings. Device host/voice tests pass; see PERFORMANCE.md.
    - 0.2.2: complete Q-Link control bounds, border-only step selection and
-     Sounds-browser banner with a real Init .xpl. Awaiting device UI confirmation.
-   - Remaining validation: new skin in the MPC UI, multiple instances, parameter
+     Sounds-browser banner with a real Init .xpl. Confirmed by the maintainer
+     on Live III / OS 3.10.1, including the Sounds tile.
+   - 0.2.3: Gen2 scope, neutral drive-model labels, current catalog packaging,
+     official CPU benchmark (WARN, p99 16.5%, max 24.6%), catalog entry and draft release.
+   - Remaining validation: exact 0.2.3 installer smoke test, multiple instances, parameter
      sweep spikes and extended stability. Feature-parity work stays deferred.
 2. **Geonkick** — explicitly requested as the next target after JC303.
    - Upstream: https://github.com/quamplex/geonkick

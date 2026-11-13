@@ -1,5 +1,46 @@
 # Verification — updated 2026-11-13
 
+## 0.2.3 Gen2 catalog release candidate
+
+Native ASan/UBSan/leak and actual ARM64 shared-object tests under QEMU pass.
+The official OpenMPC bench.c at a2dd2b78a19c4cd46257c09eb9a485a155ab2968 ran
+against this exact ARM64 binary on MPC Live III / MPC OS 3.10.1, core 4,
+nice 19, 44.1 kHz / 128 samples, ten audio seconds per stage. The only helper
+changes set its own affinity/priority; benchmark behavior is unchanged.
+WARN: p99 16.5%, worst block 24.6%; full log and matching binary SHA-256 in
+benchmarks/0.2.3/bench.txt. Temporary files were removed; MPC was not restarted.
+
+The current official release.py / catalog_check.py package passes --catalog,
+--require-portable, --expect-id and --expect-repo with zero warnings. Gen2/ARM64
+scope is declared; only Live III has hardware evidence. 0.2.3 has no installed
+UI smoke-test claim yet. Root tested.json records the maintainer’s confirmed
+0.2.2 test (including the Sounds tile); that evidence is not relabeled 0.2.3.
+
+Visible drive names now use neutral aliases; model order/files/weights stay
+unchanged. MODELS.md retains the original credits and names. No DSP behavior
+change is intended in this release candidate.
+
+During maintainer playback of 0.2.3, read-only process samples showed the same
+busy audio worker at approximately 7.3% of one core without amp and 12.2% with
+amp. Other audio threads remained similar. This is a whole-project observation,
+not an isolated benchmark or a complete installed-plugin smoke test.
+
+The maintainer found a Q-Link frame drawn above the open model list. Candidate 2
+removed the page-wide DRIVE frame and was rejected. Candidate 3 used child-level
+hideQLinkBounds; the maintainer reported that the frame still appeared above the
+menu. Candidate 4 moved selection into a real native overlay; the maintainer
+reported that layering was nearly right but the menu could not close. Candidate 5
+keeps the real overlay and paints its full-window artwork as backgroundData,
+removing a full-screen Image child that could intercept outside taps.
+
+The overlay contains a known native KnobOverlay for Focus Lost dismissal and
+37 original model-choice buttons inheriting the model Data handle. All page
+Q-Link rectangles are unchanged, and the field action is Show Overlay on model
+parameter 60. Structural checks confirm the bindings, choices, background and
+absence of a full-screen Image touch target. These checks do not establish the
+actual installed close behavior; that awaits maintainer confirmation. The ARM64
+DSP binary and its measured SHA-256 are unchanged across skin-only candidates.
+
 0.2.2 OpenMPC release ZIP passed portable catalog validation, integrity and
 all archive checksums; the only warning is the missing public source_repo.
 

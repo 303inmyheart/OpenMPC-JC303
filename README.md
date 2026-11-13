@@ -4,13 +4,13 @@
 
 # OpenMPC JC303
 
-An Acid / TB-303-style instrument for **MPC Live III**, based on [midilab/jc303](https://github.com/midilab/jc303). It runs as a native ARM64 VST2 plugin on **MPC OS 3.10.1 or newer**, with a touchscreen interface, Q-Links, MPC presets and project save/restore.
+An Acid / TB-303-style instrument for **Gen2 MPCs (ARM64)**, based on [midilab/jc303](https://github.com/midilab/jc303). It runs as a native ARM64 VST2 plugin on **MPC OS 3.10.1 or newer**, with a touchscreen interface, Q-Links, MPC presets and project save/restore.
 
 The project name is **OpenMPC JC303**. The installed instrument remains **JC303 MPC**, with its existing plugin identifier, so projects made with this port keep recognizing it. It is a separate plugin from other Open303 ports.
 
 ![OpenMPC JC303 — SYNTH page](docs/screenshots/synth.png)
 
-These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer tested the port on a real Live III; the latest 0.2.2 frame/banner changes still need on-device UI confirmation.
+These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The 0.2.3 release candidate still needs its own installation smoke test.
 
 ## Features
 
@@ -45,9 +45,9 @@ Native Sounds-browser artwork:
 
 ## Installation and use
 
-Target: **MPC Live III only, aarch64, MPC OS 3.10.1+**. Other devices and desktop plugin formats are outside this port's current support scope.
+Target: **Gen2 MPCs, aarch64, MPC OS 3.10.1+**. Hardware testing has been performed on **MPC Live III only**; other Gen2 models have not been individually tested. Gen1 ARM32 devices and desktop plugin formats are outside this port’s current support scope.
 
-Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the `*-OpenMPC.zip` into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. This source publication does not yet provide a downloadable binary release.
+Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the `*-OpenMPC.zip` into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. Release candidates are prepared as GitHub draft releases until the exact installer ZIP passes the device smoke test. See [STORE.md](STORE.md) for publication and catalog status.
 
 Enable **Preferences → Enhancements → External Plugin Support** and select **JC303 MPC** under External VST Plugins.
 
@@ -65,13 +65,16 @@ The 0.2.1 optimization reduced measured audio-thread CPU for **Blackstar HT40 Ga
 
 Details, limits and reproducible measurement data: [PERFORMANCE.md](PERFORMANCE.md), [TESTING.md](TESTING.md), [benchmarks](benchmarks/live-iii-0.2.1.json). Multiple wet instances, parameter-sweep spikes and extended project stability still need broader testing.
 
+The official 0.2.3 benchmark on MPC Live III / OS 3.10.1 reports **WARN**: p99 **16.5%**, worst block **24.6%** of one fast core during the random Q-Link stress stage. WARN is permitted with a note; it is not a FAIL. Full result: [benchmarks/0.2.3/bench.txt](benchmarks/0.2.3/bench.txt).
+
 ## Roadmap
 
-Implemented through **0.2.2**: synth/mods/LFO, host-synchronized sequencer and recording/generator, 37 drive models, native preset bank, Acid interface, CPU optimization, complete Q-Link frames, border-only step selection and Sounds-browser artwork.
+Implemented through **0.2.3**: synth/mods/LFO, host-synchronized sequencer and recording/generator, 37 drive models, native preset bank, Acid interface, CPU optimization, complete Q-Link frames, border-only step selection and Sounds-browser artwork.
 
 Next validation:
 
-- Confirm the 0.2.2 Q-Link frames, step selection and Sounds-browser tile on the device.
+- Confirm Candidate 5 native model-overlay opening and dismissal, then smoke-test the exact 0.2.3 installer ZIP, including project save/reload.
+- Publish its tested GitHub release and submit the prepared OpenMPC catalog entry.
 - Measure multiple instances and parameter-change spikes; run longer stability sessions.
 
 The following original-desktop features are **deferred for now**:
@@ -82,6 +85,10 @@ The following original-desktop features are **deferred for now**:
 - The desktop on-screen keyboard is replaced by MPC pads and the NOTE control.
 
 Other planned ports, in order: **Geonkick → Fire → Wolf Shaper → BYOD feasibility review → Surge**. BYOD first requires an assessment of whether effect-chain navigation/editing works well on MPC. Full project queue and status: [ROADMAP.md](ROADMAP.md).
+
+### Drive-model naming
+
+The 0.2.3 skin uses neutral model names to comply with the catalog’s branding policy. For example, **Valve Combo / Dynamic Mic** is the original Blackstar HT40 SM57 capture. All 37 original names and stable file identities are credited in [MODELS.md](MODELS.md). Model order, weights and saved sound identities are unchanged.
 
 ## Source and build
 

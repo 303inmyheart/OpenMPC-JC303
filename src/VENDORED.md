@@ -72,3 +72,8 @@ in a local SIMD array, unrolling the small output loop. Scalar addition order
 is preserved. The fixed 44.1 kHz adapter uses SampleRateCorrectionMode::None,
 with reset on preparation; the original LinInterp(1) instantiations remain for
 the all-model parity test. No model weights or activation approximations change.
+
+The model-overlay skin uses documented native MPC UI API primitives (Image,
+Button, CustomComponentDefinition and KnobOverlay), referenced from the official
+MPC SDK ui-reference.md. No stock Akai artwork, firmware or UI JSON files are
+distributed; its panel/choice artwork is generated locally from this project's code.

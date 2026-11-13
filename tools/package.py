@@ -4,6 +4,8 @@ Requires current successful native and actual ARM64 shared-object tests. Does no
 install anything, restart MPC, publish a release, or include development files.
 """
 import hashlib
+import argparse
+import os
 import json
 from pathlib import Path
 import re
@@ -16,7 +18,18 @@ import zipfile
 import build
 
 ROOT=build.ROOT
-VERSION='0.2.2'
+CONFIG=json.loads((ROOT/'release.json').read_text())
+VERSION=CONFIG['version']
+ap=argparse.ArgumentParser(description=__doc__)
+ap.add_argument('--desktop-name',help='Distinct installation ZIP name for a revised unpublished candidate')
+ap.add_argument('--no-desktop',action='store_true',help='CI: keep artifacts under build/releases only')
+ap.add_argument('--bench',type=Path,help='official device bench JSON/text for this binary')
+a=ap.parse_args()
+assert build.CFG['version']==int(VERSION.split('.')[0])*10000+int(VERSION.split('.')[1])*100+int(VERSION.split('.')[2])
+RELEASE_TOOLS=Path(os.environ.get('MPC_RELEASE_TOOLS',ROOT.parent/'mpc-vst-plugins-release-tools')).resolve()
+if not (RELEASE_TOOLS/'tools/release.py').exists():raise SystemExit('Missing release tools; see BUILDING.md.')
+ref=subprocess.check_output(['git','-C',str(RELEASE_TOOLS),'rev-parse','HEAD'],text=True).strip()
+if ref!=CONFIG['tools_ref']:raise SystemExit('Release tools must be pinned to '+CONFIG['tools_ref'])
 arm=ROOT/'build/aarch64'/build.CFG['so']
 tested=json.loads((arm.parent/'tested.json').read_text())
 if hashlib.sha256(arm.read_bytes()).hexdigest()!=tested['sha256']:
@@ -65,16 +78,25 @@ notices.write_text('\n\n'.join([
 # installer validates scripts, manifests and checksums before uploading anything.
 # Identify this fork as the modified source; preserve upstream attribution above.
 release_dir=ROOT/'build/releases'
-build.run([sys.executable,build.MPC/'tools/release.py',
+bench_args=[]
+if a.bench:
+    bench=json.loads(a.bench.read_text().strip().splitlines()[-1])
+    if bench.get('binary_sha256')!=hashlib.sha256(arm.read_bytes()).hexdigest():
+        raise SystemExit('CPU benchmark does not match this ARM64 binary')
+    if bench['verdict']=='FAIL':raise SystemExit('CPU benchmark FAIL: optimize before release')
+    bench_args=['--bench',a.bench]
+
+build.run([sys.executable,RELEASE_TOOLS/'tools/release.py',
            '--so',binary,'--skin',skin,'--entry',ROOT/'build/pluginlist-entry.xml',
-           '--version',VERSION,'--id','jc303-mpc','--license','GPL-3.0-only',
-           '--repo','303inmyheart/OpenMPC-JC303',
+           '--version',VERSION,'--id',CONFIG['id'],'--license',CONFIG['license'],
+           '--repo',CONFIG['repo'],
            '--extra',str(notices)+':LICENSES.txt',
-           '--about','JC303 Acid / 303 hardware skin, optimized GuitarML drive, sequencer and 12 MPC browser programs. Init starts dry.',
-           '--requires','MPC Live III, MPC OS 3.10.1 or newer',
+           '--about',CONFIG['about'],
+           '--requires',CONFIG['requires'],*bench_args,
            '-o',release_dir])
 release=release_dir/f'JC303-MPC-{VERSION}-mpc-aarch64.zip'
-build.run([sys.executable,build.MPC/'tools/catalog_check.py',release,'--require-portable'])
+build.run([sys.executable,RELEASE_TOOLS/'tools/catalog_check.py',release,'--catalog','--require-portable',
+           '--expect-id',CONFIG['id'],'--expect-repo',CONFIG['repo']])
 with zipfile.ZipFile(release) as archive:
     assert archive.testzip() is None
     top=next(iter({name.split('/')[0] for name in archive.namelist()}))
@@ -95,9 +117,13 @@ with zipfile.ZipFile(release) as archive:
         digest,name=line.split('  ',1)
         assert hashlib.sha256(archive.read(top+'/'+name)).hexdigest()==digest
 
+print('Catalog asset:',release)
+if a.no_desktop:raise SystemExit(0)
 desktop=Path.home()/'Schreibtisch'
 desktop.mkdir(exist_ok=True)
-output=desktop/f'JC303-MPC-Live-III-{VERSION}-OpenMPC.zip'
+filename=a.desktop_name or f'JC303-MPC-Gen2-{VERSION}-OpenMPC.zip'
+if not re.fullmatch(r'[A-Za-z0-9._-]+\.zip',filename):raise SystemExit('Invalid desktop ZIP filename')
+output=desktop/filename
 if output.exists():
     raise SystemExit('Refusing to overwrite '+str(output))
 shutil.copy2(release,output)

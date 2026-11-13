@@ -33,8 +33,9 @@ def compiler(target, language):
     if override:
         return override
     tool = 'aarch64-linux-gnu-g++' if language == 'c++' else 'aarch64-linux-gnu-gcc'
-    if shutil.which(tool):
-        return tool
+    for candidate in (tool,tool+'-13'):
+        if shutil.which(candidate):
+            return candidate
     local = LOCAL / 'bin' / (tool + '-13')
     if not local.exists():
         raise SystemExit('Missing ARM64 compiler: see BUILDING.md or set AARCH64_CC/AARCH64_CXX.')
@@ -83,6 +84,7 @@ def skin():
     run([sys.executable, ROOT/'tools/browser_tile.py'])
     run([sys.executable, MPC/'tools/gen_vst.py', ROOT/'vst.json'])
     run([sys.executable, ROOT/'tools/finish_skin.py'])
+    run([sys.executable, ROOT/'tools/model_overlay.py'])
     run([sys.executable, ROOT/'tools/browser_preset.py'])
     folder=next((ROOT/'build/skin').glob('*/Plugin Skins/TUI.json')).parent
     run([sys.executable, MPC/'tools/studio.py','preview',folder,'-o', ROOT/'build/preview_%d.png'])

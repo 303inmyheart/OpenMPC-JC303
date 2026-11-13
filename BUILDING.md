@@ -1,6 +1,7 @@
 # Build OpenMPC JC303
 
-The supported target is MPC Live III / ARM64, MPC OS 3.10.1 or newer.
+The supported target is Gen2 MPC / ARM64, MPC OS 3.10.1 or newer.
+Hardware tests are recorded for MPC Live III only.
 DSP/model dependencies are vendored; no JUCE checkout, desktop GUI or Steinberg
 SDK is needed for this port. Builds use a separate, pinned OpenMPC toolchain.
 
@@ -17,6 +18,17 @@ git -C ../mpc-vst-plugins apply "$PWD/patches/mpc-float32.patch"
 Use that commit and apply the included patch once to a clean checkout. The
 patch supplies the float engine ABI, stepped Q-Link feedback and host loop
 metadata this port expects. It includes the new audio_format.h file.
+
+Release templates/checks are pinned separately to the current catalog revision:
+
+```sh
+git clone https://github.com/open-mpc/mpc-vst-plugins.git ../mpc-vst-plugins-release-tools
+git -C ../mpc-vst-plugins-release-tools checkout a2dd2b78a19c4cd46257c09eb9a485a155ab2968
+```
+
+This keeps the tested wrapper patch/base stable while using current catalog
+installers, manifest generation and validation. `release.json` records that pin.
+`MPC_RELEASE_TOOLS` selects the release-tools checkout; its exact pin is checked.
 
 ## Dependencies
 
@@ -52,7 +64,12 @@ The packager uses OpenMPC release.py, validates the portable catalog format,
 archive integrity and every checksum, then writes the installation-only ZIP to
 `~/Schreibtisch`. It refuses to overwrite an existing ZIP. Source, screenshots,
 compilers, test executables and debug logs are excluded from the installer.
-It does not install, restart MPC, or publish a GitHub release.
+It does not install, restart MPC, or publish a GitHub release. Packaging uses
+`--catalog --require-portable --expect-id --expect-repo`. `--no-desktop` keeps
+CI artifacts under build/releases. A device benchmark can be attached with
+`--bench benchmarks/0.2.3/bench.txt` only when its binary SHA-256 matches exactly;
+FAIL results are rejected. A rebuilt binary needs a fresh measurement instead
+of silently inheriting a previous build’s CPU result.
 
 `MPC_VST` selects another toolchain checkout. `CC` / `CXX` select native compilers;
 `AARCH64_CC` / `AARCH64_CXX` select cross compilers. Installed tools are used when
@@ -93,3 +110,13 @@ is checked sample for sample against LinInterp(1) for all 37 models.
 private .so copy and never attaches to MPC or installs anything. Device access,
 temporary-file writes and any service operations require the owner's separate
 authorization; the build/test commands above are entirely local.
+
+For an unpublished revised skin candidate, `--desktop-name` selects a distinct
+ZIP basename without overwriting an earlier candidate. The manifest version stays
+fixed until publication; published release assets must never be replaced.
+[STORE.md](STORE.md) describes the exact package/publication/catalog gates.
+
+model_overlay.py converts the model chooser into a known native full-screen
+CustomComponent overlay using KnobOverlay focus dismissal. Its visual backdrop
+is backgroundData, not a full-screen Image input target. Page Q-Link rectangles
+stay unchanged, and parameter 65 remains reserved for compatibility.
