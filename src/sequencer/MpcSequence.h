@@ -1,211 +1,318 @@
 #pragma once
-#include "AcidSequencer303.h"
-#include "HostClock.h"
-#include <array>
-#include <string>
-#include <sstream>
+#include "LegacyMpcSequence.h"
+#include "v014/AcidSequencer303.h"
+#include "SeqParams.h"
 
-// All methods run under the wrapper's per-instance engine lock.
-class MpcSequence {
-public:
-    static constexpr int first=22, stored=19;
-    enum Param { Enable=22,Length,Transpose,Selected,Note,Rest,Accent,Slide,Tie,
-                 Generate,Clear,Record,Fill,GenAccent,GenSlide,GenTie,Tones,Low,Range,
-                 Current,Status,TileFirst };
-    struct Snapshot {
-        std::array<float,stored> settings{};
-        std::array<StepData303,16> steps{};
-    };
-private:
-    rosic::Open303& voice;
-    AcidSequencer303 seq;
+// Append-only host adapter. Legacy chunks retain the original event engine;
+// the 64-step editor uses the upstream v0.14 event engine under the host lock.
+class MpcSequence : public LegacyMpcSequence {
+    using Step=jc303seq014::StepData303;
+    using Sequencer=jc303seq014::AcidSequencer303;
+    Sequencer seq;
     HostClock clock;
-    std::array<float,stored> settings{};
-    std::array<unsigned,128> held{};
+    std::array<float,seqparam::seqFollow-seqparam::First+1> cfg{};
+    std::array<float,stored> base{};
     std::array<bool,NPARAMS> dirty{};
-    int lastCurrent=0,lastStatus=0;
-    std::function<void()> voiceNote;
-    std::function<void(int,int)> routedNote;
-    std::function<void()> routedOff;
-    float& value(int p) { return settings[p-first]; }
-    float value(int p) const { return settings[p-first]; }
-    int selected() const { return std::clamp(static_cast<int>(value(Selected))-1,0,15); }
-    static float defaultValue(int p) {
-        const auto& q=PARAMS[p];
-        return std::round(q.nopts ? q.def*(q.nopts-1) : q.min+(q.max-q.min)*q.def);
+    std::array<float,NPARAMS> shown{};
+    std::array<Step,64> clipboard{};
+    std::array<Step,16> pageClipboard{};
+    bool haveCopy=false,havePageCopy=false;
+    int current=0,status=0;
+    double factor=1,samplesPerTick=229.6875,loopA=0,loopB=0;
+    bool looping=false,vibrating=false;
+    double vibPhase=0,vibValue=0;
+    std::function<void()> noteStarted,allOff;
+    std::function<void(int,int,bool,bool,bool,double)> routed;
+    float& c(int p){return cfg[p-seqparam::First];}
+    float c(int p)const{return cfg[p-seqparam::First];}
+    bool modern()const{return c(seqparam::seqTiming)>.5f;}
+    int selected()const{return int(c(seqparam::seqSelected64))-1;}
+    int page()const{return int(c(seqparam::seqPage));}
+    static float def(int p){const auto&q=PARAMS[p];return q.nopts?q.def*(q.nopts-1):q.min+(q.max-q.min)*q.def;}
+    Step step(int n)const{
+        if(modern())return seq.getTrackData().step[n];
+        if(n<16){auto s=LegacyMpcSequence::stepAt(n);Step r;r.note=s.note;r.rest=s.rest;r.accent=s.accent;r.slide=s.slide;r.tie=s.tie;return r;}
+        return seq.getTrackData().step[n];
     }
-    void flush() { held.fill(0); if(routedOff)routedOff();else voice.allNotesOff(); }
-    void editorChanged() {
-        for(int p=Note;p<=Tie;++p) dirty[p]=true;
+    void changedViews(){
+        // Notify only actual changes. Repainting every alias for a single cell
+        // edit needlessly blocks the host UI and its audio workers.
+        auto refresh=[this](int p){float x=get(p);if(x!=shown[p]){shown[p]=x;dirty[p]=true;}};
+        for(int p=Note;p<=Tie;++p)refresh(p);
+        for(int p=seqparam::seqMute;p<=seqparam::seqVibrato;++p)refresh(p);
+        for(int p=seqparam::GateFirst;p<seqparam::NoteActionFirst;++p)refresh(p);
+        for(int p=seqparam::SelectedViewFirst;p<seqparam::End;++p)refresh(p);
+        refresh(seqparam::seqCanUndo);refresh(seqparam::seqCanRedo);
+        dirty[seqparam::seqInfo]=true;
     }
-    void reset(bool play) {
-        seq.stop(); flush();
-        if(play) seq.start();
+    void select(int n,bool notify=true){
+        c(seqparam::seqSelected64)=std::clamp(n,0,63)+1;
+        c(seqparam::seqPage)=selected()/16;
+        if(modern())seq.setRecStep(selected());else LegacyMpcSequence::set(Selected,selected()%16+1);
+        dirty[Selected]=true;
+        if(notify)dirty[seqparam::seqSelected64]=true;
+        dirty[seqparam::seqPage]=true;changedViews();
     }
-    void publish() {
-        int current=clock.playing() ? seq.getCurrentStep()+1 : 0;
-        int status=value(Enable)<.5f ? 0 : clock.playing() ? 2 : 1;
-        if(current!=lastCurrent) { dirty[Current]=true; lastCurrent=current; }
-        if(status!=lastStatus) { dirty[Status]=true; lastStatus=status; }
+    void configure(){
+        seq.setTrackLength(c(seqparam::seqLength64));seq.setTranspose(base[Transpose-first]);
+        seq.setPitchLength(c(seqparam::seqPitchLen));seq.setSwingPercent(c(seqparam::seqSwing));
+        seq.gatePercent(c(seqparam::seqGatePct));seq.setReversePlayback(c(seqparam::seqReversePlay)>.5f);
+        seq.setCpuTiming(c(seqparam::seqCpuTiming)>.5f);seq.setRecState(base[Record-first]>.5f);
+        seq.setRecStep(selected());
+        seq.liveOverrides(c(seqparam::seqLiveGate),c(seqparam::seqLiveSlide),c(seqparam::seqLiveAccent),c(seqparam::seqLiveVibrato));
+        factor=std::pow(2.0,2-int(c(seqparam::seqScale)));
+        if(c(seqparam::seqModifier)==1)factor/=1.5;
+        if(c(seqparam::seqModifier)==2)factor*=1.5;
+        clock.cycle(loopA*factor,loopB*factor,looping);
     }
-    static bool valid(int p,float x) {
-        const auto& q=PARAMS[p];
-        const float lo=q.nopts ? 0 : q.min, hi=q.nopts ? q.nopts-1 : q.max;
-        return std::isfinite(x) && x>=lo && x<=hi && x==std::round(x);
+    void ensureModern(){
+        if(modern())return;
+        auto old=LegacyMpcSequence::snapshot();LegacyMpcSequence::stop();base=old.settings;
+        for(int n=0;n<16;++n){Step s;s.note=old.steps[n].note;s.rest=old.steps[n].rest;s.accent=old.steps[n].accent;s.slide=old.steps[n].slide;s.tie=old.steps[n].tie;seq.replaceStep(n,s);}
+        c(seqparam::seqTiming)=1;c(seqparam::seqLength64)=base[Length-first];
+        configure();clock.invalidate();dirty[seqparam::seqTiming]=true;changedViews();
+    }
+    void publish(){
+        int next=active()?seq.getCurrentStep()+1:0;
+        int state=base[Enable-first]<.5f?0:clock.playing()?2:1;
+        if(current!=next){
+            if(current && (current-1)/16==page())dirty[seqparam::PlayViewFirst+(current-1)%16]=true;
+            current=next;dirty[Current]=true;
+            if(current && c(seqparam::seqFollow)>.5f && (current-1)/16!=page()){
+                c(seqparam::seqPage)=(current-1)/16;dirty[seqparam::seqPage]=true;changedViews();
+            }
+            if(current && (current-1)/16==page())dirty[seqparam::PlayViewFirst+(current-1)%16]=true;
+        }
+        if(status!=state){status=state;dirty[Status]=true;}
+    }
+    void reset(bool play){seq.stop();vibrating=false;if(play)seq.start();}
+    void editFlag(int n,int kind,bool on){
+        auto s=step(n);
+        switch(kind){
+        case 0:s.rest=!on;if(!on)s.tie=false;break;
+        case 1:s.slide=on;if(on)s.hammer=false;break;
+        case 2:s.accent=on;if(on)s.mute=false;break;
+        case 3:s.vibrato=on;break;
+        case 4:s.tie=on;if(on)s.rest=true;break;
+        case 5:s.mute=on;if(on)s.accent=false;break;
+        case 6:s.hammer=on;if(on)s.slide=false;break;
+        case 7:s.reverse=on;break;
+        }
+        seq.replaceStep(n,s);
     }
 public:
-    explicit MpcSequence(rosic::Open303& core):voice(core) {
-        for(int i=0;i<stored;++i) settings[i]=defaultValue(first+i);
+    struct Extended {
+        std::array<float,seqparam::seqFollow-seqparam::First+1> settings{};
+        std::array<Step,64> steps{};
+    };
+    explicit MpcSequence(rosic::Open303& voice):LegacyMpcSequence(voice){
+        for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);
+        for(int p=first;p<first+stored;++p)base[p-first]=LegacyMpcSequence::get(p);
         seq.prepare(44100,960);
-        seq.onNoteEvent=[this](const Acid303Event& e) {
-            const int n=e.note;
-            if(e.type==Acid303EventType::NoteOn) {
-                if(held[n]++==0) { if(voiceNote) voiceNote(); if(routedNote)routedNote(n,e.velocity);else voice.noteOn(n,e.velocity,0); }
-            } else if(held[n] && --held[n]==0) {if(routedNote)routedNote(n,0);else voice.noteOn(n,0,0);}
+        for(int i=16;i<64;++i){Step s;s.rest=true;seq.replaceStep(i,s);}
+        configure();
+        seq.onNoteEvent=[this](const jc303seq014::Acid303Event&e){
+            const bool on=e.type==jc303seq014::Acid303EventType::NoteOn;
+            if(on){if(noteStarted)noteStarted();vibrating=e.vibrato;}
+            if(routed)routed(e.note,on?e.velocity:0,e.mute,e.hammer,e.reverse,e.gateSamples);
         };
-        seq.onAllNotesOff=[this]{flush();};
+        seq.onAllNotesOff=[this]{vibrating=false;if(allOff)allOff();};
     }
-    bool active() const { return value(Enable)>=.5f && clock.playing(); }
-    void routeVoice(std::function<void(int,int)> note,std::function<void()> off){routedNote=std::move(note);routedOff=std::move(off);}
-    void onVoiceNote(std::function<void()> callback) { voiceNote=std::move(callback); }
-    void cycle(double a,double b,bool enabled) { clock.cycle(a,b,enabled); }
-    void begin(double beat,double bpm,bool playing,int frames) {
-        if(value(Enable)<.5f) { clock.invalidate(); seq.stop(); publish(); return; }
-        clock.begin(beat,bpm,playing,frames,[this](bool p){reset(p);});
-        publish();
+    void routeVoice(std::function<void(int,int)> note,std::function<void()> off){
+        LegacyMpcSequence::routeVoice(note,off);allOff=off;
+        routed=[note](int n,int v,bool,bool,bool,double){note(n,v);};
     }
-    void sample() {
-        if(!active()) return;
-        clock.sample([this](uint32_t tick){seq.tick96(tick);},[this](bool p){reset(p);});
-        publish();
+    void routeExtended(std::function<void(int,int,bool,bool,bool,double)> cb){routed=std::move(cb);}
+    void onVoiceNote(std::function<void()> cb){noteStarted=cb;LegacyMpcSequence::onVoiceNote(cb);}
+    bool active()const{return modern()?base[Enable-first]>.5f&&clock.playing():LegacyMpcSequence::active();}
+    void cycle(double a,double b,bool on){loopA=a;loopB=b;looping=on;clock.cycle(a*factor,b*factor,on);LegacyMpcSequence::cycle(a,b,on);}
+    void begin(double ppq,double bpm,bool play,int frames){
+        if(!modern()){LegacyMpcSequence::begin(ppq,bpm,play,frames);return;}
+        if(base[Enable-first]<.5f){clock.invalidate();seq.stop();publish();return;}
+        if(std::isfinite(bpm)&&bpm>0){samplesPerTick=44100*60/(bpm*factor*96);seq.clockRate(samplesPerTick);}
+        clock.begin(ppq*factor,bpm*factor,play,frames,[this](bool p){reset(p);});publish();
     }
-    void stop() { clock.invalidate(); seq.stop(); flush(); publish(); }
-    bool recordNote(uint8_t note,uint8_t velocity,bool legato) {
-        if(value(Record)<.5f) return false;
-        seq.recNote(note,velocity>=100,legato);
-        value(Selected)=seq.getRecStep()+1;
-        dirty[Selected]=true;
-        editorChanged();
-        return true;
+    void sample(){
+        if(!modern()){LegacyMpcSequence::sample();return;}
+        if(active())clock.sample([this](uint32_t t){seq.tick96(t);},[this](bool p){reset(p);});
+        seq.mpcSample(samplesPerTick);publish();
     }
-    void recordRest() {
-        if(value(Record)<.5f) return;
-        seq.recRest(); value(Selected)=seq.getRecStep()+1; dirty[Selected]=true; editorChanged();
+    double pitchMod(){
+        if(vibrating&&active()){
+            vibPhase+=c(seqparam::seqVibRate)/44100.0;if(vibPhase>=1)vibPhase-=1;
+            const double target=vibPhase<.5?0:c(seqparam::seqVibDepth);
+            vibValue+=(target-vibValue)*.003;
+        }else{vibValue=0;vibPhase=0;}
+        return vibValue;
     }
-    void set(int p,float x) {
-        if(p>=TileFirst && p<TileFirst+16) {
-            if(x>.5f && selected()!=p-TileFirst) {
-                set(Selected,static_cast<float>(p-TileFirst+1)); dirty[Selected]=true;
+    void stop(){LegacyMpcSequence::stop();clock.invalidate();seq.stop();vibrating=false;publish();}
+    bool recordNote(uint8_t n,uint8_t velocity,bool legato){
+        if(!modern()){bool done=LegacyMpcSequence::recordNote(n,velocity,legato);if(done){c(seqparam::seqSelected64)=LegacyMpcSequence::get(Selected);changedViews();}return done;}
+        if(base[Record-first]<.5f)return false;
+        seq.pushUndo();seq.recNote(n,velocity>=100,legato);select(seq.getRecStep());return true;
+    }
+    void recordRest(){
+        if(!modern()){LegacyMpcSequence::recordRest();c(seqparam::seqSelected64)=LegacyMpcSequence::get(Selected);changedViews();return;}
+        if(base[Record-first]>.5f){seq.pushUndo();seq.recRest();select(seq.getRecStep());}
+    }
+    void set(int p,float x){
+        using namespace seqparam;
+        if(p<First){
+            if(p>=TileFirst&&p<TileFirst+16){if(x>.5f)select(page()*16+p-TileFirst);return;}
+            if(p<first||p>=first+stored)return;
+            if(!modern()){LegacyMpcSequence::set(p,x);if(p==Selected)c(seqparam::seqSelected64)=page()*16+x;changedViews();return;}
+            if(p==Selected){if(x!=get(p))select(page()*16+int(x)-1);return;}
+            if(p==Length){set(seqLength64,x);return;}
+            if(p>=Note&&p<=Tie){
+                if(x==get(p))return;
+                seq.pushUndo();auto s=step(selected());
+                if(p==Note)s.note=x;
+                if(p==Rest){s.rest=x>.5f;if(!s.rest)s.tie=false;}
+                seq.replaceStep(selected(),s);
+                if(p==Accent)editFlag(selected(),2,x>.5f);
+                if(p==Slide)editFlag(selected(),1,x>.5f);
+                if(p==Tie)editFlag(selected(),4,x>.5f);
+                changedViews();return;
+            }
+            if(p==Generate||p==Clear){
+                if(x<.5f)return;
+                seq.pushUndo();
+                if(p==Generate)seq.acidRandomize(base[Fill-first],base[GenAccent-first],base[GenSlide-first],base[GenTie-first],base[Tones-first],base[Low-first],base[Range-first]);
+                else for(int n=0;n<int(c(seqLength64));++n){Step s;s.rest=true;seq.replaceStep(n,s);}
+                changedViews();return;
+            }
+            if(x==base[p-first])return;
+            base[p-first]=x;
+            if(p==Enable||p==Transpose){stop();}configure();publish();return;
+        }
+        if(p>=End)return;
+        if(p>=SelectedViewFirst)return;
+        if(p>=PitchViewFirst&&p<NoteActionFirst)return; // host cannot write views
+        if(p==seqInfo||p==seqCanUndo||p==seqCanRedo)return;
+        if(p>=NoteActionFirst){
+            if(x<.5f)return;
+            ensureModern();seq.pushUndo();
+            if(p<OctActionFirst){
+                int id=p-NoteActionFirst,n=page()*16+id/12,pitch=id%12;auto s=step(n);
+                if(!s.rest&&s.note%12==pitch)s.rest=true;
+                else{s.note=std::clamp(int(s.note)/12*12+pitch,0,127);s.rest=false;s.tie=false;}
+                seq.replaceStep(n,s);select(n);
+            }else{
+                int id=p-OctActionFirst,n=page()*16+id/4,row=id%4;static constexpr int offsets[]{3,2,1,-1};auto s=step(n);
+                int octave=int(c(seqOctBase))+offsets[row];if(int(s.note)/12==octave)octave=c(seqOctBase);
+                s.note=std::clamp(octave*12+int(s.note)%12,0,127);seq.replaceStep(n,s);select(n);
             }
             return;
         }
-        if(p<first || p>=first+stored) return;
-        if(p==Generate) {
-            if(x>.5f) {
-                seq.acidRandomize(value(Fill),value(GenAccent),value(GenSlide),value(GenTie),
-                                  value(Tones),value(Low),value(Range));
-                editorChanged();
+        if(p>=GateFirst){
+            if(x==get(p))return;
+            ensureModern();seq.pushUndo();int id=p-GateFirst;
+            editFlag(page()*16+id%16,id/16,x>.5f);changedViews();return;
+        }
+        if(p>=seqUndo&&p<=seqTransUp){
+            if(x<.5f)return;
+            ensureModern();
+            if(p==seqUndo)seq.undo();else if(p==seqRedo)seq.redo();
+            else if(p==seqCopy){for(int n=0;n<64;++n)clipboard[n]=step(n);haveCopy=true;}
+            else if(p==seqCopyPage){for(int n=0;n<16;++n)pageClipboard[n]=step(page()*16+n);havePageCopy=true;}
+            else if(p==seqPaste){if(haveCopy){seq.pushUndo();for(int n=0;n<64;++n)seq.replaceStep(n,clipboard[n]);}}
+            else if(p==seqPastePage){if(havePageCopy){seq.pushUndo();for(int n=0;n<16;++n)seq.replaceStep(page()*16+n,pageClipboard[n]);}}
+            else{
+                seq.pushUndo();
+                if(p==seqClearPage)for(int n=0;n<16;++n){Step s;s.rest=true;seq.replaceStep(page()*16+n,s);}
+                if(p==seqShiftLeft||p==seqShiftRight)seq.shiftSteps(p==seqShiftLeft?1:-1);
+                if(p==seqTransDown||p==seqTransUp)seq.transposeNotes(p==seqTransDown?-1:1);
             }
-            return;
+            changedViews();return;
         }
-        if(p==Clear) { if(x>.5f) {seq.clearTrack();editorChanged();} return; }
-        if(x==get(p)) return; // host acknowledgements must not restart/edit/notify again
-        if(p==Note) seq.setStepData(selected(),static_cast<uint8_t>(x));
-        if(p==Rest) seq.setRest(selected(),x>.5f);
-        if(p==Accent) seq.setAccent(selected(),x>.5f);
-        if(p==Slide) seq.setSlide(selected(),x>.5f);
-        if(p==Tie) seq.setTie(selected(),x>.5f);
-        value(p)=x;
-        switch(p) {
-        case Enable: stop(); break;
-        case Length: seq.stop(); seq.setTrackLength(static_cast<uint8_t>(x)); clock.invalidate(); break;
-        case Transpose: seq.stop(); seq.setTranspose(static_cast<int8_t>(x)); clock.invalidate(); break;
-        case Selected: seq.setRecStep(selected()); editorChanged(); break;
-        case Record: seq.setRecState(x>.5f); seq.setRecStep(selected()); break;
-        default: break;
+        if(p>=seqMute&&p<=seqVibrato){
+            if(x==get(p))return;
+            ensureModern();seq.pushUndo();static constexpr int kinds[]{5,6,7,3};editFlag(selected(),kinds[p-seqMute],x>.5f);changedViews();return;
         }
-        publish();
+        if(p==seqTiming){
+            if(x==get(p))return;
+            if(x>.5f)ensureModern();else{
+                Snapshot snap;for(int i=0;i<stored;++i)snap.settings[i]=get(first+i);
+                snap.settings[Length-first]=std::min(16,int(c(seqLength64)));snap.settings[Selected-first]=selected()%16+1;
+                for(int n=0;n<16;++n){auto s=step(n);snap.steps[n]={s.note,s.rest,s.accent,s.slide,s.tie};}
+                stop();c(seqTiming)=0;LegacyMpcSequence::load(snap);changedViews();
+            }return;
+        }
+        if(p==seqPage){if(x==c(p))return;c(p)=x;changedViews();return;}
+        if(p==seqSelected64){if(x!=get(p))select(int(x)-1,false);return;}
+        if(x==get(p))return;
+        ensureModern();float old=c(p);c(p)=x;
+        if(p==seqShift||p==seqPitchRotate){seq.pushUndo();int delta=int(x-old);if(p==seqShift)seq.shiftSteps(delta);else seq.rotatePitches(delta);changedViews();}
+        if(p==seqScale||p==seqModifier||p==seqLength64){stop();dirty[Length]=true;}
+        configure();if(p==seqOctBase)changedViews();
     }
-    float get(int p) const {
-        const auto& step=seq.getTrackData().step[selected()];
-        switch(p) {
-        case Note:return step.note;
-        case Rest:return step.rest;
-        case Accent:return step.accent;
-        case Slide:return step.slide;
-        case Tie:return step.tie;
-        case Generate:case Clear:return 0;
-        case Current:return lastCurrent;
-        case Status:return lastStatus;
-        default:return p>=first && p<first+stored ? value(p) : 0;
+    float get(int p)const{
+        using namespace seqparam;
+        if(p==seqTiming)return modern();
+        if(p==seqLength64&&!modern())return LegacyMpcSequence::get(Length);
+        if(p>=First&&p<=seqFollow){
+            if(p>=seqUndo&&p<=seqTransUp)return 0;
+            if(p>=seqMute&&p<=seqVibrato){auto s=step(selected());return p==seqMute?s.mute:p==seqHammer?s.hammer:p==seqReverse?s.reverse:s.vibrato;}
+            return c(p);
         }
-    }
-    int text(int p,char* out,int size) const {
-        if(p>=TileFirst && p<TileFirst+16) {
-            const int i=p-TileFirst;
-            const auto& step=seq.getTrackData().step[i];
-            static const char* notes[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
-            return step.rest ? std::snprintf(out,size,"%02d REST",i+1) :
-                std::snprintf(out,size,"%02d %s%d",i+1,notes[step.note%12],step.note/12-1);
+        if(p==seqCanUndo)return seq.canUndo();
+        if(p==seqCanRedo)return seq.canRedo();
+        if(p>=SelectedViewFirst&&p<End)return selected()==page()*16+p-SelectedViewFirst;
+        if(p>=NoteActionFirst)return 0;
+        if(p>=GateFirst&&p<NoteActionFirst){
+            int col=(p-GateFirst)%16;auto s=step(page()*16+col);
+            if(p>=PlayViewFirst)return current==page()*16+col+1&&modern();
+            if(p>=OctViewFirst){int d=int(s.note)/12-int(c(seqOctBase));return d==3?1:d==2?2:d==1?3:d==-1?4:0;}
+            if(p>=PitchViewFirst)return s.rest?0:s.note%12+1;
+            switch((p-GateFirst)/16){case 0:return !s.rest;case 1:return s.slide;case 2:return s.accent;case 3:return s.vibrato;case 4:return s.tie;case 5:return s.mute;case 6:return s.hammer;case 7:return s.reverse;}
         }
-        return std::snprintf(out,size,"%.0f",get(p));
+        if(!modern())return LegacyMpcSequence::get(p);
+        if(p==Length)return std::min(16,int(c(seqLength64)));
+        if(p==Selected)return selected()%16+1;
+        if(p>=Note&&p<=Tie){auto s=step(selected());switch(p){case Note:return s.note;case Rest:return s.rest;case Accent:return s.accent;case Slide:return s.slide;case Tie:return s.tie;}}
+        if(p==Generate||p==Clear)return 0;
+        if(p==Current)return current;
+        if(p==Status)return status;
+        return p>=first&&p<first+stored?base[p-first]:0;
     }
-    int display(int p,char* out,int size) const {
-        if(p==Note) {
-            const int n=static_cast<int>(get(p));
-            static const char* notes[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
-            return std::snprintf(out,size,"%d / %s%d",n,notes[n%12],n/12-1);
+    int text(int p,char*out,int size)const{
+        if(p>=TileFirst&&p<TileFirst+16){auto s=step(page()*16+p-TileFirst);return std::snprintf(out,size,"%02d %s",page()*16+p-TileFirst+1,s.rest?"REST":"NOTE");}
+        if(p==seqparam::seqInfo)return display(p,out,size);
+        return std::snprintf(out,size,"%.9g",get(p));
+    }
+    int display(int p,char*out,int size)const{
+        if(p==seqparam::seqInfo)return std::snprintf(out,size,"STEPS %02d-%02d  |  LENGTH %02d  |  %s",page()*16+1,page()*16+16,int(get(seqparam::seqLength64)),modern()?"NEW 64":"LEGACY");
+        if(p==Note){int n=get(p);static const char* names[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};return std::snprintf(out,size,"%d / %s%d",n,names[n%12],n/12-1);}
+        if(p==Current&&!modern())return LegacyMpcSequence::display(p,out,size);
+        if(p==Current)return current?std::snprintf(out,size,"Step %02d",current):std::snprintf(out,size,"Stopped");
+        if(p>=seqparam::First){
+            if(PARAMS[p].int_display)return std::snprintf(out,size,"%.0f",get(p));
+            return std::snprintf(out,size,"%.2f %s",get(p),PARAMS[p].unit);
         }
-        if(p==Current) return lastCurrent ? std::snprintf(out,size,"Step %02d",lastCurrent) : std::snprintf(out,size,"Stopped");
-        return 0;
+        return LegacyMpcSequence::display(p,out,size);
     }
-    bool tileOn(int p) const { return p-TileFirst==selected(); }
-    int changed(char* out,int size) {
-        for(int i=first;i<NPARAMS;++i) if(dirty[i]) {
-            dirty[i]=false;
-            std::snprintf(out,size,"%s",PARAMS[i].key); return 1;
-        }
-        return 0;
+    bool tileOn(int p)const{return p>=TileFirst&&p<TileFirst+16&&p-TileFirst==selected()%16;}
+    int changed(char*out,int size){
+        for(int p=first;p<NPARAMS;++p)if(dirty[p]){dirty[p]=false;std::snprintf(out,size,"%s",PARAMS[p].key);return 1;}
+        return LegacyMpcSequence::changed(out,size);
     }
-    void save(std::ostream& out) const {
-        for(int i=first;i<first+stored;++i) out<<PARAMS[i].key<<' '<<get(i)<<'\n';
-        out<<"pattern\n";
-        for(int i=0;i<16;++i) {
-            const auto& s=seq.getTrackData().step[i];
-            out<<i<<' '<<static_cast<int>(s.note)<<' '<<s.rest<<' '<<s.accent<<' '<<s.slide<<' '<<s.tie<<'\n';
-        }
+    void save(std::ostream&out)const{
+        for(int p=first;p<first+stored;++p)out<<PARAMS[p].key<<' '<<get(p)<<'\n';
+        out<<"pattern\n";for(int n=0;n<16;++n){auto s=step(n);out<<n<<' '<<int(s.note)<<' '<<s.rest<<' '<<s.accent<<' '<<s.slide<<' '<<s.tie<<'\n';}
     }
-    static bool parse(std::istream& in,Snapshot& snap) {
-        for(int i=first;i<first+stored;++i) {
-            std::string key;float x;
-            if(!(in>>key>>x) || key!=PARAMS[i].key || !valid(i,x)) return false;
-            snap.settings[i-first]=x;
-        }
-        std::string tag;
-        if(!(in>>tag) || tag!="pattern") return false;
-        for(int i=0;i<16;++i) {
-            int index,n,r,a,s,t;
-            if(!(in>>index>>n>>r>>a>>s>>t) || index!=i || n<0 || n>127 ||
-               r<0||r>1||a<0||a>1||s<0||s>1||t<0||t>1) return false;
-            snap.steps[i]={static_cast<uint8_t>(n),r!=0,a!=0,s!=0,t!=0};
-        }
-        return true;
+    void saveExtended(std::ostream&out)const{
+        out<<"SEQ64\n";for(int p=seqparam::First;p<=seqparam::seqFollow;++p)out<<PARAMS[p].key<<' '<<get(p)<<'\n';
+        for(int n=0;n<64;++n){auto s=step(n);out<<n<<' '<<int(s.note)<<' '<<s.rest<<' '<<s.accent<<' '<<s.slide<<' '<<s.tie<<' '<<s.mute<<' '<<s.hammer<<' '<<s.reverse<<' '<<s.vibrato<<'\n';}
     }
-    void load(const Snapshot& snap) {
-        stop(); settings=snap.settings;
-        seq.setTrackLength(static_cast<uint8_t>(value(Length)));
-        seq.setTranspose(static_cast<int8_t>(value(Transpose)));
-        seq.setRecState(value(Record)>.5f); seq.setRecStep(selected());
-        for(int i=0;i<16;++i) {
-            const auto& s=snap.steps[i];
-            seq.setStepData(i,s.note);seq.setRest(i,s.rest);seq.setAccent(i,s.accent);
-            seq.setSlide(i,s.slide);seq.setTie(i,s.tie);
-        }
-        dirty[Selected]=true; editorChanged(); publish();
+    static bool parseExtended(std::istream&in,Extended&snap){
+        std::string key;if(!(in>>key)||key!="SEQ64")return false;
+        for(int p=seqparam::First;p<=seqparam::seqFollow;++p){float x;const auto&q=PARAMS[p];if(!(in>>key>>x)||key!=q.key||!std::isfinite(x)||x<(q.nopts?0:q.min)||x>(q.nopts?q.nopts-1:q.max)||((q.nopts||q.int_display)&&x!=std::round(x)))return false;snap.settings[p-seqparam::First]=x;}
+        for(int n=0;n<64;++n){int index,note,flags[8];if(!(in>>index>>note)||index!=n||note<0||note>127)return false;for(int&f:flags)if(!(in>>f)||f<0||f>1)return false;
+            auto&s=snap.steps[n];s.note=note;s.rest=flags[0];s.accent=flags[1];s.slide=flags[2];s.tie=flags[3];s.mute=flags[4];s.hammer=flags[5];s.reverse=flags[6];s.vibrato=flags[7];
+            if((s.accent&&s.mute)||(s.slide&&s.hammer))return false;
+        }return true;
     }
-    void legacyReset() {
-        Snapshot snap;
-        for(int i=0;i<stored;++i) snap.settings[i]=defaultValue(first+i);
-        load(snap);
-    }
+    void load(const Snapshot&snap){stop();seq.clearHistory();LegacyMpcSequence::load(snap);base=snap.settings;for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);c(seqparam::seqTiming)=0;c(seqparam::seqLength64)=snap.settings[Length-first];c(seqparam::seqSelected64)=snap.settings[Selected-first];for(int n=0;n<64;++n){Step s;s.rest=true;seq.replaceStep(n,s);}changedViews();}
+    void loadExtended(const Extended&snap){stop();cfg=snap.settings;for(int n=0;n<64;++n)seq.replaceStep(n,snap.steps[n]);configure();changedViews();}
+    void legacyReset(){Snapshot s;for(int p=first;p<first+stored;++p)s.settings[p-first]=std::round(def(p));load(s);}
 };

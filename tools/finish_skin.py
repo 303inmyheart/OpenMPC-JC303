@@ -76,7 +76,7 @@ def background(index,tab):
     line(d,[(252,87),(420,87)],GREEN,4)
     badge_right=1140 if index==0 else 1210
     badge_left=badge_right-240
-    page_index=1 if tab['name'] in ('ENGINE','FILTER') else index
+    page_index=3 if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE') else 1 if tab['name'] in ('ENGINE','FILTER') else index
     caption='MODS / '+tab['name'] if tab['name'] in ('ENGINE','FILTER') else f'{index+1:02d} / {tab["name"]}'
     text(d,(badge_right-16,49),caption,20,'#EEF3E5','rm')
     for n in range(6):
@@ -133,7 +133,7 @@ def background(index,tab):
         line(d,pts,'#65784C',2)
         line(d,[(420,505),(570,430),(570,505),(720,430),(720,505),(870,430),(870,505),(1020,430),(1020,505),(1175,430)],'#949F85',1.5)
     elif index==3:
-        text(d,(792,128),'16 STEP / HOST SYNC',12,MUTED)
+        pass
     elif index==4:
         section(d,74,259,1126,'PATTERN GENERATOR')
     elif index==5:

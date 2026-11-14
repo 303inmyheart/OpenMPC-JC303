@@ -45,7 +45,7 @@ for source,name in [(build.MPC/'tools/host_test.c','host_test'),(build.ROOT/'tes
     'tests': ['framework host', 'reference voice', 'state and MIDI', '54 filter/LFO combinations',
               'stepped Q-Link host/touch synchronisation with host echoes',
               'six-waveform rotary sweeps and one-second slide migration',
-              'sequencer clock/loops, event oracle, exact audio, pattern state, record and generator',
+              'legacy sequencer exact audio/migration, 64-step grid/pages, generator length, swing/fractional gates, CPU timing oracle, scaled host clock, step articulation DSP and JC6 state',
               '37 GuitarML models, independent LSTM oracle, rapid switching and bypass',
               '12 MPC browser programs, dry Init, edited state restore and wet VST audio'],
     'environment': 'QEMU ARM64, offline only; no hardware benchmark',

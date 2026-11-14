@@ -7,11 +7,14 @@ root=Path(__file__).resolve().parents[1]
 skin=next((root/'build/skin').glob('*/Plugin Skins/TUI.json')).parent
 p=skin/'TUI.json';d=json.loads(p.read_text());page=d['pageData']
 original_definitions=deepcopy(page['componentDefinitions'])
-mods=next(t for t in page['tabs'] if t['tabName']=='MODS');main=mods['fnKeyIndex'];mapping={}
-for sub,name in enumerate(('ENGINE','FILTER'),1):
-    tab=next(t for t in page['tabs'] if t['tabName']==name)
-    mapping[(tab['fnKeyIndex']+1,tab['fnKeySubIndex']+1)]=(main+1,sub+1)
-    tab['fnKeyIndex']=main;tab['fnKeySubIndex']=sub
+mapping={}
+main=next(t['fnKeyIndex'] for t in page['tabs'] if t['tabName']=='MODS')
+for parent,names in [('MODS',('ENGINE','FILTER')),('SEQUENCE',('ARTIC','SEQTOOLS','SEQLIVE'))]:
+    mainIndex=next(t['fnKeyIndex'] for t in page['tabs'] if t['tabName']==parent)
+    for sub,name in enumerate(names,1):
+        tab=next(t for t in page['tabs'] if t['tabName']==name)
+        mapping[(tab['fnKeyIndex']+1,tab['fnKeySubIndex']+1)]=(mainIndex+1,sub+1)
+        tab['fnKeyIndex']=mainIndex;tab['fnKeySubIndex']=sub
 page['tabs'].sort(key=lambda t:(t['fnKeyIndex'],t['fnKeySubIndex']))
 qpath=skin/'Q-Links.json';q=json.loads(qpath.read_text())
 for bank in q['Screen Mode Q-Links']['map']:

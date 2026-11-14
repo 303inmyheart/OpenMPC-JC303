@@ -10,7 +10,9 @@ public:
     ~ModernVoice();
     ModernVoice(const ModernVoice&)=delete;
     void configure(const float* oldValues,const float* extra);
-    void noteOn(int note,int velocity);
+    void noteOn(int note,int velocity,bool mute=false,bool hammer=false,bool reverse=false,double gateSamples=0);
+    void pitchBend(double semitones);
+    void tempo(double bpm);
     void allNotesOff();
     double sample();
 private:

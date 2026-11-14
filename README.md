@@ -25,21 +25,33 @@ Older MPC state versions automatically choose **Legacy 0.2.3**, preserving the
 original filters (including Diode Octave) and previous audio. New state version
 JC303-MPC-5 saves the engine choice and sound controls. Existing parameters,
 preset browser and optimized GuitarML path remain available. This is step one;
-new modulation-matrix/sequencer features, pre-VCA routing, JSON banks and microtuning
+new modulation-matrix features, pre-VCA routing, JSON banks and microtuning
 file import are later milestones. Public release/source update is pending.
 See [the German test guide](TESTPLAN-0.3.0.md) and [license audit](LICENSE-AUDIT.md).
+
+## Local 0.4.0 sequencer candidate
+
+A new piano roll offers **64 steps on four pages**, octave and note touch entry,
+step articulation lanes, shuffle, fractional gate lengths, step scale/modifiers,
+reverse, pitch polymeter and transient clipboard/undo. SEQUENCE cycles through
+**SEQUENCE → ARTIC → SEQTOOLS → SEQLIVE**. GENERATE exposes length 1–64 and
+changes only the active length. New JC303-MPC-6 state stores all 64 steps;
+versions 1–5 retain the original sequencer timing on import. Hardware acceptance
+and a public release are pending; a formal store benchmark is deferred to the
+final release build. See [the German test guide](TESTPLAN-0.4.0-DE.md).
 
 ## Features
 
 - Open303-based mono voice with waveform morph, tuning, cutoff, resonance, envelope modulation, decay, accent and output level.
 - TeeBee, Diode Octave and Diode filters, plus the JC303 modifications and LFO.
 - Extended Slide Time up to **1 second**, with migration of older saved slide durations.
-- **16-step sequencer** synchronized to MPC tempo/transport: adjustable length, notes, rests, accents, slides, ties and transpose.
+- **64-step piano-roll sequencer** on four 16-step pages, synchronized to MPC tempo/transport. Touch note and octave entry, slide/accent/vibrato lanes, mute/hammer/reverse/ties, shuffle, gate length, step scale, reverse playback, pitch polymeter, clipboard and undo/redo. Older projects retain Legacy 16 timing.
+- **Generate length 1–64**: only the active length is regenerated; later steps remain stored. See [the sequencer test guide](TESTPLAN-0.4.0.md) for exact controls and limitations.
 - Pattern generator with fill, accent/slide/tie probabilities, pitch-class count and note-range controls.
 - MIDI/pad step recording: velocity 100+ records accent; overlapping notes record slide; sustain-pedal down enters a rest.
 - **37 embedded GuitarML drive models**, with level/gain, equal-power dry/wet mixing, background model preparation and fades during model changes.
 - **12 factory programs** in the native MPC preset browser, including dry **Init** and two sequenced patches. New instances start with Drive and Sequencer off.
-- Six native pages: **SYNTH, MODS, LFO, SEQUENCE, GENERATE, DRIVE**, with Q-Link mappings and complete sound/pattern/drive project state.
+- Six main function keys: **SYNTH, MODS, LFO, SEQUENCE, GENERATE, DRIVE**, with Q-Link mappings and complete sound/pattern/drive project state.
 - Custom 303-style panels, rotary knobs, switches and Acid smiley. Step selection uses a bright border that leaves its caption visible.
 - A **Sounds → Plugin** browser tile and a loadable **Init `.xpl`** preset.
 - OpenMPC Installer-compatible packaging with installation scripts, manifests and checksums.
@@ -50,11 +62,17 @@ See [the German test guide](TESTPLAN-0.3.0.md) and [license audit](LICENSE-AUDIT
 |---|---|
 | ![Circuit modifications](docs/screenshots/mods.png) | ![LFO](docs/screenshots/lfo.png) |
 
-![16-step sequencer with selected-step border](docs/screenshots/sequence.png)
+![64-step piano-roll sequencer, offline native-skin preview](docs/screenshots/sequence.png)
 
 | GENERATE | DRIVE |
 |---|---|
 | ![Pattern generator and step recording](docs/screenshots/generate.png) | ![GuitarML drive model selection](docs/screenshots/drive.png) |
+
+| ARTIC | SEQTOOLS |
+|---|---|
+| ![Step articulation lanes](docs/screenshots/artic.png) | ![Sequencer timing and editing tools](docs/screenshots/seqtools.png) |
+
+[Live overrides and page editing preview](docs/screenshots/seqlive.png)
 
 Native Sounds-browser artwork:
 
@@ -70,7 +88,7 @@ Enable **Preferences → Enhancements → External Plugin Support** and select *
 
 Play from pads, keys or MIDI clips. Overlapping notes slide and velocities of 100 or more accent. Enable **MODS** to engage the extra circuit/LFO settings. Filter Drive affects the diode filter's input saturator; its display indicates when MODS is off or a non-diode filter is selected.
 
-On **SEQUENCE**, enable SEQUENCER and press MPC Play. Tap a step or use EDIT STEP, then edit NOTE, REST, ACCENT, SLIDE and TIE. The SEQUENCER switch is beside TIE. On **GENERATE**, set probabilities/range and generate a pattern, or enable RECORD for step input. GENERATE and CLEAR replace pattern data and currently have no undo.
+On **SEQUENCE**, enable SEQUENCER and press MPC Play. Choose STEP PAGE and LENGTH, then tap note/octave cells and the articulation lanes. Use **ARTIC** for precise EDIT STEP / NOTE input and additional step flags. **SEQTOOLS** contains timing, clipboard and undo/redo; **SEQLIVE** contains live overrides and page operations. On **GENERATE**, set LENGTH 1–64 before generating, or enable RECORD for step input. In New 64 mode, GENERATE and CLEAR are undoable; Legacy 16 retains its previous behavior.
 
 On **DRIVE**, enable the effect and choose a model. LEVEL / GAIN controls the second input of conditioned models or the input gain of fixed models, following JC303's original mapping. Models are embedded; no model files or downloads are needed at runtime. Bypass returns to dry audio.
 

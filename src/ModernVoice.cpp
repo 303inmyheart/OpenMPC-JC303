@@ -7,7 +7,9 @@
 struct ModernVoice::Impl { rosic014::Open303 voice; std::array<float,22> old{};std::array<float,Count> extra{};bool configured=false; Impl(){voice.setSampleRate(44100);} };
 ModernVoice::ModernVoice():impl(std::make_unique<Impl>()){}
 ModernVoice::~ModernVoice()=default;
-void ModernVoice::noteOn(int n,int v){impl->voice.noteOn(n,v,0);}
+void ModernVoice::noteOn(int n,int v,bool mute,bool hammer,bool reverse,double gateSamples){impl->voice.noteOn(n,v,0,mute,hammer,reverse,gateSamples);}
+void ModernVoice::pitchBend(double s){impl->voice.setPitchBend(s);}
+void ModernVoice::tempo(double bpm){impl->voice.setReverseTempo(bpm);}
 void ModernVoice::allNotesOff(){impl->voice.allNotesOff();}
 double ModernVoice::sample(){return impl->voice.getSample();}
 void ModernVoice::configure(const float* p,const float* x){

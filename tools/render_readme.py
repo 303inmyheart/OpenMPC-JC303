@@ -43,7 +43,7 @@ def xywh(bounds):return tuple(int(float(x)) for x in bounds['bounds'].split())
 try:
     for n,tab in enumerate(tui['tabs']):
         role=tab['componentName'].split('|')[0]
-        call(e,2,0,10 if role in ('SEQUENCE','GENERATE') else 0,None,0)
+        call(e,2,0,10 if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE') else 0,None,0)
         if role in ('MODS','LFO'):setparam(e,ids['switchModState'],1)
         if role=='LFO':setparam(e,ids['lfoDepth'],.4)
         if role=='DRIVE':
@@ -52,9 +52,12 @@ try:
         if role in ('ENGINE','FILTER'):
             setparam(e,ids['engine014'],1);setparam(e,ids['switchModState'],1)
             setparam(e,ids['filterModel014'],1/7)
+        if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE'):
+            setparam(e,ids['seqTiming'],1);setparam(e,ids['seqLength64'],1)
+        state={i:round(get(e,i)*(len(q['options'])-1)) for i,q in enumerate(params) if q.get('options')}
         im=Image.new('RGBA',(1280,628));draw=ImageDraw.Draw(im)
         for c in studio.tab_components(tab,defs):
-            if not studio.shown(c,{}):continue
+            if not studio.shown(c,state):continue
             cd=c['componentData'];x,y,ww,hh=xywh(c['bounds'])
             if cd['type']=='Image':
                 pic=Image.open(skin/cd['data']['image']).convert('RGBA');im.alpha_composite(pic,(x,y));continue

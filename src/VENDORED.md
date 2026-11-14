@@ -109,3 +109,19 @@ All old VST indices, including the implicit popup flag at 65, are retained.
 Licensing is now a combined GPLv3/AGPLv3 distribution: see LICENSE-AUDIT.md and
 src/dsp/v014/open303/LICENSE-AGPL-3.0. The old MIT/GPL/BSD notices stay in place;
 no file is silently relicensed by the directory layout or namespace change.
+
+## 64-step sequencer milestone (0.4.0)
+
+`src/sequencer/v014/AcidSequencer303.h` is adapted from the same pinned upstream
+v0.14.0 source (original Aciduino MIT notice retained). JUCE types/clock wrappers
+are replaced by standard C++ and the existing MPC HostClock. The host serializes
+all calls under its per-instance lock. Native upstream event-queue, swing,
+reverse/hammer/mute, pitch-length and step-history logic is retained. MPC changes:
+64 steps, active-length-only generation, fractional gate percentage, live flag
+overrides, an added step vibrato flag and namespace jc303seq014. The old event
+engine/adapter remains as LegacyMpcSequence for chunks through version 5.
+
+MpcSequence provides the host bindings, page aliases, grid actions, clipboard,
+new JC303-MPC-6 extension and independent alternating/smoothed pitch vibrato.
+No D16 code or artwork is used. The local, user-supplied reference image remains
+untracked and is not included in source or install archives.

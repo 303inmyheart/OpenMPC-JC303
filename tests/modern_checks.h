@@ -30,7 +30,7 @@ void modernChecks(){
     }
     require(sounds[0]!=sounds[1] && sounds[1]!=sounds[2],"oscillator model selector disconnected");
     Plugin p;p.units("engine014",1);p.units("switchModState",1);p.units("filterModel014",6);p.units("oscModel014",2);p.units("filterFm014",.25);p.units("shaperMode014",2);p.units("subGain014",.32);
-    std::string saved=chunk(p);require(saved.rfind("JC303-MPC-5",0)==0,"missing versioned modern state");
+    std::string saved=chunk(p);require(saved.rfind("JC303-MPC-6",0)==0,"missing versioned modern state");
     Plugin restored;loadChunk(restored,saved);require(chunk(restored)==saved,"modern state did not round trip");
     auto broken=saved;broken.replace(broken.find("filterFm014 "),std::string::npos,"filterFm014 nan\n");loadChunk(restored,broken);require(chunk(restored)==saved,"invalid modern state partially mutated instance");
     loadChunk(restored,saved.substr(0,saved.find("subGain014 ")));require(chunk(restored)==saved,"truncated modern state accepted");

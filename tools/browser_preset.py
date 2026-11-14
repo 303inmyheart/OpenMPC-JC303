@@ -30,7 +30,7 @@ try:
     size=call(effect,23,0,0,C.byref(ptr),0)
     assert size>0
     chunk=C.string_at(ptr,size)
-    assert chunk.startswith(b'JC303-MPC-5\n') and b'preset 0\n' in chunk
+    assert chunk.startswith(b'JC303-MPC-6\n') and b'preset 0\n' in chunk
     uid=int.from_bytes(cfg['uid'].encode(),'big')
     text=xpl.xpl(cfg['name'],cfg['vendor'],f'%payload-path%/{folder}/{cfg["so"]}',
                  uid,cfg['version'],chunk,preset='Init')

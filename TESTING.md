@@ -308,3 +308,38 @@ MPC application restarted and returned to active/running. Subpage acceptance is
 pending. No benchmark result is attached to this development installer. The user
 requires the formal Store benchmark only at the final release-build milestone;
 a prematurely started development run is not used as release evidence.
+
+
+## 0.4.0 — 64-step sequencer development candidate
+
+2026-11-14: native ASan/UBSan/leak checks and actual ARM64 shared-object checks
+under QEMU pass. Existing legacy voice/clock/loop tests retain sample-identical
+audio. New checks cover fourth-page step 64, pitch/octave cells, exclusive
+articulations, selected-column views, active-length-only generation, page
+clipboard, undo/redo, read-only views, malformed-state rollback, JC6 exact
+roundtrip and JC5 legacy-timing migration. A monotonic 64-step cursor sweep with
+immediate host echoes passes. Independent sample oracles verify fractional
+shuffle/gates, 1% sub-tick gates, 303 IRQ/latency timing and Full/Dotted/Triplet
+step scales. Actual VST audio differs for mute, hammer, reverse and vibrato,
+confirming these flags reach the modern DSP rather than only the editor.
+
+The final native skin geometry checker passes after the model-overlay and
+subpage transformations. Six main function keys remain; SEQUENCE owns
+SEQUENCE / ARTIC / SEQTOOLS / SEQLIVE. Native-rendered piano roll, articulation
+and generator previews were visually inspected. Existing VST indices 0–85 are
+unchanged; new API is append-only. Installer/portable catalog validation returns
+zero warnings. The install ZIP contains no user reference image, source, local
+logs or toolchain files. Key/scale highlighting remains on the roadmap.
+
+Installed under standing user authorization: the old 0.3.1 plugin folder was
+backed up locally; 286 plugin-specific files were staged, verified and replaced.
+MPC.settings stayed unchanged during file replacement. The MPC application was
+restarted; active/running and a new process were verified. Installed binary hash
+matches the stripped package binary:
+`7728e03380c0f94cb33dd9cc3a532806b7c7854180d0630707c63471bbefac7a`.
+No device GUI/touch/hearing acceptance or real-device functional harness is
+claimed for this candidate. See TESTPLAN-0.4.0-DE.md for the hands-on test list.
+
+No formal/store performance benchmark was run or attached. It is reserved for
+the final release build at the user's explicit instruction. This development
+candidate is local/installed only; it is not a published GitHub/store release.

@@ -36,3 +36,8 @@ are recorded in src/VENDORED.md. Before any public binary release, publish the
 matching adapted source and update release/catalog metadata and license notices.
 This audit records the source notices and our compliance plan; it is not a
 separate grant of rights from any upstream author.
+
+0.4.0 sequencer adaptation: the upstream v0.14 AcidSequencer303 header retains
+its Aciduino MIT attribution. Its JUCE dependency has been removed; no JUCE code,
+D16 source, D16 artwork or reference screenshot is distributed. Existing combined
+GPLv3/AGPLv3 distribution notices and corresponding-source obligations remain.

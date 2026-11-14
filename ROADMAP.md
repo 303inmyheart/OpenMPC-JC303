@@ -55,11 +55,29 @@ Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
    engine remains for sample-identical older projects; JC303-MPC-5 stores new
    settings, preserving VST indices 0–65. Dedicated ENGINE and FILTER pages.
    Existing host sequencer and optimized post-VCA GuitarML remain in use.
-2. **Modulation and sequencer parity:** four-slot matrix, additional LFO controls,
-   new step states/reverse/swing/polymeter and undo/redo, plus pre-VCA/Disperse.
-3. **Preset/import parity:** factory JSON sounds/banks and practical file import,
+2. **Sequencer candidate 0.4.0:** 64 steps/four piano-roll pages, active-length
+   generator, mute/hammer/reverse, swing/fractional gates, pitch polymeter,
+   clipboard and undo/redo. Native sanitizer/ARM64 tests and installer validation passed; installed
+   on Live III as a development candidate. Touch/hearing acceptance pending. See TESTPLAN-0.4.0.md.
+3. **Remaining modulation/audio parity:** four-slot matrix, additional LFO
+   controls, pre-VCA drive/Disperse.
+4. **Preset/import parity:** factory JSON sounds/banks and practical file import,
    then AnaMark .tun import. Existing MPC preset browser and dry Init remain.
 
 User requests exact control names and a practical test list for each delivered
 milestone. Do not describe step one as full v0.14 parity. New license notices are
 combined GPLv3/AGPLv3; see LICENSE-AUDIT.md. No new Desktop copies by default.
+
+## Sequencer: requested scale guide (deferred)
+
+Add a root-note / key-and-scale menu to the new piano-roll sequencer, e.g.
+**A Minor**. Highlight the corresponding allowed note rows across all octaves
+and all four 16-step pages, so the user can see the notes of the chosen scale
+while entering a sequence. Store the selected key/scale with the pattern.
+Highlighting must not silently transpose, quantize or rewrite existing notes;
+optional scale snapping is a separate later decision. This is a roadmap item,
+not a requirement to block the current 64-step editor milestone.
+
+Current sequencer milestone: Phoscyon-2-inspired piano roll in our own Acid
+artwork, 64 steps on four pages, JC303 v0.14 sequencer features. GENERATE must
+expose the same 1–64 pattern length and generate only within the active length.

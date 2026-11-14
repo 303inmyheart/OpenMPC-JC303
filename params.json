@@ -842,6 +842,6626 @@
       "max": 1,
       "default": 1,
       "dynamic_display": true
+    },
+    {
+      "key": "seqTiming",
+      "name": "Sequence Timing",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Legacy 16",
+        "New 64"
+      ]
+    },
+    {
+      "key": "seqPage",
+      "name": "Step Page",
+      "min": 0,
+      "max": 3,
+      "default": 0,
+      "options": [
+        "1-16",
+        "17-32",
+        "33-48",
+        "49-64"
+      ]
+    },
+    {
+      "key": "seqLength64",
+      "name": "Pattern Length",
+      "min": 1,
+      "max": 64,
+      "default": 16,
+      "display": "int",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqSelected64",
+      "name": "Selected Step",
+      "min": 1,
+      "max": 64,
+      "default": 1,
+      "display": "int",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqSwing",
+      "name": "Shuffle",
+      "min": 50,
+      "max": 75,
+      "default": 50,
+      "unit": "%",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqGatePct",
+      "name": "Step Length",
+      "min": 1,
+      "max": 100,
+      "default": 50,
+      "unit": "%",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqScale",
+      "name": "Step Scale",
+      "min": 0,
+      "max": 6,
+      "default": 2,
+      "options": [
+        "1/64",
+        "1/32",
+        "1/16",
+        "1/8",
+        "1/4",
+        "1/2",
+        "1/1"
+      ]
+    },
+    {
+      "key": "seqModifier",
+      "name": "Step Modifier",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Full",
+        "Dotted",
+        "Triplet"
+      ]
+    },
+    {
+      "key": "seqReversePlay",
+      "name": "Reverse Playback",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPitchLen",
+      "name": "Pitch Length",
+      "min": 0,
+      "max": 64,
+      "default": 0,
+      "display": "int",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqShift",
+      "name": "Pattern Shift",
+      "min": -63,
+      "max": 63,
+      "default": 0,
+      "display": "int",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqPitchRotate",
+      "name": "Pitch Rotation",
+      "min": -63,
+      "max": 63,
+      "default": 0,
+      "display": "int",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqCpuTiming",
+      "name": "303 CPU Timing",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqMute",
+      "name": "Muted Note",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqHammer",
+      "name": "Hammer",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqReverse",
+      "name": "Reverse Note",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqVibrato",
+      "name": "Vibrato",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqUndo",
+      "name": "Undo",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqRedo",
+      "name": "Redo",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqCopy",
+      "name": "Copy Pattern",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqPaste",
+      "name": "Paste Pattern",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqCopyPage",
+      "name": "Copy Page",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqPastePage",
+      "name": "Paste Page",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqClearPage",
+      "name": "Clear Page",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqShiftLeft",
+      "name": "Shift Left",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqShiftRight",
+      "name": "Shift Right",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqTransDown",
+      "name": "Transpose Down",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqTransUp",
+      "name": "Transpose Up",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Do"
+      ]
+    },
+    {
+      "key": "seqVibRate",
+      "name": "Vibrato Rate",
+      "min": 1,
+      "max": 20,
+      "default": 6,
+      "unit": "Hz",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqVibDepth",
+      "name": "Vibrato Spread",
+      "min": 0,
+      "max": 2,
+      "default": 0.35,
+      "unit": "st",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqLiveGate",
+      "name": "Gate Override",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Pattern",
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqLiveSlide",
+      "name": "Slide Override",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Pattern",
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqLiveAccent",
+      "name": "Accent Override",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Pattern",
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqLiveVibrato",
+      "name": "Vibrato Override",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Pattern",
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqOctBase",
+      "name": "Base Octave",
+      "min": 0,
+      "max": 7,
+      "default": 3,
+      "display": "int",
+      "dynamic_display": true
+    },
+    {
+      "key": "seqFollow",
+      "name": "Follow Playhead",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqInfo",
+      "name": "Pattern Info",
+      "min": 0,
+      "max": 0,
+      "default": 0,
+      "display": "string",
+      "get": "seqInfo_display",
+      "live": true
+    },
+    {
+      "key": "seqCanUndo",
+      "name": "Undo Available",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "options": [
+        "No",
+        "Yes"
+      ]
+    },
+    {
+      "key": "seqCanRedo",
+      "name": "Redo Available",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "options": [
+        "No",
+        "Yes"
+      ]
+    },
+    {
+      "key": "seqGridGate1",
+      "name": "Gate Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate2",
+      "name": "Gate Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate3",
+      "name": "Gate Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate4",
+      "name": "Gate Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate5",
+      "name": "Gate Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate6",
+      "name": "Gate Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate7",
+      "name": "Gate Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate8",
+      "name": "Gate Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate9",
+      "name": "Gate Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate10",
+      "name": "Gate Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate11",
+      "name": "Gate Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate12",
+      "name": "Gate Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate13",
+      "name": "Gate Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate14",
+      "name": "Gate Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate15",
+      "name": "Gate Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridGate16",
+      "name": "Gate Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide1",
+      "name": "Slide Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide2",
+      "name": "Slide Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide3",
+      "name": "Slide Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide4",
+      "name": "Slide Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide5",
+      "name": "Slide Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide6",
+      "name": "Slide Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide7",
+      "name": "Slide Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide8",
+      "name": "Slide Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide9",
+      "name": "Slide Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide10",
+      "name": "Slide Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide11",
+      "name": "Slide Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide12",
+      "name": "Slide Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide13",
+      "name": "Slide Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide14",
+      "name": "Slide Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide15",
+      "name": "Slide Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridSlide16",
+      "name": "Slide Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent1",
+      "name": "Accent Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent2",
+      "name": "Accent Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent3",
+      "name": "Accent Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent4",
+      "name": "Accent Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent5",
+      "name": "Accent Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent6",
+      "name": "Accent Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent7",
+      "name": "Accent Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent8",
+      "name": "Accent Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent9",
+      "name": "Accent Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent10",
+      "name": "Accent Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent11",
+      "name": "Accent Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent12",
+      "name": "Accent Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent13",
+      "name": "Accent Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent14",
+      "name": "Accent Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent15",
+      "name": "Accent Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridAccent16",
+      "name": "Accent Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato1",
+      "name": "Vibrato Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato2",
+      "name": "Vibrato Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato3",
+      "name": "Vibrato Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato4",
+      "name": "Vibrato Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato5",
+      "name": "Vibrato Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato6",
+      "name": "Vibrato Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato7",
+      "name": "Vibrato Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato8",
+      "name": "Vibrato Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato9",
+      "name": "Vibrato Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato10",
+      "name": "Vibrato Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato11",
+      "name": "Vibrato Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato12",
+      "name": "Vibrato Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato13",
+      "name": "Vibrato Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato14",
+      "name": "Vibrato Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato15",
+      "name": "Vibrato Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridVibrato16",
+      "name": "Vibrato Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie1",
+      "name": "Tie Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie2",
+      "name": "Tie Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie3",
+      "name": "Tie Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie4",
+      "name": "Tie Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie5",
+      "name": "Tie Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie6",
+      "name": "Tie Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie7",
+      "name": "Tie Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie8",
+      "name": "Tie Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie9",
+      "name": "Tie Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie10",
+      "name": "Tie Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie11",
+      "name": "Tie Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie12",
+      "name": "Tie Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie13",
+      "name": "Tie Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie14",
+      "name": "Tie Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie15",
+      "name": "Tie Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridTie16",
+      "name": "Tie Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute1",
+      "name": "Mute Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute2",
+      "name": "Mute Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute3",
+      "name": "Mute Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute4",
+      "name": "Mute Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute5",
+      "name": "Mute Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute6",
+      "name": "Mute Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute7",
+      "name": "Mute Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute8",
+      "name": "Mute Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute9",
+      "name": "Mute Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute10",
+      "name": "Mute Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute11",
+      "name": "Mute Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute12",
+      "name": "Mute Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute13",
+      "name": "Mute Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute14",
+      "name": "Mute Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute15",
+      "name": "Mute Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridMute16",
+      "name": "Mute Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer1",
+      "name": "Hammer Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer2",
+      "name": "Hammer Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer3",
+      "name": "Hammer Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer4",
+      "name": "Hammer Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer5",
+      "name": "Hammer Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer6",
+      "name": "Hammer Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer7",
+      "name": "Hammer Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer8",
+      "name": "Hammer Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer9",
+      "name": "Hammer Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer10",
+      "name": "Hammer Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer11",
+      "name": "Hammer Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer12",
+      "name": "Hammer Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer13",
+      "name": "Hammer Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer14",
+      "name": "Hammer Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer15",
+      "name": "Hammer Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridHammer16",
+      "name": "Hammer Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse1",
+      "name": "Reverse Step 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse2",
+      "name": "Reverse Step 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse3",
+      "name": "Reverse Step 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse4",
+      "name": "Reverse Step 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse5",
+      "name": "Reverse Step 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse6",
+      "name": "Reverse Step 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse7",
+      "name": "Reverse Step 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse8",
+      "name": "Reverse Step 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse9",
+      "name": "Reverse Step 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse10",
+      "name": "Reverse Step 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse11",
+      "name": "Reverse Step 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse12",
+      "name": "Reverse Step 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse13",
+      "name": "Reverse Step 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse14",
+      "name": "Reverse Step 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse15",
+      "name": "Reverse Step 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqGridReverse16",
+      "name": "Reverse Step 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPitchView1",
+      "name": "Pitch View 1",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView2",
+      "name": "Pitch View 2",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView3",
+      "name": "Pitch View 3",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView4",
+      "name": "Pitch View 4",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView5",
+      "name": "Pitch View 5",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView6",
+      "name": "Pitch View 6",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView7",
+      "name": "Pitch View 7",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView8",
+      "name": "Pitch View 8",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView9",
+      "name": "Pitch View 9",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView10",
+      "name": "Pitch View 10",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView11",
+      "name": "Pitch View 11",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView12",
+      "name": "Pitch View 12",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView13",
+      "name": "Pitch View 13",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView14",
+      "name": "Pitch View 14",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView15",
+      "name": "Pitch View 15",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqPitchView16",
+      "name": "Pitch View 16",
+      "min": 0,
+      "max": 12,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Rest",
+        "C",
+        "C#",
+        "D",
+        "D#",
+        "E",
+        "F",
+        "F#",
+        "G",
+        "G#",
+        "A",
+        "A#",
+        "B"
+      ]
+    },
+    {
+      "key": "seqOctView1",
+      "name": "Octave View 1",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView2",
+      "name": "Octave View 2",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView3",
+      "name": "Octave View 3",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView4",
+      "name": "Octave View 4",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView5",
+      "name": "Octave View 5",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView6",
+      "name": "Octave View 6",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView7",
+      "name": "Octave View 7",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView8",
+      "name": "Octave View 8",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView9",
+      "name": "Octave View 9",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView10",
+      "name": "Octave View 10",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView11",
+      "name": "Octave View 11",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView12",
+      "name": "Octave View 12",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView13",
+      "name": "Octave View 13",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView14",
+      "name": "Octave View 14",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView15",
+      "name": "Octave View 15",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqOctView16",
+      "name": "Octave View 16",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Base",
+        "+3",
+        "+2",
+        "+1",
+        "-1"
+      ]
+    },
+    {
+      "key": "seqPlayView1",
+      "name": "Playhead 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView2",
+      "name": "Playhead 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView3",
+      "name": "Playhead 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView4",
+      "name": "Playhead 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView5",
+      "name": "Playhead 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView6",
+      "name": "Playhead 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView7",
+      "name": "Playhead 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView8",
+      "name": "Playhead 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView9",
+      "name": "Playhead 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView10",
+      "name": "Playhead 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView11",
+      "name": "Playhead 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView12",
+      "name": "Playhead 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView13",
+      "name": "Playhead 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView14",
+      "name": "Playhead 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView15",
+      "name": "Playhead 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqPlayView16",
+      "name": "Playhead 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqCell1_0",
+      "name": "Note Cell 1/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_1",
+      "name": "Note Cell 1/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_2",
+      "name": "Note Cell 1/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_3",
+      "name": "Note Cell 1/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_4",
+      "name": "Note Cell 1/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_5",
+      "name": "Note Cell 1/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_6",
+      "name": "Note Cell 1/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_7",
+      "name": "Note Cell 1/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_8",
+      "name": "Note Cell 1/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_9",
+      "name": "Note Cell 1/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_10",
+      "name": "Note Cell 1/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell1_11",
+      "name": "Note Cell 1/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_0",
+      "name": "Note Cell 2/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_1",
+      "name": "Note Cell 2/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_2",
+      "name": "Note Cell 2/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_3",
+      "name": "Note Cell 2/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_4",
+      "name": "Note Cell 2/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_5",
+      "name": "Note Cell 2/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_6",
+      "name": "Note Cell 2/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_7",
+      "name": "Note Cell 2/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_8",
+      "name": "Note Cell 2/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_9",
+      "name": "Note Cell 2/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_10",
+      "name": "Note Cell 2/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell2_11",
+      "name": "Note Cell 2/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_0",
+      "name": "Note Cell 3/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_1",
+      "name": "Note Cell 3/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_2",
+      "name": "Note Cell 3/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_3",
+      "name": "Note Cell 3/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_4",
+      "name": "Note Cell 3/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_5",
+      "name": "Note Cell 3/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_6",
+      "name": "Note Cell 3/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_7",
+      "name": "Note Cell 3/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_8",
+      "name": "Note Cell 3/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_9",
+      "name": "Note Cell 3/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_10",
+      "name": "Note Cell 3/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell3_11",
+      "name": "Note Cell 3/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_0",
+      "name": "Note Cell 4/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_1",
+      "name": "Note Cell 4/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_2",
+      "name": "Note Cell 4/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_3",
+      "name": "Note Cell 4/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_4",
+      "name": "Note Cell 4/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_5",
+      "name": "Note Cell 4/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_6",
+      "name": "Note Cell 4/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_7",
+      "name": "Note Cell 4/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_8",
+      "name": "Note Cell 4/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_9",
+      "name": "Note Cell 4/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_10",
+      "name": "Note Cell 4/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell4_11",
+      "name": "Note Cell 4/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_0",
+      "name": "Note Cell 5/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_1",
+      "name": "Note Cell 5/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_2",
+      "name": "Note Cell 5/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_3",
+      "name": "Note Cell 5/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_4",
+      "name": "Note Cell 5/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_5",
+      "name": "Note Cell 5/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_6",
+      "name": "Note Cell 5/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_7",
+      "name": "Note Cell 5/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_8",
+      "name": "Note Cell 5/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_9",
+      "name": "Note Cell 5/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_10",
+      "name": "Note Cell 5/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell5_11",
+      "name": "Note Cell 5/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_0",
+      "name": "Note Cell 6/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_1",
+      "name": "Note Cell 6/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_2",
+      "name": "Note Cell 6/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_3",
+      "name": "Note Cell 6/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_4",
+      "name": "Note Cell 6/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_5",
+      "name": "Note Cell 6/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_6",
+      "name": "Note Cell 6/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_7",
+      "name": "Note Cell 6/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_8",
+      "name": "Note Cell 6/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_9",
+      "name": "Note Cell 6/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_10",
+      "name": "Note Cell 6/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell6_11",
+      "name": "Note Cell 6/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_0",
+      "name": "Note Cell 7/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_1",
+      "name": "Note Cell 7/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_2",
+      "name": "Note Cell 7/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_3",
+      "name": "Note Cell 7/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_4",
+      "name": "Note Cell 7/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_5",
+      "name": "Note Cell 7/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_6",
+      "name": "Note Cell 7/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_7",
+      "name": "Note Cell 7/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_8",
+      "name": "Note Cell 7/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_9",
+      "name": "Note Cell 7/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_10",
+      "name": "Note Cell 7/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell7_11",
+      "name": "Note Cell 7/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_0",
+      "name": "Note Cell 8/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_1",
+      "name": "Note Cell 8/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_2",
+      "name": "Note Cell 8/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_3",
+      "name": "Note Cell 8/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_4",
+      "name": "Note Cell 8/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_5",
+      "name": "Note Cell 8/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_6",
+      "name": "Note Cell 8/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_7",
+      "name": "Note Cell 8/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_8",
+      "name": "Note Cell 8/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_9",
+      "name": "Note Cell 8/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_10",
+      "name": "Note Cell 8/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell8_11",
+      "name": "Note Cell 8/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_0",
+      "name": "Note Cell 9/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_1",
+      "name": "Note Cell 9/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_2",
+      "name": "Note Cell 9/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_3",
+      "name": "Note Cell 9/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_4",
+      "name": "Note Cell 9/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_5",
+      "name": "Note Cell 9/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_6",
+      "name": "Note Cell 9/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_7",
+      "name": "Note Cell 9/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_8",
+      "name": "Note Cell 9/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_9",
+      "name": "Note Cell 9/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_10",
+      "name": "Note Cell 9/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell9_11",
+      "name": "Note Cell 9/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_0",
+      "name": "Note Cell 10/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_1",
+      "name": "Note Cell 10/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_2",
+      "name": "Note Cell 10/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_3",
+      "name": "Note Cell 10/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_4",
+      "name": "Note Cell 10/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_5",
+      "name": "Note Cell 10/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_6",
+      "name": "Note Cell 10/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_7",
+      "name": "Note Cell 10/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_8",
+      "name": "Note Cell 10/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_9",
+      "name": "Note Cell 10/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_10",
+      "name": "Note Cell 10/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell10_11",
+      "name": "Note Cell 10/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_0",
+      "name": "Note Cell 11/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_1",
+      "name": "Note Cell 11/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_2",
+      "name": "Note Cell 11/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_3",
+      "name": "Note Cell 11/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_4",
+      "name": "Note Cell 11/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_5",
+      "name": "Note Cell 11/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_6",
+      "name": "Note Cell 11/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_7",
+      "name": "Note Cell 11/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_8",
+      "name": "Note Cell 11/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_9",
+      "name": "Note Cell 11/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_10",
+      "name": "Note Cell 11/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell11_11",
+      "name": "Note Cell 11/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_0",
+      "name": "Note Cell 12/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_1",
+      "name": "Note Cell 12/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_2",
+      "name": "Note Cell 12/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_3",
+      "name": "Note Cell 12/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_4",
+      "name": "Note Cell 12/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_5",
+      "name": "Note Cell 12/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_6",
+      "name": "Note Cell 12/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_7",
+      "name": "Note Cell 12/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_8",
+      "name": "Note Cell 12/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_9",
+      "name": "Note Cell 12/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_10",
+      "name": "Note Cell 12/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell12_11",
+      "name": "Note Cell 12/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_0",
+      "name": "Note Cell 13/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_1",
+      "name": "Note Cell 13/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_2",
+      "name": "Note Cell 13/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_3",
+      "name": "Note Cell 13/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_4",
+      "name": "Note Cell 13/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_5",
+      "name": "Note Cell 13/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_6",
+      "name": "Note Cell 13/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_7",
+      "name": "Note Cell 13/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_8",
+      "name": "Note Cell 13/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_9",
+      "name": "Note Cell 13/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_10",
+      "name": "Note Cell 13/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell13_11",
+      "name": "Note Cell 13/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_0",
+      "name": "Note Cell 14/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_1",
+      "name": "Note Cell 14/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_2",
+      "name": "Note Cell 14/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_3",
+      "name": "Note Cell 14/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_4",
+      "name": "Note Cell 14/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_5",
+      "name": "Note Cell 14/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_6",
+      "name": "Note Cell 14/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_7",
+      "name": "Note Cell 14/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_8",
+      "name": "Note Cell 14/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_9",
+      "name": "Note Cell 14/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_10",
+      "name": "Note Cell 14/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell14_11",
+      "name": "Note Cell 14/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_0",
+      "name": "Note Cell 15/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_1",
+      "name": "Note Cell 15/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_2",
+      "name": "Note Cell 15/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_3",
+      "name": "Note Cell 15/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_4",
+      "name": "Note Cell 15/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_5",
+      "name": "Note Cell 15/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_6",
+      "name": "Note Cell 15/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_7",
+      "name": "Note Cell 15/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_8",
+      "name": "Note Cell 15/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_9",
+      "name": "Note Cell 15/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_10",
+      "name": "Note Cell 15/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell15_11",
+      "name": "Note Cell 15/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_0",
+      "name": "Note Cell 16/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_1",
+      "name": "Note Cell 16/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_2",
+      "name": "Note Cell 16/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_3",
+      "name": "Note Cell 16/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_4",
+      "name": "Note Cell 16/4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_5",
+      "name": "Note Cell 16/5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_6",
+      "name": "Note Cell 16/6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_7",
+      "name": "Note Cell 16/7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_8",
+      "name": "Note Cell 16/8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_9",
+      "name": "Note Cell 16/9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_10",
+      "name": "Note Cell 16/10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqCell16_11",
+      "name": "Note Cell 16/11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell1_0",
+      "name": "Octave Cell 1/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell1_1",
+      "name": "Octave Cell 1/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell1_2",
+      "name": "Octave Cell 1/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell1_3",
+      "name": "Octave Cell 1/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell2_0",
+      "name": "Octave Cell 2/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell2_1",
+      "name": "Octave Cell 2/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell2_2",
+      "name": "Octave Cell 2/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell2_3",
+      "name": "Octave Cell 2/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell3_0",
+      "name": "Octave Cell 3/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell3_1",
+      "name": "Octave Cell 3/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell3_2",
+      "name": "Octave Cell 3/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell3_3",
+      "name": "Octave Cell 3/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell4_0",
+      "name": "Octave Cell 4/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell4_1",
+      "name": "Octave Cell 4/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell4_2",
+      "name": "Octave Cell 4/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell4_3",
+      "name": "Octave Cell 4/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell5_0",
+      "name": "Octave Cell 5/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell5_1",
+      "name": "Octave Cell 5/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell5_2",
+      "name": "Octave Cell 5/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell5_3",
+      "name": "Octave Cell 5/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell6_0",
+      "name": "Octave Cell 6/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell6_1",
+      "name": "Octave Cell 6/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell6_2",
+      "name": "Octave Cell 6/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell6_3",
+      "name": "Octave Cell 6/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell7_0",
+      "name": "Octave Cell 7/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell7_1",
+      "name": "Octave Cell 7/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell7_2",
+      "name": "Octave Cell 7/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell7_3",
+      "name": "Octave Cell 7/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell8_0",
+      "name": "Octave Cell 8/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell8_1",
+      "name": "Octave Cell 8/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell8_2",
+      "name": "Octave Cell 8/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell8_3",
+      "name": "Octave Cell 8/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell9_0",
+      "name": "Octave Cell 9/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell9_1",
+      "name": "Octave Cell 9/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell9_2",
+      "name": "Octave Cell 9/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell9_3",
+      "name": "Octave Cell 9/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell10_0",
+      "name": "Octave Cell 10/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell10_1",
+      "name": "Octave Cell 10/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell10_2",
+      "name": "Octave Cell 10/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell10_3",
+      "name": "Octave Cell 10/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell11_0",
+      "name": "Octave Cell 11/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell11_1",
+      "name": "Octave Cell 11/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell11_2",
+      "name": "Octave Cell 11/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell11_3",
+      "name": "Octave Cell 11/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell12_0",
+      "name": "Octave Cell 12/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell12_1",
+      "name": "Octave Cell 12/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell12_2",
+      "name": "Octave Cell 12/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell12_3",
+      "name": "Octave Cell 12/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell13_0",
+      "name": "Octave Cell 13/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell13_1",
+      "name": "Octave Cell 13/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell13_2",
+      "name": "Octave Cell 13/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell13_3",
+      "name": "Octave Cell 13/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell14_0",
+      "name": "Octave Cell 14/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell14_1",
+      "name": "Octave Cell 14/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell14_2",
+      "name": "Octave Cell 14/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell14_3",
+      "name": "Octave Cell 14/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell15_0",
+      "name": "Octave Cell 15/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell15_1",
+      "name": "Octave Cell 15/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell15_2",
+      "name": "Octave Cell 15/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell15_3",
+      "name": "Octave Cell 15/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell16_0",
+      "name": "Octave Cell 16/0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell16_1",
+      "name": "Octave Cell 16/1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell16_2",
+      "name": "Octave Cell 16/2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqOctCell16_3",
+      "name": "Octave Cell 16/3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "legacy": true,
+      "options": [
+        "Off",
+        "Tap"
+      ]
+    },
+    {
+      "key": "seqSelectedView1",
+      "name": "Selected Column 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView2",
+      "name": "Selected Column 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView3",
+      "name": "Selected Column 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView4",
+      "name": "Selected Column 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView5",
+      "name": "Selected Column 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView6",
+      "name": "Selected Column 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView7",
+      "name": "Selected Column 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView8",
+      "name": "Selected Column 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView9",
+      "name": "Selected Column 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView10",
+      "name": "Selected Column 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView11",
+      "name": "Selected Column 11",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView12",
+      "name": "Selected Column 12",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView13",
+      "name": "Selected Column 13",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView14",
+      "name": "Selected Column 14",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView15",
+      "name": "Selected Column 15",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqSelectedView16",
+      "name": "Selected Column 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
     }
   ]
 }

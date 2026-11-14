@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import embed_models
+import sequence_spec
 
 ROOT = Path(__file__).resolve().parents[1]
 MPC = Path(os.environ.get('MPC_VST', ROOT.parent / 'mpc-vst-plugins')).resolve()
@@ -42,6 +43,7 @@ def compiler(target, language):
     return str(local)
 
 def prepare():
+    sequence_spec.generate()
     if not (MPC/'wrapper/audio_format.h').exists():
         raise SystemExit('Apply patches/mpc-float32.patch to MPC_VST first; see BUILDING.md.')
     run([sys.executable, MPC/'tools/gen_vst.py', ROOT/'vst.json', '--params-h'])
@@ -87,6 +89,7 @@ def skin():
     run([sys.executable, ROOT/'tools/browser_tile.py'])
     run([sys.executable, MPC/'tools/gen_vst.py', ROOT/'vst.json'])
     run([sys.executable, ROOT/'tools/finish_skin.py'])
+    run([sys.executable, ROOT/'tools/sequencer_skin.py'])
     run([sys.executable, ROOT/'tools/model_overlay.py'])
     run([sys.executable, ROOT/'tools/browser_preset.py'])
     run([sys.executable, ROOT/'tools/group_mod_pages.py'])
