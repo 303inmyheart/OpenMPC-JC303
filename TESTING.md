@@ -224,3 +224,61 @@ User-reported CPU: 30–33% on Live III with synth + sequencer +
 BlackstarHT40 GainKnob SM57mic enabled (0.2.0). Instance count and meter semantics
 not independently verified. Subsequent isolated benchmark results are documented
 in PERFORMANCE.md; they do not replace the MPC UI meter reading.
+
+## 0.3.0 — upstream v0.14 synthesis, stage one (2026-11-14)
+
+- Native ASan/UBSan with leak detection and ARM64 actual shared-object tests under
+  QEMU pass. All existing voice, sequencer, 37-model neural-drive, preset-browser,
+  host echo/rotary and one-second slide migration checks remain passing.
+- All three old filter modes load a v4 fixture into Legacy and produce
+  sample-identical audio. Old VST definitions 0–64 are unchanged; the old implicit
+  popup flag is explicitly retained at 65. New settings append at 66–85.
+- 24 combinations of three new oscillator models and eight filters render finite,
+  audible output; quality/morph edits are exercised. The three oscillator
+  families produce different captured signals. Existing host-sequencer notes are
+  routed into the selected new engine; an engine switch silences inactive tails.
+- JC303-MPC-5 round-trips all new sound settings and exact captured audio.
+  Non-finite/truncated modern state is rejected transactionally. Versions 1–4
+  restore Legacy. New Synth initialization, real Init .xpl and wet-to-dry browser
+  restore are verified. Old program sounds deliberately select Legacy.
+- Built native skin reviewed offline: eight pages, new ENGINE/FILTER pages,
+  custom Acid knobs, readable selector headings and preserved native Drive
+  overlay. Final skin checker has zero findings. Offline geometry is not an MPC
+  screenshot; touch/Q-Link and listening acceptance remain pending.
+
+### Isolated Live III diagnostic, not an MPC-app listening test
+
+Candidate ARM64 binary loaded from a private temporary directory; helper pinned
+at normal scheduling / nice 19 on A76 core 4. 44.1 kHz, 128-frame blocks, one held
+note re-struck every half-second; 2 seconds of audio per case. MODS on, cutoff
+50 %, resonance 80 %, no neural drive, no sequencer. Thread CPU time excludes
+pre-emption and is expressed as a percentage of the 2.902 ms block budget.
+
+| Filter / variant | Mean % | p99 % | Max % |
+|---|---:|---:|---:|
+| TeeBee | 4.879 | 5.205 | 6.944 |
+| Spicy Standard | 7.583 | 7.969 | 9.104 |
+| MissBehave | 25.032 | 28.760 | 29.604 |
+| JuneBug | 21.410 | 22.379 | 23.474 |
+| Wasabi | 18.109 | 19.183 | 20.037 |
+| Hornet | 19.855 | 21.314 | 21.444 |
+| SemiSweet | 20.168 | 20.761 | 22.087 |
+| Oddity | 19.922 | 20.570 | 21.776 |
+| Spicy Hi-Fi | 10.624 | 10.983 | 12.149 |
+| Alpha Juno / Spicy | 7.970 | 8.180 | 9.335 |
+| Phaseshaper Formant / Spicy | 7.143 | 7.356 | 8.521 |
+
+This is a short diagnostic, not the formal release benchmark, nine-instance
+stress test or a guarantee that every edit is crackle-free. Do not reuse 0.2.3's
+published CPU verdict for this binary. Strong resonance can exceed unity output;
+no new limiter is added. Temporary helper/library were removed. MPC application,
+settings and installed plugin were untouched during the diagnostic.
+
+Installation under the user's standing authorization: the previous 0.2.3 plugin
+folder was backed up locally, 179 package files staged and hash-verified after
+replacement. MPC.settings stayed unchanged during the file update. The MPC
+application was restarted and returned to active/running. Other plugins were
+not updated. Hearing/touch/GUI acceptance of 0.3.0 remains pending. Installer
+checksums, portable catalog check (zero warnings), binary privacy scan, real Init
+preset and native skin checks passed. No Desktop copy or public release was made.
+The exact candidate installer and private deployment record remain in build/.

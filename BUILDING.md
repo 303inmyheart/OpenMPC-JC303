@@ -120,3 +120,18 @@ model_overlay.py converts the model chooser into a known native full-screen
 CustomComponent overlay using KnobOverlay focus dismissal. Its visual backdrop
 is backgroundData, not a full-screen Image input target. Page Q-Link rectangles
 stay unchanged, and parameter 65 remains reserved for compatibility.
+
+## 0.3.0 synthesis update
+
+The new DSP is pinned to JC303 v0.14.0 (b0ff26011f80e45c7796cad7b29fbc7f347b9337).
+Both source trees compile, with distinct namespaces and object filenames; only
+the selected core renders audio. The original legacy sources and neural-network
+optimizations remain intact. ModernVoice.cpp isolates modern headers behind an
+opaque interface. JC303-MPC-5 stores 20 appended engine controls; versions 1–4
+restore Legacy. Old VST parameter indices 0–65 remain unchanged, including the
+previous implicit driveModel__open flag, now declared explicitly before new keys.
+
+Distribution is a GPLv3/AGPLv3 combination. Read LICENSE-AUDIT.md and retain both
+license texts plus dependency notices. Public release artifacts must reference
+matching published source. Package output defaults to build/releases; --desktop
+is an explicit opt-in. Offline tests are not MPC CPU measurements.

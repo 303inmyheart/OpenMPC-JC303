@@ -1,11 +1,11 @@
 {
-  "version": "0.2.3",
+  "version": "0.3.0",
   "id": "jc303-mpc",
   "repo": "303inmyheart/OpenMPC-JC303",
-  "license": "GPL-3.0-only",
+  "license": "GPL-3.0-only AND AGPL-3.0-or-later",
   "tools_ref": "a2dd2b78a19c4cd46257c09eb9a485a155ab2968",
   "asset_pattern": "JC303-MPC-*-mpc-aarch64.zip",
   "requires": "Gen2 MPC (aarch64), MPC OS 3.10.1 or newer",
-  "about": "303-style mono synth with MPC skin, host-synced sequencer, 37 neural drive models and native presets.",
-  "tag": "jc303-mpc-v0.2.3"
+  "about": "JC303 MPC: v0.14 synthesis models plus a legacy engine for older MPC projects; MPC sequencer and optimized neural drive.",
+  "tag": "jc303-mpc-v0.3.0"
 }

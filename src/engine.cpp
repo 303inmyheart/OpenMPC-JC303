@@ -8,6 +8,7 @@ extern "C" {
 #include "dsp/open303/rosic_Open303.h"
 #include "sequencer/MpcSequence.h"
 #include "drive/Drive.h"
+#include "ModernVoice.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -30,6 +31,8 @@ double exponential(double x, double a, double b) { return a * std::pow(b / a, x)
 
 struct Voice {
     rosic::Open303 core;
+    ModernVoice modern;
+    std::array<float,ModernVoice::Count> extra{};
     MpcSequence sequence{core};
     GuitarDrive drive;
     static constexpr int presetParam=64, presetCount=12;
@@ -42,9 +45,17 @@ struct Voice {
 
     Voice() {
         core.setSampleRate(44100);
+        resetExtra(true);
+        sequence.routeVoice([this](int n,int v){noteOn(n,v);},[this]{core.allNotesOff();modern.allNotesOff();});
         for (int i = 0; i < voiceParams; ++i) values[i] = PARAMS[i].def;
         sequence.onVoiceNote([this]{silenced=false;});
         applyAll();
+    }
+    bool isModern() const {return extra[0]>.5f;}
+    void noteOn(int n,int velocity){if(isModern())modern.noteOn(n,velocity);else core.noteOn(n,velocity,0);}
+    void resetExtra(bool enabled){
+        for(int j=0;j<ModernVoice::Count;++j){const auto& p=PARAMS[ModernVoice::First+j];extra[j]=p.nopts?p.def*(p.nopts-1):p.min+(p.max-p.min)*p.def;}
+        extra[0]=enabled?1:0;
     }
     void apply(int i) {
         const double x = values[i];
@@ -81,15 +92,16 @@ struct Voice {
     void applyAll() {
         for (int i = 0; i < voiceParams; ++i) if (i != Mod) apply(i);
         core.setLfoOn(values[Mod] >= 0.5f);
+        modern.configure(values.data(),extra.data());
     }
     void stop(bool immediate = false) {
-        core.allNotesOff();
+        core.allNotesOff();modern.allNotesOff();
         held.fill(false);
         silenced = immediate;
     }
     void loadPreset(int index) {
         if(index<0 || index>=presetCount || index==preset) return;
-        stop();sequence.legacyReset();drive.load({});
+        stop();sequence.legacyReset();drive.load({});resetExtra(false);
         for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
         switch(index) {
         case 1: values[Wave]=0;values[Cutoff]=.35f;values[EnvMod]=.6f;values[Decay]=.45f;break;
@@ -118,6 +130,7 @@ struct Voice {
         default:break;
         }
         applyAll();preset=index;
+        for(int j=ModernVoice::First;j<ModernVoice::First+ModernVoice::Count;++j)dirty[j]=true;
         for(int i=0;i<=presetParam;++i)
             if(!PARAMS[i].string_display && !PARAMS[i].momentary && i!=GuitarDrive::Status) dirty[i]=true;
     }
@@ -134,7 +147,7 @@ struct Voice {
         std::istringstream input(text);
         std::string version;
         input >> version;
-        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4") return;
+        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5") return;
         auto restored = values;
         for (int i = 0; i < voiceParams; ++i) {
             std::string key;
@@ -143,22 +156,29 @@ struct Voice {
             restored[i] = value;
         }
         MpcSequence::Snapshot pattern;
-        const bool hasSequence=version=="JC303-MPC-3" || version=="JC303-MPC-4";
+        const bool hasSequence=version=="JC303-MPC-3" || version=="JC303-MPC-4" || version=="JC303-MPC-5";
         if(hasSequence && !MpcSequence::parse(input,pattern)) return;
         GuitarDrive::Settings driveSettings;
         int restoredPreset=0;
-        if(version=="JC303-MPC-4") {
+        if(version=="JC303-MPC-4" || version=="JC303-MPC-5") {
             std::string tag;
             if(!GuitarDrive::parse(input,driveSettings) || !(input>>tag>>restoredPreset) ||
                tag!="preset" || restoredPreset<0 || restoredPreset>=presetCount) return;
         }
-        std::string extra;
-        if (input >> extra) return;
+        std::array<float,ModernVoice::Count> restoredExtra{};
+        for(int j=0;j<ModernVoice::Count;++j){const auto& p=PARAMS[ModernVoice::First+j];restoredExtra[j]=p.nopts?p.def*(p.nopts-1):p.min+(p.max-p.min)*p.def;}
+        restoredExtra[0]=0; // Old chunks select the unchanged legacy engine.
+        if(version=="JC303-MPC-5") {
+            std::string key;for(int j=0;j<ModernVoice::Count;++j)
+                if(!(input>>key>>restoredExtra[j]) || key!=PARAMS[ModernVoice::First+j].key || !valid(ModernVoice::First+j,restoredExtra[j]))return;
+        }
+        std::string trailing;
+        if (input >> trailing) return;
         if (version == "JC303-MPC-1") restored[Slide] *= 358.0f/998.0f;
         stop();
         if(hasSequence) sequence.load(pattern); else sequence.legacyReset();
         drive.load(driveSettings);preset=restoredPreset;
-        values = restored;
+        values = restored;extra=restoredExtra;
         applyAll();
     }
     static bool valid(int i, float x) {
@@ -185,14 +205,14 @@ void midi(void* instance, const uint8_t* msg, int length) {
         v.sequence.recordNote(note,velocity,legato);
         if(v.sequence.active()) { v.held[note]=true; return; }
         // Repeated note-ons replace their old stack entry, avoiding stuck duplicates.
-        if (v.held[note]) v.core.noteOn(note, 0, 0);
+        if (v.held[note]) v.noteOn(note, 0);
         v.held[note] = true;
         v.silenced = false;
-        v.core.noteOn(note, velocity, 0); // third argument is detune, NOT a slide flag
+        v.noteOn(note, velocity); // third argument is detune, NOT a slide flag
     } else if (status == 0x80 || (status == 0x90 && !velocity)) {
         v.held[note] = false;
         if(v.sequence.active()) return;
-        v.core.noteOn(note, 0, 0);
+        v.noteOn(note, 0);
     } else if (status == 0xb0 && (note == 120 || note == 123)) {
         v.sequence.stop();
         v.stop(note == 120);
@@ -214,12 +234,17 @@ void set(void* instance, const char* key, const char* text) {
                  std::min(PARAMS[i].nopts ? static_cast<float>(PARAMS[i].nopts - 1) : PARAMS[i].max, x));
     if (PARAMS[i].nopts) x = std::round(x);
     if (PARAMS[i].int_display) x=std::round(x);
+    if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count){
+        if(i==ModernVoice::Engine && x!=v.extra[0]){v.sequence.stop();v.stop(true);}
+        v.extra[i-ModernVoice::First]=x;v.modern.configure(v.values.data(),v.extra.data());return;
+    }
     if(i==Voice::presetParam) {v.loadPreset(static_cast<int>(x));return;}
     if(i>=GuitarDrive::First && i<=GuitarDrive::Status) {v.drive.set(i,x);return;}
     if(i>=voiceParams) { v.sequence.set(i,x); return; }
     if (x == v.values[i]) return;
     v.values[i] = x;
     v.apply(i);
+    v.modern.configure(v.values.data(),v.extra.data());
 }
 int get(void* instance, const char* key, char* out, int size) {
     if (!out || size < 1) return 0;
@@ -227,17 +252,19 @@ int get(void* instance, const char* key, char* out, int size) {
     if (!std::strcmp(key, "state")) {
         std::ostringstream state;
         state.precision(9);
-        state << "JC303-MPC-4\n";
+        state << "JC303-MPC-5\n";
         for (int i = 0; i < voiceParams; ++i) state << PARAMS[i].key << ' ' << v.values[i] << '\n';
         v.sequence.save(state);
         v.drive.save(state);
         state<<"preset "<<v.preset<<'\n';
+        for(int j=0;j<ModernVoice::Count;++j)state<<PARAMS[ModernVoice::First+j].key<<' '<<v.extra[j]<<'\n';
         const auto text = state.str();
         if (text.size() >= static_cast<size_t>(size)) return 0;
         std::memcpy(out, text.c_str(), text.size() + 1);
         return static_cast<int>(text.size());
     }
     const int i = indexOf(key);
+    if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count)return std::snprintf(out,size,"%.9g",v.extra[i-ModernVoice::First]);
     if(i==Voice::presetParam) return std::snprintf(out,size,"%d",v.preset);
     if(i>=GuitarDrive::First && i<=GuitarDrive::Status) return std::snprintf(out,size,"%.9g",v.drive.get(i));
     if (i >= voiceParams) return v.sequence.text(i,out,size);
@@ -250,6 +277,12 @@ int get(void* instance, const char* key, char* out, int size) {
     if (name.size() > 8 && name.substr(name.size() - 8) == "_display") {
         const int j = indexOf(name.substr(0, name.size() - 8).c_str());
         if (j < 0) return 0;
+        if(j>=ModernVoice::First && j<ModernVoice::First+ModernVoice::Count){
+            float x=v.extra[j-ModernVoice::First];
+            if(j==ModernVoice::Saturation)return std::snprintf(out,size,"+%.1f dB",x);
+            if(j==ModernVoice::Trim)return std::snprintf(out,size,"%.2f x",x);
+            return std::snprintf(out,size,"%.1f %%",100*x);
+        }
         if(j>=GuitarDrive::First && j<=GuitarDrive::Status) return v.drive.display(j,out,size);
         if(j>=voiceParams) return v.sequence.display(j,out,size);
         const double x = v.values[j];
@@ -279,7 +312,7 @@ void render(void* instance, mpc_sample_t* out, int frames) {
     v.drive.beginRender();
     for (int i = 0; i < frames; ++i) {
         v.sequence.sample();
-        const float dry = static_cast<float>(v.core.getSample());
+        const float dry = static_cast<float>(v.isModern()?v.modern.sample():v.core.getSample());
         const float x=v.drive.process(v.silenced ? 0.0f : dry);
         out[2*i] = out[2*i+1] = v.silenced ? 0.0f : x;
     }

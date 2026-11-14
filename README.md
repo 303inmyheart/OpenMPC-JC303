@@ -12,6 +12,22 @@ The project and installed instrument are named **JC303 MPC**. The catalog displa
 
 These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The maintainer also confirmed Candidate 5 of 0.2.3 on that device and authorized its release.
 
+## Local 0.3.0 synthesis milestone
+
+The new synthesis core is pinned to JC303 **v0.14.0**
+(`b0ff26011f80e45c7796cad7b29fbc7f347b9337`). This local candidate adds eight
+filter models, TB-303 / Alpha Juno / Phaseshaper oscillators, Circuit square,
+sub oscillator and filter-shaping controls on new **ENGINE** and **FILTER** pages.
+Choose **JC303 0.14** and enable **MODS** to use the extended models.
+
+Older MPC state versions automatically choose **Legacy 0.2.3**, preserving the
+original filters (including Diode Octave) and previous audio. New state version
+JC303-MPC-5 saves the engine choice and sound controls. Existing parameters,
+preset browser and optimized GuitarML path remain available. This is step one;
+new modulation-matrix/sequencer features, pre-VCA routing, JSON banks and microtuning
+file import are later milestones. Public release/source update is pending.
+See [the German test guide](TESTPLAN-0.3.0.md) and [license audit](LICENSE-AUDIT.md).
+
 ## Features
 
 - Open303-based mono voice with waveform morph, tuning, cutoff, resonance, envelope modulation, decay, accent and output level.
@@ -92,13 +108,15 @@ The 0.2.3 skin uses neutral model names to comply with the catalog’s branding 
 
 ## Source and build
 
-The default **`mpc-live-iii`** branch contains this port. The fork's **`main`** branch preserves the original JC303 source. This port is based on upstream commit `25d0ed1dab6d0edffc0e28c7d68c170a8af71aee`.
+The default **`mpc-live-iii`** branch contains this port. The fork's **`main`** branch preserves the original JC303 source. The legacy engine is based on upstream commit `25d0ed1dab6d0edffc0e28c7d68c170a8af71aee`; the new engine uses v0.14.0 as described above.
 
 The MPC adapter uses the [OpenMPC toolchain](https://github.com/open-mpc/mpc-vst-plugins), pinned to `ef05a26c6e59f1bfd3ef2023e6a9d8b371b61310` with the included [float/host integration patch](patches/mpc-float32.patch). DSP/model dependencies are vendored. A C++20 compiler, ARM64 cross compiler, Python and Pillow are required. See [BUILDING.md](BUILDING.md) for checkout, build, tests and packaging.
 
 ## License and credits
 
-The complete MPC port is **GPL-3.0-only**. See [LICENSE](LICENSE) for the full license text. Source and modifications must be distributed in accordance with the applicable licenses; the AI-generated development process does not replace upstream licensing or credits.
+Versions through 0.2.3 are **GPL-3.0-only**. The 0.3.0 update combines
+GPLv3 and file-specific **AGPL-3.0-or-later** DSP. Both licenses/notices apply;
+see [LICENSE-AUDIT.md](LICENSE-AUDIT.md). See [LICENSE](LICENSE) for the full license text. Source and modifications must be distributed in accordance with the applicable licenses; the AI-generated development process does not replace upstream licensing or credits.
 
 | Component | License / notice |
 |---|---|

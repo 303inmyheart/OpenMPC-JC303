@@ -639,6 +639,209 @@
       ],
       "default": 0,
       "refresh_display": true
+    },
+    {
+      "key": "driveModel__open",
+      "name": "Model List",
+      "type": "enum",
+      "options": [
+        "Closed",
+        "Open"
+      ],
+      "default": 0,
+      "popup_of": "driveModel"
+    },
+    {
+      "key": "engine014",
+      "name": "Engine",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Legacy 0.2.3",
+        "JC303 0.14"
+      ]
+    },
+    {
+      "key": "oscModel014",
+      "name": "Oscillator Model",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "TB-303",
+        "Alpha Juno",
+        "Phaseshaper"
+      ]
+    },
+    {
+      "key": "filterModel014",
+      "name": "Filter Model 0.14",
+      "min": 0,
+      "max": 7,
+      "default": 0,
+      "options": [
+        "TeeBee",
+        "Spicy",
+        "MissBehave",
+        "JuneBug",
+        "Wasabi",
+        "Hornet",
+        "SemiSweet",
+        "Oddity"
+      ]
+    },
+    {
+      "key": "filterMorph014",
+      "name": "Filter Morph",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "filterSaturation014",
+      "name": "Filter Saturation",
+      "min": 0,
+      "max": 16,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "filterQuality014",
+      "name": "Filter Quality",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Standard",
+        "Hi-Fi"
+      ]
+    },
+    {
+      "key": "filterTension014",
+      "name": "Filter Tension",
+      "min": -1,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "resTrim014",
+      "name": "Resonance Trim",
+      "min": 0.85,
+      "max": 1.15,
+      "default": 1,
+      "dynamic_display": true
+    },
+    {
+      "key": "filterFm014",
+      "name": "Filter FM",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "filterBias014",
+      "name": "Saturation Bias",
+      "min": 0,
+      "max": 1,
+      "default": 0.5,
+      "dynamic_display": true
+    },
+    {
+      "key": "filterRail014",
+      "name": "Saturation Rail",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "dynamic_display": true
+    },
+    {
+      "key": "squareModel014",
+      "name": "Square Model",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Open303",
+        "Circuit"
+      ]
+    },
+    {
+      "key": "junoWave014",
+      "name": "Juno Wave",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "options": [
+        "1 Saw",
+        "2 Oct",
+        "3 PW",
+        "4 Hi Oct",
+        "5 Dual"
+      ]
+    },
+    {
+      "key": "superDetune014",
+      "name": "Super Detune",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "superMix014",
+      "name": "Super Mix",
+      "min": 0,
+      "max": 1,
+      "default": 0.75,
+      "dynamic_display": true
+    },
+    {
+      "key": "shaperMode014",
+      "name": "Phaseshaper Mode",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Tri Mod",
+        "Ripple Saw",
+        "Formant"
+      ]
+    },
+    {
+      "key": "shaperDrift014",
+      "name": "Shape Drift",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "shaperSplit014",
+      "name": "Formant Split",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "subGain014",
+      "name": "Sub Level",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "subBlend014",
+      "name": "Sub Octave Blend",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "dynamic_display": true
     }
   ]
 }

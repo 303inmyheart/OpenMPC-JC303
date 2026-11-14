@@ -70,7 +70,7 @@ int index(const char* key) {
 }
 struct Plugin {
     Effect* fx = VSTPluginMain(host);
-    Plugin() { require(fx && fx->magic==0x56737450,"VST2 entry failed"); fx->dispatch(fx,0,0,0,nullptr,0); }
+    Plugin() { require(fx && fx->magic==0x56737450,"VST2 entry failed"); fx->dispatch(fx,0,0,0,nullptr,0); units("engine014",0); }
     ~Plugin() { fx->dispatch(fx,1,0,0,nullptr,0); }
     void set(const char* key,float value) { fx->set(fx,index(key),value); }
     void units(const char* key,float value) {
@@ -313,8 +313,9 @@ void slideRangeMigration() {
 }
 #include "sequence_checks.h"
 #include "drive_checks.h"
+#include "modern_checks.h"
 int main() {
-    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); }
+    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); }
     catch(const std::exception& e) { std::fprintf(stderr,"FAIL: %s\n",e.what()); return 1; }
     std::puts("JC303 behavioural tests PASSED");
     return 0;

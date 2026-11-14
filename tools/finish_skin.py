@@ -77,8 +77,8 @@ def background(index,tab):
     badge_right=1140 if index==0 else 1210
     badge_left=badge_right-240
     text(d,(badge_right-16,49),f'{index+1:02d} / {tab["name"]}',20,'#EEF3E5','rm')
-    for n in range(6):
-        x=badge_right-109+n*17
+    for n in range(len(TABS)):
+        x=badge_right-len(TABS)*16+n*16
         box(d,(x,77,x+11,81),GREEN if n==index else '#45523C',radius=1)
     if index==0:smiley(d,1187,59,28)
     # A printed footer, outside all touch regions.
@@ -143,6 +143,10 @@ def background(index,tab):
         for x in (265,564,863):
             line(d,[(x,551),(x+75,551)],MUTED,2)
             line(d,[(x+68,546),(x+75,551),(x+68,556)],MUTED,2)
+    elif index==6:
+        section(d,74,246,1126,'MODS ON / LEGACY KEEPS THE PREVIOUS SOUND')
+    elif index==7:
+        section(d,74,198,1126,'ENGINE: JC303 0.14 / MODS ON')
     save(im,SKIN/f'sh_bg_{index}.png')
 
 

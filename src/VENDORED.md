@@ -77,3 +77,35 @@ The model-overlay skin uses documented native MPC UI API primitives (Image,
 Button, CustomComponentDefinition and KnobOverlay), referenced from the official
 MPC SDK ui-reference.md. No stock Akai artwork, firmware or UI JSON files are
 distributed; its panel/choice artwork is generated locally from this project's code.
+
+## v0.14 synthesis milestone (0.3.0)
+
+`src/dsp/v014/` is from midilab/jc303 tag v0.14.0, commit
+`b0ff26011f80e45c7796cad7b29fbc7f347b9337`. Source licenses and copyright
+notices are retained. Namespace tokens rosic/dfl become rosic014/dfl014 to allow
+coexistence with the untouched old synthesis engine. ModernVoice uses a private
+implementation so differently versioned headers do not share include guards.
+The global numerical helpers remain equivalent; the existing LP64/bit_cast
+GlobalDefinitions safety fix is reused. The existing prototype-table bound fix
+is also retained. Ooura FFT implementation symbols are confined to the modern
+translation unit's anonymous namespace to avoid duplicate global functions.
+GlobalFunctions.cpp is not compiled twice. Object filenames receive a v014_
+prefix; legacy compilation/source filenames are unchanged.
+
+New engine classes include all upstream oscillator/filter algorithms, but this
+milestone exposes synthesis only: oscillator models, square model, Juno spread,
+phaseshaper, sub oscillator, eight filters and shaping/quality controls. The old
+three-target LFO remains mapped. New mod-matrix controls, v0.14 sequencer events,
+pre-VCA drive/Disperse, factory JSON presets and .tun import are later milestones.
+The tuning source is retained as a dependency of the modern voice, not a public
+file-import feature. Our optimized post-VCA GuitarML inference is unchanged.
+
+`MpcSequence` retains its old timing and adds a routed note/off callback, directing
+its events to the selected synthesis engine. It never runs both audio cores.
+JC303-MPC-1/2/3/4 state selects the legacy engine, preserving old filter indices
+including Diode Octave. JC303-MPC-5 adds the engine choice and 19 sound controls.
+All old VST indices, including the implicit popup flag at 65, are retained.
+
+Licensing is now a combined GPLv3/AGPLv3 distribution: see LICENSE-AUDIT.md and
+src/dsp/v014/open303/LICENSE-AGPL-3.0. The old MIT/GPL/BSD notices stay in place;
+no file is silently relicensed by the directory layout or namespace change.

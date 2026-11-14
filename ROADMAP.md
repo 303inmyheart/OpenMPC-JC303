@@ -47,3 +47,19 @@ Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
    - Upstream: https://github.com/surge-synthesizer/surge
    - Source/build/license/dependency review, ARM64 performance and MPC navigation
      feasibility are pending. No implementation has started.
+
+## JC303 upstream v0.14.0 — staged update
+
+1. **0.3.0 synthesis and migration:** new eight-model filter family, three
+   oscillator models, Circuit square, sub oscillator and filter shaping. Old
+   engine remains for sample-identical older projects; JC303-MPC-5 stores new
+   settings, preserving VST indices 0–65. Dedicated ENGINE and FILTER pages.
+   Existing host sequencer and optimized post-VCA GuitarML remain in use.
+2. **Modulation and sequencer parity:** four-slot matrix, additional LFO controls,
+   new step states/reverse/swing/polymeter and undo/redo, plus pre-VCA/Disperse.
+3. **Preset/import parity:** factory JSON sounds/banks and practical file import,
+   then AnaMark .tun import. Existing MPC preset browser and dry Init remain.
+
+User requests exact control names and a practical test list for each delivered
+milestone. Do not describe step one as full v0.14 parity. New license notices are
+combined GPLv3/AGPLv3; see LICENSE-AUDIT.md. No new Desktop copies by default.

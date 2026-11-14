@@ -55,6 +55,9 @@ def flags(target, sanitize):
         result += ['--sysroot='+str(LOCAL.parent), '-B'+str(LOCAL/'bin')+'/']
     return result
 
+def object_name(source):
+    return ("v014_" if "/v014/" in str(source) else "")+Path(source).stem
+
 def build(target, sanitize=False):
     prepare()
     embed_models.generate(ROOT)
@@ -64,7 +67,7 @@ def build(target, sanitize=False):
     objects = []
     for source in CFG['build']['sources'] + [str(MPC/'wrapper/vst2_wrap.c')]:
         cpp = source.endswith('.cpp')
-        obj = dest / (Path(source).stem+'.o')
+        obj = dest / (object_name(source)+'.o')
         run([compiler(target, 'c++' if cpp else 'c'), '-std=c++20' if cpp else '-std=gnu11',
              *common, *(['-O3'] + (['-mtune=cortex-a76'] if target=='aarch64' else []) if source.endswith('RNNAccelerated.cpp') and not sanitize else []), '-c', source, '-o', obj])
         objects.append(obj)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create an OpenMPC Installer compatible Live III development ZIP on the desktop.
+"""Create an OpenMPC Installer compatible Live III development ZIP under build/releases.
 Requires current successful native and actual ARM64 shared-object tests. Does not
 install anything, restart MPC, publish a release, or include development files.
 """
@@ -22,7 +22,8 @@ CONFIG=json.loads((ROOT/'release.json').read_text())
 VERSION=CONFIG['version']
 ap=argparse.ArgumentParser(description=__doc__)
 ap.add_argument('--desktop-name',help='Distinct installation ZIP name for a revised unpublished candidate')
-ap.add_argument('--no-desktop',action='store_true',help='CI: keep artifacts under build/releases only')
+ap.add_argument('--no-desktop',action='store_true',help='Keep artifacts under build/releases only (default)')
+ap.add_argument('--desktop',action='store_true',help='Explicitly copy installer to Desktop')
 ap.add_argument('--bench',type=Path,help='official device bench JSON/text for this binary')
 a=ap.parse_args()
 assert build.CFG['version']==int(VERSION.split('.')[0])*10000+int(VERSION.split('.')[1])*100+int(VERSION.split('.')[2])
@@ -62,8 +63,9 @@ build.run([strip,'--strip-unneeded',binary])
 
 notices=destination/'LICENSES.txt'
 notices.write_text('\n\n'.join([
-    'JC303 MPC development port — GPL-3.0-only\nBased on midilab/jc303, commit 25d0ed1dab6d0edffc0e28c7d68c170a8af71aee.\nSource: https://github.com/303inmyheart/OpenMPC-JC303',
+    'JC303 MPC development port — combined GPLv3 / AGPLv3\nBased on midilab/jc303 v0.14.0, commit b0ff26011f80e45c7796cad7b29fbc7f347b9337; legacy engine 25d0ed1dab6d0edffc0e28c7d68c170a8af71aee.\nSource: https://github.com/303inmyheart/OpenMPC-JC303',
     (ROOT/'LICENSE').read_text(),
+    'New DSP file-specific AGPL-3.0-or-later notices apply; see corresponding source.\n'+(ROOT/'src/dsp/v014/open303/LICENSE-AGPL-3.0').read_text(),
     'Open303 engine — MIT\n'+(ROOT/'src/dsp/open303/LICENSE').read_text(),
     'Aciduino sequencer and harmonizer — MIT\n'+(ROOT/'src/sequencer/LICENSE').read_text(),
     'MPC wrapper — MIT\n'+(build.MPC/'LICENSE').read_text(),
@@ -118,7 +120,7 @@ with zipfile.ZipFile(release) as archive:
         assert hashlib.sha256(archive.read(top+'/'+name)).hexdigest()==digest
 
 print('Catalog asset:',release)
-if a.no_desktop:raise SystemExit(0)
+if a.no_desktop or not a.desktop:raise SystemExit(0)
 desktop=Path.home()/'Schreibtisch'
 desktop.mkdir(exist_ok=True)
 filename=a.desktop_name or f'JC303-MPC-Gen2-{VERSION}-OpenMPC.zip'

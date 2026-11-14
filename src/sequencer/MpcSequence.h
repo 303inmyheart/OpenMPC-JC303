@@ -25,6 +25,8 @@ private:
     std::array<bool,NPARAMS> dirty{};
     int lastCurrent=0,lastStatus=0;
     std::function<void()> voiceNote;
+    std::function<void(int,int)> routedNote;
+    std::function<void()> routedOff;
     float& value(int p) { return settings[p-first]; }
     float value(int p) const { return settings[p-first]; }
     int selected() const { return std::clamp(static_cast<int>(value(Selected))-1,0,15); }
@@ -32,7 +34,7 @@ private:
         const auto& q=PARAMS[p];
         return std::round(q.nopts ? q.def*(q.nopts-1) : q.min+(q.max-q.min)*q.def);
     }
-    void flush() { held.fill(0); voice.allNotesOff(); }
+    void flush() { held.fill(0); if(routedOff)routedOff();else voice.allNotesOff(); }
     void editorChanged() {
         for(int p=Note;p<=Tie;++p) dirty[p]=true;
     }
@@ -58,12 +60,13 @@ public:
         seq.onNoteEvent=[this](const Acid303Event& e) {
             const int n=e.note;
             if(e.type==Acid303EventType::NoteOn) {
-                if(held[n]++==0) { if(voiceNote) voiceNote(); voice.noteOn(n,e.velocity,0); }
-            } else if(held[n] && --held[n]==0) voice.noteOn(n,0,0);
+                if(held[n]++==0) { if(voiceNote) voiceNote(); if(routedNote)routedNote(n,e.velocity);else voice.noteOn(n,e.velocity,0); }
+            } else if(held[n] && --held[n]==0) {if(routedNote)routedNote(n,0);else voice.noteOn(n,0,0);}
         };
         seq.onAllNotesOff=[this]{flush();};
     }
     bool active() const { return value(Enable)>=.5f && clock.playing(); }
+    void routeVoice(std::function<void(int,int)> note,std::function<void()> off){routedNote=std::move(note);routedOff=std::move(off);}
     void onVoiceNote(std::function<void()> callback) { voiceNote=std::move(callback); }
     void cycle(double a,double b,bool enabled) { clock.cycle(a,b,enabled); }
     void begin(double beat,double bpm,bool playing,int frames) {

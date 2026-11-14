@@ -33,7 +33,7 @@ for source,name in [(build.MPC/'tools/host_test.c','host_test'),(build.ROOT/'tes
         build.run([cxx,*common,'-c',bridge,'-o',dest/'bridge.o'])
         build.run([cc,*common,'-Dplugin_test_main=run_cpp_tests','-c','tests/load_plugin.c','-o',dest/'cpp_loader.o'])
         extras=[dest/'cpp_loader.o',dest/'bridge.o']+[p for p in dest.glob('*.o')
-                if p.stem in {build.Path(s).stem for s in build.CFG['build']['sources'] if s!='src/engine.cpp'}]
+                if p.stem in {build.object_name(s) for s in build.CFG['build']['sources'] if s!='src/engine.cpp'}]
     else:
         extras=[dest/'load_plugin.o']
     binary=dest/name

@@ -48,6 +48,9 @@ try:
         if n==5:
             # Keep the documentation shot dry: all model choices are available without loading a network.
             setparam(e,ids['driveModel'],16/36)
+        if n>=6:
+            setparam(e,ids['engine014'],1);setparam(e,ids['switchModState'],1)
+            setparam(e,ids['filterModel014'],1/7)
         im=Image.new('RGBA',(1280,628));draw=ImageDraw.Draw(im)
         for c in studio.tab_components(tab,defs):
             if not studio.shown(c,{}):continue
