@@ -397,3 +397,12 @@ installer: JC303-MPC-0.4.2-mpc-aarch64.zip under ignored build/releases; SHA-256
 `df36aa0e80c6058a8f539c0700695e71c2e033f946ea06ec399310aaceea8294`.
 No Desktop copy, public push/release, device install, device restart or benchmark
 was performed for 0.4.2. Installation is held for the user's explicit Go.
+
+
+0.4.2 subsequently installed after the user's explicit Go. Previous 0.4.1
+plugin backed up locally; 354 plugin files staged and hash-verified. Settings
+unchanged during file replacement. MPC application restarted, active/running
+and new process confirmed. Installed stripped binary matches the package:
+`0a03d95fe187ac43851d51b2cca7ef112b75c490f6aa5d5745bf7feece37ae2e`.
+Actual touch/hearing acceptance remains pending. No other plugins, projects or
+global settings were manually changed. Future installs still require user Go.
