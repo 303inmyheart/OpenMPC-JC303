@@ -58,11 +58,18 @@ Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
 2. **Sequencer candidate 0.4.0:** 64 steps/four piano-roll pages, active-length
    generator, mute/hammer/reverse, swing/fractional gates, pitch polymeter,
    clipboard and undo/redo. Native sanitizer/ARM64 tests and installer validation passed; installed
-   on Live III as a development candidate. Touch/hearing acceptance pending. See TESTPLAN-0.4.0.md.
+   on Live III as a development candidate. Persistent ARTIC/front flag touch controls confirmed by the user after 0.4.2;
+   extended pattern/record/stability acceptance remains separate. See TESTPLAN-0.4.0.md.
 3. **Remaining modulation/audio parity:** four-slot matrix, additional LFO
    controls, pre-VCA drive/Disperse.
+   Also expose Accent Sweep and global Reverse Gate (step reverse is present).
 4. **Preset/import parity:** factory JSON sounds/banks and practical file import,
    then AnaMark .tun import. Existing MPC preset browser and dry Init remain.
+
+5. **Remaining original workflow parity:** pitch-only/rhythm-only generation;
+   optional internal/MIDI clock, note-trigger start and sequencer MIDI output;
+   MIDI pitch wheel and CC1/mod-knob assignment behavior. The MPC host clock,
+   native Q-Links and preset browser are already available.
 
 User requests exact control names and a practical test list for each delivered
 milestone. Do not describe step one as full v0.14 parity. New license notices are

@@ -406,3 +406,9 @@ and new process confirmed. Installed stripped binary matches the package:
 `0a03d95fe187ac43851d51b2cca7ef112b75c490f6aa5d5745bf7feece37ae2e`.
 Actual touch/hearing acceptance remains pending. No other plugins, projects or
 global settings were manually changed. Future installs still require user Go.
+
+
+0.4.2 user acceptance update: the user confirmed that the corrected persistent
+ARTIC switches and SEQUENCE Slide/Accent/Vibrato touch controls work after the
+approved installation. This confirms the reported switch regression, not a
+claim of testing every 64-step/record/import scenario or completing v0.14 parity.
