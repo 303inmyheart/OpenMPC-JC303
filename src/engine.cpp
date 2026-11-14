@@ -9,6 +9,7 @@ extern "C" {
 #include "sequencer/MpcSequence.h"
 #include "drive/Drive.h"
 #include "ModernVoice.h"
+#include "MatrixParams.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -33,6 +34,8 @@ struct Voice {
     rosic::Open303 core;
     ModernVoice modern;
     std::array<float,ModernVoice::Count> extra{};
+    std::array<float,matrixparam::Count> matrix{};
+    int lastMatrixStatus=-1;
     MpcSequence sequence{core};
     GuitarDrive drive;
     static constexpr int presetParam=64, presetCount=12;
@@ -47,6 +50,7 @@ struct Voice {
     Voice() {
         core.setSampleRate(44100);
         resetExtra(true);
+        resetMatrix();
         sequence.routeVoice([this](int n,int v){noteOn(n,v);},[this]{core.allNotesOff();modern.allNotesOff();});
         sequence.routeExtended([this](int n,int v,bool m,bool h,bool r,double gate){if(isModern())modern.noteOn(n,v,m,h,r,gate);else core.noteOn(n,v,0);});
         for (int i = 0; i < voiceParams; ++i) values[i] = PARAMS[i].def;
@@ -59,6 +63,10 @@ struct Voice {
         for(int j=0;j<ModernVoice::Count;++j){const auto& p=PARAMS[ModernVoice::First+j];extra[j]=p.nopts?p.def*(p.nopts-1):p.min+(p.max-p.min)*p.def;}
         extra[0]=enabled?1:0;
     }
+    void resetMatrix(){
+        for(int j=0;j<matrixparam::Count;++j){const auto&p=PARAMS[matrixparam::First+j];matrix[j]=p.nopts?p.def*(p.nopts-1):p.min+(p.max-p.min)*p.def;}
+    }
+    int matrixStatus()const{return !isModern()?0:values[Mod]<.5f?1:2;}
     void apply(int i) {
         const double x = values[i];
         const bool mod = values[Mod] >= 0.5f;
@@ -95,6 +103,7 @@ struct Voice {
         for (int i = 0; i < voiceParams; ++i) if (i != Mod) apply(i);
         core.setLfoOn(values[Mod] >= 0.5f);
         modern.configure(values.data(),extra.data());
+        modern.configureMatrix(matrix.data());
     }
     void stop(bool immediate = false) {
         core.allNotesOff();modern.allNotesOff();
@@ -104,7 +113,7 @@ struct Voice {
     }
     void loadPreset(int index) {
         if(index<0 || index>=presetCount || index==preset) return;
-        stop();sequence.legacyReset();drive.load({});resetExtra(false);
+        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();
         for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
         switch(index) {
         case 1: values[Wave]=0;values[Cutoff]=.35f;values[EnvMod]=.6f;values[Decay]=.45f;break;
@@ -133,11 +142,13 @@ struct Voice {
         default:break;
         }
         applyAll();preset=index;
+        for(int j=matrixparam::First;j<matrixparam::First+matrixparam::Count;++j)dirty[j]=true;
         for(int j=ModernVoice::First;j<ModernVoice::First+ModernVoice::Count;++j)dirty[j]=true;
         for(int i=0;i<=presetParam;++i)
             if(!PARAMS[i].string_display && !PARAMS[i].momentary && i!=GuitarDrive::Status) dirty[i]=true;
     }
     int changed(char* key,int size) {
+        const int ms=matrixStatus();if(ms!=lastMatrixStatus){lastMatrixStatus=ms;dirty[matrixparam::matrixStatus]=true;}
         const int status=static_cast<int>(drive.get(GuitarDrive::Status));
         if(status!=lastDriveStatus) {lastDriveStatus=status;dirty[GuitarDrive::Status]=true;}
         for(int i=0;i<NPARAMS;++i) if(dirty[i]) {
@@ -150,7 +161,7 @@ struct Voice {
         std::istringstream input(text);
         std::string version;
         input >> version;
-        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7") return;
+        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7" && version != "JC303-MPC-8") return;
         const int stateVersion=version.back()-'0';
         auto restored = values;
         for (int i = 0; i < voiceParams; ++i) {
@@ -179,6 +190,15 @@ struct Voice {
         MpcSequence::Extended extended;
         if(stateVersion>=6 && !MpcSequence::parseExtended(input,extended))return;
         if(stateVersion>=7 && !MpcSequence::parseGuide(input,extended))return;
+        std::array<float,matrixparam::Count> restoredMatrix{};
+        restoredMatrix[0]=restored[LfoDest];
+        int startMode=0;
+        if(stateVersion>=8){
+            std::string tag,key;if(!(input>>tag)||tag!="MATRIX")return;
+            for(int j=0;j<matrixparam::Count;++j)if(!(input>>key>>restoredMatrix[j]) || key!=PARAMS[matrixparam::First+j].key || !valid(matrixparam::First+j,restoredMatrix[j]))return;
+            if(!(input>>tag>>startMode)||tag!="RUNMODE"||startMode<0||startMode>2)return;
+            if(startMode>0 && extended.settings[0]<.5f)return;
+        }
         std::string trailing;
         if (input >> trailing) return;
         if (version == "JC303-MPC-1") restored[Slide] *= 358.0f/998.0f;
@@ -186,7 +206,8 @@ struct Voice {
         if(hasSequence) sequence.load(pattern); else sequence.legacyReset();
         if(stateVersion>=6)sequence.loadExtended(extended);
         drive.load(driveSettings);preset=restoredPreset;
-        values = restored;extra=restoredExtra;
+        values = restored;extra=restoredExtra;matrix=restoredMatrix;
+        sequence.set(runparam::Mode,startMode);
         applyAll();
     }
     static bool valid(int i, float x) {
@@ -211,7 +232,7 @@ void midi(void* instance, const uint8_t* msg, int length) {
     if (status == 0x90 && velocity) {
         const bool legato=std::any_of(v.held.begin(),v.held.end(),[](bool x){return x;});
         v.sequence.recordNote(note,velocity,legato);
-        if(v.sequence.active()) { v.held[note]=true; return; }
+        if(v.sequence.inputNote(note,velocity) || v.sequence.active()) { v.held[note]=true; return; }
         // Repeated note-ons replace their old stack entry, avoiding stuck duplicates.
         if (v.held[note]) v.noteOn(note, 0);
         v.held[note] = true;
@@ -219,7 +240,7 @@ void midi(void* instance, const uint8_t* msg, int length) {
         v.noteOn(note, velocity); // third argument is detune, NOT a slide flag
     } else if (status == 0x80 || (status == 0x90 && !velocity)) {
         v.held[note] = false;
-        if(v.sequence.active()) return;
+        if(v.sequence.inputNote(note,0) || v.sequence.active()) return;
         v.noteOn(note, 0);
     } else if (status == 0xb0 && (note == 120 || note == 123)) {
         v.sequence.stop();
@@ -232,7 +253,7 @@ void midi(void* instance, const uint8_t* msg, int length) {
 void set(void* instance, const char* key, const char* text) {
     auto& v = *static_cast<Voice*>(instance);
     if (!std::strcmp(key, "state")) { v.restore(text); return; }
-    if (!std::strcmp(key, "transport")) { if (text[0] == '0') v.stop(); return; }
+    if (!std::strcmp(key, "transport")) { if (text[0] == '0') {v.sequence.stop();v.stop();} return; }
     const int i = indexOf(key);
     if (i < 0) return;
     char* end = nullptr;
@@ -242,6 +263,14 @@ void set(void* instance, const char* key, const char* text) {
                  std::min(PARAMS[i].nopts ? static_cast<float>(PARAMS[i].nopts - 1) : PARAMS[i].max, x));
     if (PARAMS[i].nopts) x = std::round(x);
     if (PARAMS[i].int_display) x=std::round(x);
+    if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count){
+        if(v.matrix[i-matrixparam::First]==x)return;
+        v.matrix[i-matrixparam::First]=x;
+        if(i==matrixparam::matrixDest1 && x<=2){v.values[LfoDest]=x;v.apply(LfoDest);v.dirty[LfoDest]=true;}
+        v.modern.configureMatrix(v.matrix.data());return;
+    }
+    if(i>=matrixparam::matrixStatus && i<matrixparam::End && i!=runparam::Mode)return;
+    if(i==runparam::Mode){if(x!=v.sequence.get(i)){v.sequence.set(i,x);v.stop(true);}return;}
     if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count){
         if(i==ModernVoice::Engine && x!=v.extra[0]){v.sequence.stop();v.stop(true);}
         v.extra[i-ModernVoice::First]=x;v.modern.configure(v.values.data(),v.extra.data());return;
@@ -249,6 +278,11 @@ void set(void* instance, const char* key, const char* text) {
     if(i==Voice::presetParam) {v.loadPreset(static_cast<int>(x));return;}
     if(i>=GuitarDrive::First && i<=GuitarDrive::Status) {v.drive.set(i,x);return;}
     if(i>=voiceParams) { v.sequence.set(i,x); return; }
+    if(i==LfoDest){
+        if(x==v.values[i] && x==v.matrix[0])return;
+        v.values[i]=x;v.matrix[0]=x;v.apply(i);v.dirty[matrixparam::matrixDest1]=true;
+        v.modern.configure(v.values.data(),v.extra.data());v.modern.configureMatrix(v.matrix.data());return;
+    }
     if (x == v.values[i]) return;
     v.values[i] = x;
     v.apply(i);
@@ -260,7 +294,7 @@ int get(void* instance, const char* key, char* out, int size) {
     if (!std::strcmp(key, "state")) {
         std::ostringstream state;
         state.precision(9);
-        state << "JC303-MPC-7\n";
+        state << "JC303-MPC-8\n";
         for (int i = 0; i < voiceParams; ++i) state << PARAMS[i].key << ' ' << v.values[i] << '\n';
         v.sequence.save(state);
         v.drive.save(state);
@@ -268,12 +302,19 @@ int get(void* instance, const char* key, char* out, int size) {
         for(int j=0;j<ModernVoice::Count;++j)state<<PARAMS[ModernVoice::First+j].key<<' '<<v.extra[j]<<'\n';
         v.sequence.saveExtended(state);
         v.sequence.saveGuide(state);
+        state<<"MATRIX\n";
+        for(int j=0;j<matrixparam::Count;++j)state<<PARAMS[matrixparam::First+j].key<<' '<<v.matrix[j]<<'\n';
+        state<<"RUNMODE "<<v.sequence.get(runparam::Mode)<<'\n';
         const auto text = state.str();
         if (text.size() >= static_cast<size_t>(size)) return 0;
         std::memcpy(out, text.c_str(), text.size() + 1);
         return static_cast<int>(text.size());
     }
     const int i = indexOf(key);
+    if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count)return std::snprintf(out,size,"%.9g",v.matrix[i-matrixparam::First]);
+    if(i==matrixparam::matrixStatus)return std::snprintf(out,size,"%d",v.matrixStatus());
+    if(i==matrixparam::matrixSource1)return std::snprintf(out,size,"LFO (fixed)");
+    if(i==matrixparam::matrixSource2)return std::snprintf(out,size,"Env (fixed)");
     if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count)return std::snprintf(out,size,"%.9g",v.extra[i-ModernVoice::First]);
     if(i==Voice::presetParam) return std::snprintf(out,size,"%d",v.preset);
     if(i>=GuitarDrive::First && i<=GuitarDrive::Status) return std::snprintf(out,size,"%.9g",v.drive.get(i));
@@ -287,6 +328,7 @@ int get(void* instance, const char* key, char* out, int size) {
     if (name.size() > 8 && name.substr(name.size() - 8) == "_display") {
         const int j = indexOf(name.substr(0, name.size() - 8).c_str());
         if (j < 0) return 0;
+        if(j>=matrixparam::First && j<matrixparam::First+matrixparam::Count)return std::snprintf(out,size,"%+.1f %%",100*v.matrix[j-matrixparam::First]);
         if(j>=ModernVoice::First && j<ModernVoice::First+ModernVoice::Count){
             float x=v.extra[j-ModernVoice::First];
             if(j==ModernVoice::Saturation)return std::snprintf(out,size,"+%.1f dB",x);
@@ -319,6 +361,7 @@ int get(void* instance, const char* key, char* out, int size) {
 }
 void render(void* instance, mpc_sample_t* out, int frames) {
     auto& v = *static_cast<Voice*>(instance);
+    v.drive.setMixModulation(v.isModern()&&v.values[Mod]>=.5f?static_cast<float>(v.modern.driveModulation()):0.0f);
     v.drive.beginRender();
     for (int i = 0; i < frames; ++i) {
         v.sequence.sample();

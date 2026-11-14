@@ -3,6 +3,7 @@
 #include "v014/AcidSequencer303.h"
 #include "SeqParams.h"
 #include "ScaleGuide.h"
+#include "../RunModeParams.h"
 
 // Append-only host adapter. Legacy chunks retain the original event engine;
 // the 64-step editor uses the upstream v0.14 event engine under the host lock.
@@ -20,6 +21,14 @@ class MpcSequence : public LegacyMpcSequence {
     std::array<Step,16> pageClipboard{};
     bool haveCopy=false,havePageCopy=false;
     int current=0,status=0;
+    int startMode=0,lastTriggerStatus=-1,framesLeft=0;
+    std::array<bool,128> triggerHeld{};
+    bool latched=false,hostWasPlaying=false;
+    double localBeat=0,triggerBpm=120;
+    bool armed()const{return latched || std::any_of(triggerHeld.begin(),triggerHeld.end(),[](bool x){return x;});}
+    int triggerStatus()const{return get(Enable)<.5f?0:!startMode?1:!armed()?2:startMode==1?3:4;}
+    void restartForEdit(){clock.invalidate();seq.stop();vibrating=false;localBeat=0;publish();}
+    void startLocalClock(){clock.cycle(0,0,false);clock.begin(localBeat*factor,triggerBpm*factor,true,framesLeft,[this](bool p){reset(p);});}
     double factor=1,samplesPerTick=229.6875,loopA=0,loopB=0;
     bool looping=false,vibrating=false;
     double vibPhase=0,vibValue=0;
@@ -67,7 +76,7 @@ class MpcSequence : public LegacyMpcSequence {
         factor=std::pow(2.0,2-int(c(seqparam::seqScale)));
         if(c(seqparam::seqModifier)==1)factor/=1.5;
         if(c(seqparam::seqModifier)==2)factor*=1.5;
-        clock.cycle(loopA*factor,loopB*factor,looping);
+        clock.cycle(loopA*factor,loopB*factor,looping&&!startMode);
     }
     void ensureModern(){
         if(modern())return;
@@ -130,16 +139,37 @@ public:
     void routeExtended(std::function<void(int,int,bool,bool,bool,double)> cb){routed=std::move(cb);}
     void onVoiceNote(std::function<void()> cb){noteStarted=cb;LegacyMpcSequence::onVoiceNote(cb);}
     bool active()const{return modern()?base[Enable-first]>.5f&&clock.playing():LegacyMpcSequence::active();}
-    void cycle(double a,double b,bool on){loopA=a;loopB=b;looping=on;clock.cycle(a*factor,b*factor,on);LegacyMpcSequence::cycle(a,b,on);}
+    void cycle(double a,double b,bool on){loopA=a;loopB=b;looping=on;clock.cycle(a*factor,b*factor,on&&!startMode);LegacyMpcSequence::cycle(a,b,on);}
+    // Trigger notes control the local clock; their pitch never transposes the pattern.
+    bool inputNote(int note,int velocity){
+        if(!startMode || get(Enable)<.5f)return false;
+        const bool wasArmed=armed();
+        triggerHeld[note]=velocity>0;
+        if(velocity>0 && startMode==2)latched=true;
+        if(!wasArmed && armed())restartForEdit();
+        else if(wasArmed && !armed())restartForEdit();
+        return true;
+    }
     void begin(double ppq,double bpm,bool play,int frames){
+        if(std::isfinite(bpm)&&bpm>0)triggerBpm=bpm;
+        framesLeft=std::max(0,frames);
+        if(startMode && hostWasPlaying && !play)stop();
+        hostWasPlaying=play;
         if(!modern()){LegacyMpcSequence::begin(ppq,bpm,play,frames);return;}
         if(base[Enable-first]<.5f){clock.invalidate();seq.stop();publish();return;}
         if(std::isfinite(bpm)&&bpm>0){samplesPerTick=44100*60/(bpm*factor*96);seq.clockRate(samplesPerTick);}
-        clock.begin(ppq*factor,bpm*factor,play,frames,[this](bool p){reset(p);});publish();
+        if(startMode){if(armed())startLocalClock();else{clock.invalidate();seq.stop();}}
+        else clock.begin(ppq*factor,bpm*factor,play,frames,[this](bool p){reset(p);});
+        publish();
     }
     void sample(){
         if(!modern()){LegacyMpcSequence::sample();return;}
-        if(active())clock.sample([this](uint32_t t){seq.tick96(t);},[this](bool p){reset(p);});
+        if(startMode && armed() && get(Enable)>.5f && !clock.playing())startLocalClock();
+        if(active()){
+            clock.sample([this](uint32_t t){seq.tick96(t);},[this](bool p){reset(p);});
+            if(startMode)localBeat+=triggerBpm/(60*44100);
+        }
+        if(framesLeft>0)--framesLeft;
         seq.mpcSample(samplesPerTick);publish();
     }
     double pitchMod(){
@@ -150,7 +180,7 @@ public:
         }else{vibValue=0;vibPhase=0;}
         return vibValue;
     }
-    void stop(){LegacyMpcSequence::stop();clock.invalidate();seq.stop();vibrating=false;publish();}
+    void stop(){triggerHeld.fill(false);latched=false;localBeat=0;LegacyMpcSequence::stop();clock.invalidate();seq.stop();vibrating=false;publish();}
     bool recordNote(uint8_t n,uint8_t velocity,bool legato){
         if(!modern()){bool done=LegacyMpcSequence::recordNote(n,velocity,legato);if(done){c(seqparam::seqSelected64)=LegacyMpcSequence::get(Selected);changedViews();}return done;}
         if(base[Record-first]<.5f)return false;
@@ -162,6 +192,12 @@ public:
     }
     void set(int p,float x){
         using namespace seqparam;
+        if(p==runparam::Mode){
+            if(startMode==int(x))return;
+            stop();if(x>0)ensureModern();startMode=int(x);configure();dirty[runparam::Mode]=true;return;
+        }
+        if(p==runparam::Stop){if(x>.5f)stop();return;}
+        if(p==runparam::Status)return;
         if(p<First){
             if(p>=TileFirst&&p<TileFirst+16){if(x>.5f)select(page()*16+p-TileFirst);return;}
             if(p<first||p>=first+stored)return;
@@ -188,7 +224,7 @@ public:
             }
             if(x==base[p-first])return;
             base[p-first]=x;
-            if(p==Enable||p==Transpose){stop();}configure();publish();return;
+            if(p==Enable)stop();else if(p==Transpose)restartForEdit();configure();publish();return;
         }
         if(p>=End)return;
         if(p==seqKeyRoot||p==seqKeyScale){
@@ -245,7 +281,7 @@ public:
                 Snapshot snap;for(int i=0;i<stored;++i)snap.settings[i]=get(first+i);
                 snap.settings[Length-first]=std::min(16,int(c(seqLength64)));snap.settings[Selected-first]=selected()%16+1;
                 for(int n=0;n<16;++n){auto s=step(n);snap.steps[n]={s.note,s.rest,s.accent,s.slide,s.tie};}
-                stop();c(seqTiming)=0;LegacyMpcSequence::load(snap);changedViews();
+                stop();startMode=0;dirty[runparam::Mode]=true;c(seqTiming)=0;LegacyMpcSequence::load(snap);changedViews();
             }return;
         }
         if(p==seqPage){if(x==c(p))return;c(p)=x;changedViews();return;}
@@ -253,11 +289,13 @@ public:
         if(x==get(p))return;
         ensureModern();float old=c(p);c(p)=x;
         if(p==seqShift||p==seqPitchRotate){seq.pushUndo();int delta=int(x-old);if(p==seqShift)seq.shiftSteps(delta);else seq.rotatePitches(delta);changedViews();}
-        if(p==seqScale||p==seqModifier||p==seqLength64){stop();dirty[Length]=true;}
+        if(p==seqScale||p==seqModifier||p==seqLength64){restartForEdit();dirty[Length]=true;}
         configure();if(p==seqOctBase)changedViews();
     }
     float get(int p)const{
         using namespace seqparam;
+        if(p==runparam::Mode)return startMode;
+        if(p==runparam::Status)return triggerStatus();
         if(p==seqTiming)return modern();
         if(p==seqLength64&&!modern())return LegacyMpcSequence::get(Length);
         if(p>=First&&p<=seqFollow){
@@ -311,6 +349,7 @@ public:
     }
     bool tileOn(int p)const{return p>=TileFirst&&p<TileFirst+16&&p-TileFirst==selected()%16;}
     int changed(char*out,int size){
+        const int ts=triggerStatus();if(ts!=lastTriggerStatus){lastTriggerStatus=ts;dirty[runparam::Status]=true;}
         for(int p=first;p<NPARAMS;++p)if(dirty[p]){dirty[p]=false;std::snprintf(out,size,"%s",PARAMS[p].key);return 1;}
         return LegacyMpcSequence::changed(out,size);
     }
@@ -336,7 +375,7 @@ public:
             if((s.accent&&s.mute)||(s.slide&&s.hammer))return false;
         }return true;
     }
-    void load(const Snapshot&snap){stop();guide=ScaleGuide{};seq.clearHistory();LegacyMpcSequence::load(snap);base=snap.settings;for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);c(seqparam::seqTiming)=0;c(seqparam::seqLength64)=snap.settings[Length-first];c(seqparam::seqSelected64)=snap.settings[Selected-first];for(int n=0;n<64;++n){Step s;s.rest=true;seq.replaceStep(n,s);}changedViews();}
+    void load(const Snapshot&snap){stop();startMode=0;dirty[runparam::Mode]=true;guide=ScaleGuide{};seq.clearHistory();LegacyMpcSequence::load(snap);base=snap.settings;for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);c(seqparam::seqTiming)=0;c(seqparam::seqLength64)=snap.settings[Length-first];c(seqparam::seqSelected64)=snap.settings[Selected-first];for(int n=0;n<64;++n){Step s;s.rest=true;seq.replaceStep(n,s);}changedViews();}
     void loadExtended(const Extended&snap){stop();guide=snap.guide;cfg=snap.settings;for(int n=0;n<64;++n)seq.replaceStep(n,snap.steps[n]);configure();changedViews();}
     void legacyReset(){Snapshot s;for(int p=first;p<first+stored;++p)s.settings[p-first]=std::round(def(p));load(s);}
 };

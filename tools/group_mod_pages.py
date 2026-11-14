@@ -9,7 +9,7 @@ p=skin/'TUI.json';d=json.loads(p.read_text());page=d['pageData']
 original_definitions=deepcopy(page['componentDefinitions'])
 mapping={}
 main=next(t['fnKeyIndex'] for t in page['tabs'] if t['tabName']=='MODS')
-for parent,names in [('MODS',('ENGINE','FILTER')),('SEQUENCE',('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'))]:
+for parent,names in [('MODS',('ENGINE','FILTER','MATRIX1','MATRIX2','MATRIX3','MATRIX4')),('SEQUENCE',('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'))]:
     mainIndex=next(t['fnKeyIndex'] for t in page['tabs'] if t['tabName']==parent)
     for sub,name in enumerate(names,1):
         tab=next(t for t in page['tabs'] if t['tabName']==name)
@@ -25,7 +25,7 @@ pairs=[(b['Tab'],b['SubTab']) for b in q['Screen Mode Q-Links']['map']]
 assert len(pairs)==len(set(pairs))
 assert set(pairs)=={(t['fnKeyIndex']+1,t['fnKeySubIndex']+1) for t in page['tabs']}
 assert set(t['fnKeyIndex'] for t in page['tabs'])==set(range(6))
-assert [(t['fnKeySubIndex'],t['tabName']) for t in page['tabs'] if t['fnKeyIndex']==main]==[(0,'MODS'),(1,'ENGINE'),(2,'FILTER')]
+assert [(t['fnKeySubIndex'],t['tabName']) for t in page['tabs'] if t['fnKeyIndex']==main]==list(enumerate(('MODS','ENGINE','FILTER','MATRIX1','MATRIX2','MATRIX3','MATRIX4')))
 assert original_definitions==page['componentDefinitions']
 p.write_text(json.dumps(d,indent=2)+'\n');qpath.write_text(json.dumps(q,indent=2)+'\n')
-print('MODS -> MODS / ENGINE / FILTER: native subpages and matching Q-Link banks; six main tabs; controls unchanged.')
+print('MODS -> MODS / ENGINE / FILTER / MATRIX1-4: native subpages and matching Q-Link banks; six main tabs; controls unchanged.')

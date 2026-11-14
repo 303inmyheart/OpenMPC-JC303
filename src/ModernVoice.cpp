@@ -4,12 +4,21 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
-struct ModernVoice::Impl { rosic014::Open303 voice; std::array<float,22> old{};std::array<float,Count> extra{};bool configured=false; Impl(){voice.setSampleRate(44100);} };
+struct ModernVoice::Impl { rosic014::Open303 voice; std::array<float,22> old{};std::array<float,Count> extra{};std::array<float,9> matrix{};bool matrixConfigured=false;bool configured=false; Impl(){voice.setSampleRate(44100);} };
 ModernVoice::ModernVoice():impl(std::make_unique<Impl>()){}
 ModernVoice::~ModernVoice()=default;
 void ModernVoice::noteOn(int n,int v,bool mute,bool hammer,bool reverse,double gateSamples){impl->voice.noteOn(n,v,0,mute,hammer,reverse,gateSamples);}
 void ModernVoice::pitchBend(double s){impl->voice.setPitchBend(s);}
 void ModernVoice::tempo(double bpm){impl->voice.setReverseTempo(bpm);}
+void ModernVoice::configureMatrix(const float* m){
+ auto& v=impl->voice;auto changed=[&](int p){return !impl->matrixConfigured||m[p]!=impl->matrix[p];};
+ if(changed(0))v.setLfoDestination(static_cast<int>(m[0]));
+ if(changed(1)||changed(2))v.setModSlot(1,rosic014::MOD_SRC_ENV,static_cast<int>(m[1]),m[2]);
+ if(changed(3)||changed(4)||changed(5))v.setModSlot(2,static_cast<int>(m[3]),static_cast<int>(m[4]),m[5]);
+ if(changed(6)||changed(7)||changed(8))v.setModSlot(3,static_cast<int>(m[6]),static_cast<int>(m[7]),m[8]);
+ std::copy_n(m,9,impl->matrix.begin());impl->matrixConfigured=true;
+}
+double ModernVoice::driveModulation()const{return impl->voice.getLfoOverdriveMod();}
 void ModernVoice::allNotesOff(){impl->voice.allNotesOff();}
 double ModernVoice::sample(){return impl->voice.getSample();}
 void ModernVoice::configure(const float* p,const float* x){
@@ -56,7 +65,7 @@ void ModernVoice::configure(const float* p,const float* x){
  if(old(18))v.setLfoWaveform(static_cast<int>(p[18]));
  if(old(19))v.setLfoRate(exp(.1,20,p[19]));
  if(old(20))v.setLfoDepth(p[20]);
- if(old(21))v.setLfoDestination(p[21]);
+ if(old(21))v.setLfoDestination(impl->matrixConfigured?impl->matrix[0]:p[21]);
  if(old(8)){v.setLfoOn(mods);v.setCircuitPulseShape(mods);}
  std::copy_n(p,22,impl->old.begin());std::copy_n(x,Count,impl->extra.begin());impl->configured=true;
 }

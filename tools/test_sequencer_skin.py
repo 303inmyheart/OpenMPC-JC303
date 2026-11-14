@@ -12,6 +12,22 @@ skin=ROOT/'build/skin'/f"{cfg['vendor']} - VST - {cfg['name']}"/'Plugin Skins'
 pd=json.loads((skin/'TUI.json').read_text())['pageData']
 defs={d['key']:d['value'] for d in pd['componentDefinitions']['localComponentDefinitions']}
 pages={t['tabName']:defs[t['componentName']]['componentsData'] for t in pd['tabs']}
+# Function keys/subtabs and the Q-Link map must point at the same new pages.
+tabs={t['tabName']:t for t in pd['tabs']}
+banks=json.loads((skin/'Q-Links.json').read_text())['Screen Mode Q-Links']['map']
+def bank(name):
+    t=tabs[name];return next(b['Q-Links'] for b in banks if (b['Tab'],b['SubTab'])==(t['fnKeyIndex']+1,t['fnKeySubIndex']+1))
+assert ids['seqStartMode'] in bank('SEQTOOLS').values()
+assert ids['seqTriggerStop'] in bank('SEQTOOLS').values()
+assert params[ids['seqTriggerStop']].get('momentary') and not params[ids['seqTriggerStop']].get('live')
+for slot in range(1,5):
+    name=f'MATRIX{slot}';assert tabs[name]['fnKeyIndex']==tabs['MODS']['fnKeyIndex']
+    assert 0<=tabs[name]['fnKeySubIndex']<8
+    assert ids[f'matrixDest{slot}'] in bank(name).values()
+    choices=[c for c in pages[name] if c['componentData']['type'].startswith(f'shSeg_matrixDest{slot}_')]
+    assert len(choices)==14
+    assert all(any(m['key']=='Data' and m['value']==f'Parameter {ids[f"matrixDest{slot}"]}' for m in c['handle remapping']['map']) for c in choices)
+print('Four matrix pages: native 14-target bindings, matching subtab/Q-Link banks, automatable momentary STOP and hardware binding verified.')
 def binding(c):
     return next(int(m['value'].split()[1]) for m in c['handle remapping']['map'] if m['key']=='Data')
 def rect(c):return tuple(map(int,c['bounds']['bounds'].split()))

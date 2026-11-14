@@ -77,6 +77,7 @@ struct GuitarDrive::Impl {
     std::thread worker;
     int active=-1,pending=-1;
     uint64_t activeToken=0;
+    float mixModulation=0;
     Ramp condition,gain,mix,enabled,modelFade;
     float cachedMix=-1,dryGain=1,wetGain=0;
 
@@ -166,7 +167,7 @@ struct GuitarDrive::Impl {
     float process(float dry) noexcept {
         if(active<0) return dry; // while preparing the first model, keep the dry voice audible
         if(settings.enabled<.5f && enabled.current==0) return dry;
-        const float amount=mix.next(), on=enabled.next(), fade=modelFade.next();
+        const float amount=std::clamp(mix.next()+mixModulation,0.0f,1.0f), on=enabled.next(), fade=modelFade.next();
         float wet=slots[active].process(dry,condition.next(),gain.next());
         if(!std::isfinite(wet)) {wet=0;slots[active].dc.reset();}
         // Model fade passes through dry, so the synth remains audible while swapping.
@@ -233,6 +234,7 @@ int GuitarDrive::display(int p,char* out,int size) const {
     return 0;
 }
 void GuitarDrive::beginRender(){impl->begin();}
+void GuitarDrive::setMixModulation(float amount)noexcept{impl->mixModulation=std::isfinite(amount)?std::clamp(amount,-1.0f,1.0f):0;}
 float GuitarDrive::process(float x) noexcept{return impl->process(x);}
 void GuitarDrive::save(std::ostream& out) const {
     const auto& s=impl->settings;

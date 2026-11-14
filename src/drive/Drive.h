@@ -14,6 +14,7 @@ public:
     float get(int param) const;
     int display(int param,char* out,int size) const;
     void beginRender();
+    void setMixModulation(float amount) noexcept;
     float process(float dry) noexcept;
     void save(std::ostream&) const;
     static bool parse(std::istream&,Settings&);

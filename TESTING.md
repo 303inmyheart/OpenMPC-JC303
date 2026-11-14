@@ -412,3 +412,35 @@ global settings were manually changed. Future installs still require user Go.
 ARTIC switches and SEQUENCE Slide/Accent/Vibrato touch controls work after the
 approved installation. This confirms the reported switch regression, not a
 claim of testing every 64-step/record/import scenario or completing v0.14 parity.
+
+
+## 0.5.0 local candidate — installed; acceptance pending
+
+Native ASan/UBSan/leak and actual ARM64 shared-object/QEMU suites pass. Matrix
+checks cover 8 source choices × 14 targets for finite output, bipolar routing,
+MODS/legacy bypass, transient neural-drive wet mix, transactional JC8 state and
+JC7 migration. Note-mode checks cover sample-offset starts, MPC-tempo timing
+across blocks, non-transposing triggers, overlapping held notes, release/latched
+behavior, host Stop, explicit STOP, API automation availability and fresh-note
+waiting after state restore. Existing legacy/reference, all 37 model checks,
+64-step/scale oracles and Stop/Play touch-feedback regressions still pass.
+
+Final native skin checks validate matching subtab/Q-Link maps, all fourteen
+route choices on each matrix page, the STOP hardware binding and all 176 flag
+cell centers and reversible ON/OFF actions. Offline previews were regenerated.
+Installer/catalog validation reports zero warnings; privacy and file hashes pass.
+These are offline tests, not real-device touch/automation acceptance.
+
+At the user's explicit request and subsequent standing authorization, 504 plugin
+files were backed up locally, staged and hash-verified on Live III. Settings were
+unchanged during replacement; MPC application restart completed and its service
+is active/running. Installed binary SHA-256:
+`0bebc08a3efba0f2d2ed9887a9a6019be55209dfef8aca3a10ef39a8b022440b`.
+Installer `JC303-MPC-0.5.0-mpc-aarch64.zip` SHA-256:
+`80abec367410a379a3709e274f538adbf898c1ef4dfb7cc21a5dba5b8590eb9a`.
+
+Hardware hearing, touch/Q-Link and MPC automation acceptance is pending; follow
+[the German test guide](TESTPLAN-0.5.0-DE.md). Public release remains 0.2.3. No
+source push/public binary release, Desktop copy, full device reboot or formal
+Store/CPU benchmark was performed for this candidate. Standing deployment
+authorization now lasts until the user revokes it, within our plugins only.

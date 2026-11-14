@@ -44,6 +44,7 @@ try:
     for n,tab in enumerate(tui['tabs']):
         role=tab['componentName'].split('|')[0]
         call(e,2,0,10 if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE','SEQKEY') else 0,None,0)
+        if role.startswith('MATRIX'):setparam(e,ids['engine014'],1);setparam(e,ids['switchModState'],1)
         if role in ('MODS','LFO'):setparam(e,ids['switchModState'],1)
         if role=='LFO':setparam(e,ids['lfoDepth'],.4)
         if role=='DRIVE':

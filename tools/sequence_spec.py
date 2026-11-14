@@ -1,6 +1,7 @@
 """Append-only 64-step editor API. Existing indices 0..85 stay frozen."""
 from pathlib import Path
 import json
+import matrix_spec
 ROOT=Path(__file__).resolve().parents[1]
 def generate():
     path=ROOT/'params.json';data=json.loads(path.read_text());params=data['params'][:86];defs=[]
@@ -67,4 +68,5 @@ def generate():
     for k,i in defs:lines.append(f'constexpr int {k}={i};')
     for k,i in ranges.items():lines.append(f'constexpr int {k}First={i};')
     lines+=['}'];(ROOT/'src/sequencer/SeqParams.h').write_text('\n'.join(lines)+'\n')
+    matrix_spec.generate()
 if __name__=='__main__':generate()

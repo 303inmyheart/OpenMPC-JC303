@@ -76,8 +76,8 @@ def background(index,tab):
     line(d,[(252,87),(420,87)],GREEN,4)
     badge_right=1140 if index==0 else 1210
     badge_left=badge_right-240
-    page_index=3 if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY') else 1 if tab['name'] in ('ENGINE','FILTER') else index
-    caption='MODS / '+tab['name'] if tab['name'] in ('ENGINE','FILTER') else f'{index+1:02d} / {tab["name"]}'
+    page_index=3 if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY') else 1 if tab['name'] in ('ENGINE','FILTER','MATRIX1','MATRIX2','MATRIX3','MATRIX4') else index
+    caption='MODS / '+tab['name'] if tab['name'] in ('ENGINE','FILTER','MATRIX1','MATRIX2','MATRIX3','MATRIX4') else f'{index+1:02d} / {tab["name"]}'
     if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'):
         caption='SEQUENCE / '+{'ARTIC':'ARTIC','SEQTOOLS':'TOOLS','SEQLIVE':'LIVE','SEQKEY':'KEY'}[tab['name']]
     text(d,(badge_right-16,49),caption,20,'#EEF3E5','rm')
@@ -127,13 +127,7 @@ def background(index,tab):
         text(d,(706,526),'ENVELOPE  /  SLIDE  /  DIODE FILTER',11,MUTED,'lm')
         text(d,(706,553),'ENABLE MODS TO ENGAGE THE EXTENDED CIRCUIT',10,MUTED,'lm')
     elif index==2:
-        # Selector labels occupy the upper silkscreen row on this page.
-        box(d,(390,355,1200,555),None,'#929D86',8)
-        text(d,(420,381),'MODULATION / ACID MOTION',13,MUTED,'lm')
-        for n in range(4):line(d,[(420,410+n*37),(1175,410+n*37)],'#A4AE99')
-        pts=[(420+x,468-43*math.sin(x/58)) for x in range(756)]
-        line(d,pts,'#65784C',2)
-        line(d,[(420,505),(570,430),(570,505),(720,430),(720,505),(870,430),(870,505),(1020,430),(1020,505),(1175,430)],'#949F85',1.5)
+        section(d,74,294,1126,'SLOT 1 / FIXED LFO SOURCE / DESTINATION SHARED WITH MOD MATRIX 1')
     elif index==3:
         pass
     elif index==4:
@@ -151,6 +145,8 @@ def background(index,tab):
         section(d,74,246,1126,'MODS ON / LEGACY KEEPS THE PREVIOUS SOUND')
     elif index==7:
         section(d,74,198,1126,'ENGINE: JC303 0.14 / MODS ON')
+    if tab['name'].startswith('MATRIX'):
+        text(d,(640,594),'JC303 0.14 ENGINE + MODS REQUIRED   /   OVERDRIVE MODULATES DRIVE DRY / WET',12,MUTED)
     save(im,SKIN/f'sh_bg_{index}.png')
 
 

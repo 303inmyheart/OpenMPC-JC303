@@ -7920,6 +7920,229 @@
         "Off",
         "On"
       ]
+    },
+    {
+      "key": "matrixDest1",
+      "name": "Slot 1 Destination",
+      "min": 0,
+      "max": 13,
+      "default": 0,
+      "options": [
+        "Cutoff",
+        "Volume",
+        "Pitch",
+        "Pulse Width",
+        "Resonance",
+        "Overdrive",
+        "Filter FM",
+        "Env Mod",
+        "Decay",
+        "Accent",
+        "Waveform",
+        "LFO Rate",
+        "LFO Depth",
+        "Filter Morph"
+      ]
+    },
+    {
+      "key": "matrixDest2",
+      "name": "Slot 2 Destination",
+      "min": 0,
+      "max": 13,
+      "default": 0,
+      "options": [
+        "Cutoff",
+        "Volume",
+        "Pitch",
+        "Pulse Width",
+        "Resonance",
+        "Overdrive",
+        "Filter FM",
+        "Env Mod",
+        "Decay",
+        "Accent",
+        "Waveform",
+        "LFO Rate",
+        "LFO Depth",
+        "Filter Morph"
+      ]
+    },
+    {
+      "key": "matrixAmount2",
+      "name": "Slot 2 Amount",
+      "min": -1,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "matrixSource3",
+      "name": "Slot 3 Source",
+      "min": 0,
+      "max": 7,
+      "default": 0,
+      "options": [
+        "Off",
+        "LFO",
+        "Env",
+        "Accent",
+        "Key",
+        "Random",
+        "Cutoff",
+        "Env+"
+      ]
+    },
+    {
+      "key": "matrixDest3",
+      "name": "Slot 3 Destination",
+      "min": 0,
+      "max": 13,
+      "default": 0,
+      "options": [
+        "Cutoff",
+        "Volume",
+        "Pitch",
+        "Pulse Width",
+        "Resonance",
+        "Overdrive",
+        "Filter FM",
+        "Env Mod",
+        "Decay",
+        "Accent",
+        "Waveform",
+        "LFO Rate",
+        "LFO Depth",
+        "Filter Morph"
+      ]
+    },
+    {
+      "key": "matrixAmount3",
+      "name": "Slot 3 Amount",
+      "min": -1,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "matrixSource4",
+      "name": "Slot 4 Source",
+      "min": 0,
+      "max": 7,
+      "default": 0,
+      "options": [
+        "Off",
+        "LFO",
+        "Env",
+        "Accent",
+        "Key",
+        "Random",
+        "Cutoff",
+        "Env+"
+      ]
+    },
+    {
+      "key": "matrixDest4",
+      "name": "Slot 4 Destination",
+      "min": 0,
+      "max": 13,
+      "default": 0,
+      "options": [
+        "Cutoff",
+        "Volume",
+        "Pitch",
+        "Pulse Width",
+        "Resonance",
+        "Overdrive",
+        "Filter FM",
+        "Env Mod",
+        "Decay",
+        "Accent",
+        "Waveform",
+        "LFO Rate",
+        "LFO Depth",
+        "Filter Morph"
+      ]
+    },
+    {
+      "key": "matrixAmount4",
+      "name": "Slot 4 Amount",
+      "min": -1,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "matrixStatus",
+      "name": "Matrix Status",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "live": true,
+      "options": [
+        "Legacy: LFO only",
+        "MODS Off",
+        "Active"
+      ]
+    },
+    {
+      "key": "matrixSource1",
+      "name": "Slot 1 Source",
+      "min": 0,
+      "max": 0,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": false
+    },
+    {
+      "key": "matrixSource2",
+      "name": "Slot 2 Source",
+      "min": 0,
+      "max": 0,
+      "default": 0,
+      "display": "string",
+      "live": true,
+      "poll": false
+    },
+    {
+      "key": "seqStartMode",
+      "name": "Start Mode",
+      "min": 0,
+      "max": 2,
+      "default": 0,
+      "options": [
+        "Host Transport",
+        "Note Gate/Hold",
+        "Note Trigger"
+      ]
+    },
+    {
+      "key": "seqTriggerStatus",
+      "name": "Sequencer Start Status",
+      "min": 0,
+      "max": 4,
+      "default": 0,
+      "live": true,
+      "options": [
+        "Sequencer Off",
+        "Host Transport",
+        "Waiting for Note",
+        "Note Gate Running",
+        "Note Trigger Running"
+      ]
+    },
+    {
+      "key": "seqTriggerStop",
+      "name": "Stop Note Sequencer",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "momentary": true,
+      "debounce_ms": 250,
+      "options": [
+        "Off",
+        "Stop"
+      ]
     }
   ]
 }

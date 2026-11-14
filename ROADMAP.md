@@ -30,6 +30,7 @@ Development milestones since 0.2.3:
 | 0.4.0 | 64-step piano roll on four 16-step pages; active-length generation; mute, hammer, reverse, swing, fractional gates, pitch polymeter, clipboard and undo/redo | Installed; superseded after touch/input feedback |
 | 0.4.1 | Moving playhead line; 12 keys and 19 scales plus Off; canonical touch feedback during Stop/Play | Installed; pitch improvement confirmed, persistent switch problem identified |
 | 0.4.2 | Separate native input recipes for persistent switches and momentary cells; reversible GATE/TIE editing | Installed; maintainer confirmed the touch correction works |
+| 0.5.0 | Four-slot matrix with native MODS pages, 8 source choices / 14 destinations, expanded LFO destination; Host Transport / Note Gate-Hold / latched Note Trigger and automatable Q-Link STOP | Installed for testing; offline checks pass, Live III acceptance pending; next release only |
 
 The 64-step editor includes:
 
@@ -52,18 +53,26 @@ validation pass. These are distinct from the maintainer's real-device tests.
 reserved for the completed release build. Matching source and release metadata
 must be published together before a new public binary release.
 
-## Active work: modulation matrix
+## Local 0.5.0 candidate: matrix and note-start modes
 
-Port the JC303 v0.14.0 matrix into native MPC pages and project state:
+Implemented for the **next public release**, not in the current 0.2.3 download:
 
-- Four slots, retaining the original roles: slot 1 is LFO, slot 2 is envelope,
-  slots 3 and 4 have selectable sources.
-- Destination selection, modulation amount and appropriate Q-Link controls.
-- Preserve old parameter IDs and existing project sounds; new routes start off.
-- Explicit MODS/engine status, native touch testing, state migration and audible
-  routing checks before delivery.
+- Four slots: fixed LFO, fixed bipolar envelope and two selectable sources.
+- Eight source choices and fourteen destinations, including transient DRIVE
+  Dry/Wet modulation. Source Off / Amount 0 disables the additional route.
+- MATRIX1–4 beneath MODS, with matching Q-Link banks and engine/MODS status.
+  Expanded destinations require the JC303 0.14 synthesis engine and MODS on.
+- LFO page shares destination/depth with slot 1; old parameter IDs are retained.
+- Host Transport stays the default. Note Gate/Hold plays while notes are held;
+  Note Trigger latches until Stop. Both use MPC tempo and preserve pattern pitch.
+- An automatable STOP impulse is on TOOLS and a free Q-Link. Actual MPC automation
+  selection/recording needs hardware acceptance, distinct from VST API checks.
+- JC8 projects store all slots and the selected start mode. Old projects retain
+  their existing LFO route and host clock; new routes are neutral. Held/latched
+  triggers do not resume when loading a project. Older builds cannot read JC8.
 
-**Implementation is in progress. There is no released or installed matrix build.**
+**Device acceptance of 0.5.0 is pending.** There is no new public binary release
+or release benchmark. See [the test guide](TESTPLAN-0.5.0-DE.md).
 
 ## Remaining planned JC303 work
 
@@ -75,8 +84,8 @@ Port the JC303 v0.14.0 matrix into native MPC pages and project state:
 4. Original factory JSON sounds/banks and practical preset import/export and
    management alongside the existing MPC preset browser.
 5. Deferred sequencer extras: pitch-only/rhythm-only randomization, optional
-   internal/MIDI clock, note-trigger start and sequencer MIDI output. The current
-   host-clock sequencer works independently of those optional modes.
+   internal/MIDI clock and sequencer MIDI output. Host clock plus the two
+   note-start modes already work in the local candidate.
 6. Release validation: extended sessions, multiple instances, parameter-change
    spikes and the final-release Store benchmark, then public source/release and
    catalog update.

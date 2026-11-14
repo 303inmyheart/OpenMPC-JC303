@@ -46,8 +46,10 @@ for source,name in [(framework_test.source(build,dest),'host_test'),(build.ROOT/
     'tests': ['framework host', 'reference voice', 'state and MIDI', '54 filter/LFO combinations',
               'stepped Q-Link host/touch synchronisation with host echoes',
               'six-waveform rotary sweeps and one-second slide migration',
-              'legacy sequencer exact audio/migration, 64-step grid/pages, generator length, swing/fractional gates, CPU timing oracle, scaled host clock, step articulation DSP, JC7 state and 12-key/19-scale interval oracle',
+              'legacy sequencer exact audio/migration, 64-step grid/pages, generator length, swing/fractional gates, CPU timing oracle, scaled host clock, step articulation DSP, JC8 state and 12-key/19-scale interval oracle',
               '37 GuitarML models, independent LSTM oracle, rapid switching and bypass',
+              'four-slot modulation matrix, all source/target routes, bipolar/Overdrive routing and old-state migration',
+              'Host Transport, Note Gate/Hold and latched Note Trigger sample/timing/state checks',
               '12 MPC browser programs, dry Init, edited state restore and wet VST audio'],
     'environment': 'QEMU ARM64, offline only; no hardware benchmark',
 },indent=2)+'\n')
