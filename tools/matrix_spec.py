@@ -25,9 +25,17 @@ def generate():
     add('seqStartMode','Start Mode',0,2,0,['Host Transport','Note Gate/Hold','Note Trigger'])
     add('seqTriggerStatus','Sequencer Start Status',0,4,0,['Sequencer Off','Host Transport','Waiting for Note','Note Gate Running','Note Trigger Running'],live=True)
     add('seqTriggerStop','Stop Note Sequencer',0,1,0,['Off','Stop'],momentary=True,debounce_ms=250)
+    for key,name in [('circuitEnabled','Circuit Mods'),('oscModsEnabled','Oscillator Mods'),('filterModsEnabled','Filter Mods'),*[(f'modSlot{i}Enabled',f'Matrix Slot {i}') for i in range(1,5)]]:
+        add(key,name,0,1,1,['Off','On'])
+    add('lfoPhase014','LFO Start Phase',0,1,0,dynamic_display=True)
+    add('lfoSync014','LFO Key Sync',0,1,0,['Off','On'])
+    add('lfoContour014','LFO Contour',-1,1,0,dynamic_display=True)
+    add('accentSweep014','Accent Sweep',0,1,0,dynamic_display=True)
+    add('reverseGate014','Reverse Gate',0,1,0,dynamic_display=True)
     path.write_text(json.dumps(data,indent=2)+'\n')
     (ROOT/'params.lock').write_text('\n'.join(p['key'] for p in params)+'\n')
     lines=['#pragma once','namespace matrixparam {',f'constexpr int First={first}, Count=9, End={first+12};']
     lines += [f'constexpr int {key}={index};' for key,index in defs]
     lines+=['}'];(ROOT/'src/MatrixParams.h').write_text('\n'.join(lines)+'\n')
+    (ROOT/'src/ModSettings.h').write_text('#pragma once\nnamespace pageparam { constexpr int First=603, Count=7, End=610; }\nnamespace extmod { constexpr int First=610, Count=5, End=615; }\n')
     (ROOT/'src/RunModeParams.h').write_text('#pragma once\nnamespace runparam { constexpr int Mode=600, Status=601, Stop=602; }\n')

@@ -386,6 +386,8 @@ namespace rosic014
     }
 
     /** Enables/disables LFO processing (master on/off). */
+    // MPC port: bypass slots independently, including depth-modulated LFO slot.
+    void setModSlotEnabled(int slot,bool enabled) { if(slot>=0 && slot<NUM_MOD_SLOTS) modSlotEnabled[slot]=enabled; }
     void setLfoOn(bool on) { lfoEnabled = on; }
 
     /** Enables/disables resetting the LFO phase on every (non-slid) note trigger. */
@@ -809,6 +811,7 @@ namespace rosic014
     double lfoDepth;    // LFO depth (0.0 to 1.0)
     ModSlot modSlots[NUM_MOD_SLOTS] = { {MOD_SRC_OFF, 0, 0.0}, {MOD_SRC_OFF, 0, 0.0},
                                         {MOD_SRC_OFF, 0, 0.0}, {MOD_SRC_OFF, 0, 0.0} };
+    bool modSlotEnabled[NUM_MOD_SLOTS] = {true,true,true,true}; // MPC per-slot bypass
     double lfoPhase = 0.0;      // LFO start phase for key-sync (0.0 to 1.0)
     bool lfoKeySync = false;    // reset LFO phase on note trigger
     double baseResonance = 0.0;       // knob value (percent), LFO offsets are applied on top
@@ -1024,6 +1027,7 @@ namespace rosic014
       for(int k = 1; k <= NUM_MOD_SLOTS; k++)
       {
         int    i           = k % NUM_MOD_SLOTS;
+        if(!modSlotEnabled[i])continue; // MPC: retain settings while bypassed
         int    source      = modSlots[i].source;
         int    destination = modSlots[i].destination;
         double amount      = modSlots[i].amount;

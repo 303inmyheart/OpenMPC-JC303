@@ -135,3 +135,13 @@ the pinned base plus float patch was byte-compared to the tested wrapper/header.
 The core API/header is unchanged. Other ports do not opt into ASYNC_IDLE_NOTIFY
 unless explicitly configured. Persistent switches use the existing native MODS
 recipe; note/octave actions use the native momentary trigger recipe.
+
+
+## 0.6.0 independent bypass adaptation
+
+The pinned v0.14 DSP gains one MPC-specific slot-enable array and checked setter
+in rosic_Open303.h. Disabled slots are skipped before their source is sampled,
+so another slot cannot re-enable a bypassed LFO route by modulating its depth.
+Original matrix arithmetic and license notices are unchanged. Phase, key sync,
+contour, Accent Sweep and global Reverse Gate call the existing upstream setters.
+Independent Circuit/Osc/Filter defaults and saved switches live in the adapter.

@@ -17,6 +17,7 @@ tabs={t['tabName']:t for t in pd['tabs']}
 banks=json.loads((skin/'Q-Links.json').read_text())['Screen Mode Q-Links']['map']
 def bank(name):
     t=tabs[name];return next(b['Q-Links'] for b in banks if (b['Tab'],b['SubTab'])==(t['fnKeyIndex']+1,t['fnKeySubIndex']+1))
+for name,key in [('MODS','circuitEnabled'),('ENGINE','oscModsEnabled'),('FILTER','filterModsEnabled'),('LFO','modSlot1Enabled')]:assert ids[key] in bank(name).values()
 assert ids['seqStartMode'] in bank('SEQTOOLS').values()
 assert ids['seqTriggerStop'] in bank('SEQTOOLS').values()
 assert params[ids['seqTriggerStop']].get('momentary') and not params[ids['seqTriggerStop']].get('live')
@@ -24,6 +25,7 @@ for slot in range(1,5):
     name=f'MATRIX{slot}';assert tabs[name]['fnKeyIndex']==tabs['MODS']['fnKeyIndex']
     assert 0<=tabs[name]['fnKeySubIndex']<8
     assert ids[f'matrixDest{slot}'] in bank(name).values()
+    assert ids[f'modSlot{slot}Enabled'] in bank(name).values()
     choices=[c for c in pages[name] if c['componentData']['type'].startswith(f'shSeg_matrixDest{slot}_')]
     assert len(choices)==14
     assert all(any(m['key']=='Data' and m['value']==f'Parameter {ids[f"matrixDest{slot}"]}' for m in c['handle remapping']['map']) for c in choices)

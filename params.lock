@@ -601,3 +601,15 @@ matrixSource2
 seqStartMode
 seqTriggerStatus
 seqTriggerStop
+circuitEnabled
+oscModsEnabled
+filterModsEnabled
+modSlot1Enabled
+modSlot2Enabled
+modSlot3Enabled
+modSlot4Enabled
+lfoPhase014
+lfoSync014
+lfoContour014
+accentSweep014
+reverseGate014

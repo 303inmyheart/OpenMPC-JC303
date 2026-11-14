@@ -8143,6 +8143,126 @@
         "Off",
         "Stop"
       ]
+    },
+    {
+      "key": "circuitEnabled",
+      "name": "Circuit Mods",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "oscModsEnabled",
+      "name": "Oscillator Mods",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "filterModsEnabled",
+      "name": "Filter Mods",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "modSlot1Enabled",
+      "name": "Matrix Slot 1",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "modSlot2Enabled",
+      "name": "Matrix Slot 2",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "modSlot3Enabled",
+      "name": "Matrix Slot 3",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "modSlot4Enabled",
+      "name": "Matrix Slot 4",
+      "min": 0,
+      "max": 1,
+      "default": 1,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "lfoPhase014",
+      "name": "LFO Start Phase",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "lfoSync014",
+      "name": "LFO Key Sync",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "lfoContour014",
+      "name": "LFO Contour",
+      "min": -1,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "accentSweep014",
+      "name": "Accent Sweep",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "reverseGate014",
+      "name": "Reverse Gate",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
     }
   ]
 }

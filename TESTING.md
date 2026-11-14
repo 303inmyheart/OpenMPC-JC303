@@ -444,3 +444,42 @@ Hardware hearing, touch/Q-Link and MPC automation acceptance is pending; follow
 source push/public binary release, Desktop copy, full device reboot or formal
 Store/CPU benchmark was performed for this candidate. Standing deployment
 authorization now lasts until the user revokes it, within our plugins only.
+
+
+## 0.6.0 — independent MODS and extended LFO/Circuit
+
+The user confirmed the installed 0.5.0 works. Authorized scope for 0.6.0 is
+phase 1 + phase 2 only; Pre-VCA/Disperse, preset import/export and sequencer
+extras were not implemented.
+
+Native sanitizer regression suites and supplemental final-source checks pass,
+including independent Circuit/Osc/Filter/four-slot bypass, retained settings,
+master bypass of advanced filter shaping, and protection against reactivating
+a bypassed LFO route through LFO Depth modulation. LFO phase only affects
+key-synced starts; positive/negative contour and Accent Sweep/global Reverse
+Gate affect captured audio. JC9 roundtrip, malformed rollback and JC8 enabled-
+page/neutral-effect migration pass. The real VST MIDI fixture handles MPC-style
+CC123 while host transport is already stopped, clears the latch to Waiting for
+Note, and verifies immediate CC120 silence. This is simulated host MIDI, not
+proof of an actual hardware Stop press in the MPC app.
+
+After the final master-filter gate correction, supplemental ASan/UBSan checks
+were repeated and the exact rebuilt ARM64 shared object passed the full suite
+under QEMU. Existing voice, all 37 neural models, legacy migration, 64-step
+editing/clock/scale and UI feedback regressions pass. Final native skin geometry
+has no findings; matrix/area Q-Link bindings and all 176 flag-cell ON/OFF hit
+targets pass. Offline screenshots were reviewed.
+
+The OpenMPC installer/catalog validator reports zero warnings. Archive privacy,
+required installer scripts, checksums and tested ARM64 binary receipt pass.
+No Desktop copy, public source push/release or formal Store/CPU benchmark.
+
+Installed under the user's standing authorization: prior 0.5.0 plugin backed up
+locally, 505 package files staged and hash-verified. Settings unchanged during
+file replacement. MPC application restarted and active/running confirmed;
+installed binary SHA-256 matches the package:
+`b9bc92471670095fa1048ac7dc6511febc89811928c67654bf6d7388f09c1244`.
+Installer SHA-256:
+`99135a4b3ac0287df35ae92f2f97729f84025d72f9f47bc7d3c63ec8dc88313e`.
+Actual 0.6.0 hearing, touch/Q-Link and hardware Stop acceptance is pending; follow
+[the German test guide](TESTPLAN-0.6.0-DE.md). Public release remains 0.2.3.

@@ -9,8 +9,8 @@ public:
     ModernVoice();
     ~ModernVoice();
     ModernVoice(const ModernVoice&)=delete;
-    void configure(const float* oldValues,const float* extra);
-    void configureMatrix(const float* values);
+    void configure(const float* oldValues,const float* extra,const float* pages,const float* extensions);
+    void configureMatrix(const float* values,const float* pages);
     double driveModulation() const;
     void noteOn(int note,int velocity,bool mute=false,bool hammer=false,bool reverse=false,double gateSamples=0);
     void pitchBend(double semitones);

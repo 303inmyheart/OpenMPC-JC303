@@ -41,7 +41,13 @@ void runModeChecks(){
         std::string saved=chunk(p);Plugin loaded;loadChunk(loaded,saved);require(chunk(loaded)==saved,"start mode did not roundtrip");
         time.flags=(1<<9)|(1<<10);activeTime=&time;auto silence=loaded.render(256);activeTime=nullptr;
         for(float x:silence)require(x==0,"restored project resumed a stale trigger");
-        p.note(0x90,84,0);p.render(64);
+        // MPC hardware Stop sends All Notes Off, even with transport stopped.
+        time.flags=(1<<9)|(1<<10);activeTime=&time;
+        p.note(0xb0,123,0);p.render(128);
+        char status[64]{};p.fx->dispatch(p.fx,7,index("seqTriggerStatus"),0,status,0);
+        require(std::string(status)=="Waiting for Note","hardware Stop/All Notes Off left note trigger latched");
+        p.note(0x90,84,100);p.render(128);p.note(0xb0,120,0);
+        auto killed=p.render(128);activeTime=nullptr;for(float x:killed)require(x==0,"hardware panic did not silence note mode");
     }
     std::puts("Host/Gate/Hold/latched Trigger: sample offsets, MPC tempo, no transposition, overlapping notes, host Stop, stopped-host retrigger, state waiting PASS");
 }

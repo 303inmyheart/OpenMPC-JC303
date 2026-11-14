@@ -16,10 +16,10 @@ result does not describe the newer development builds below.
 
 ## Working development builds — not publicly released
 
-**0.4.2 is currently installed on the maintainer's Live III.** The maintainer
-confirmed the corrected ARTIC switches and the SEQUENCE Slide/Accent/Vibrato
-touch lanes. This is a tested development build, not a published release or
-catalog update. Full extended stability/multiple-instance validation is separate.
+The maintainer confirmed **0.5.0** works on Live III, including the matrix and
+note-start modes. **0.6.0** adds independent MODS bypasses and the remaining
+LFO/Circuit controls; its hardware acceptance is pending. These are development
+builds, not a published release or catalog update.
 
 Development milestones since 0.2.3:
 
@@ -30,7 +30,8 @@ Development milestones since 0.2.3:
 | 0.4.0 | 64-step piano roll on four 16-step pages; active-length generation; mute, hammer, reverse, swing, fractional gates, pitch polymeter, clipboard and undo/redo | Installed; superseded after touch/input feedback |
 | 0.4.1 | Moving playhead line; 12 keys and 19 scales plus Off; canonical touch feedback during Stop/Play | Installed; pitch improvement confirmed, persistent switch problem identified |
 | 0.4.2 | Separate native input recipes for persistent switches and momentary cells; reversible GATE/TIE editing | Installed; maintainer confirmed the touch correction works |
-| 0.5.0 | Four-slot matrix with native MODS pages, 8 source choices / 14 destinations, expanded LFO destination; Host Transport / Note Gate-Hold / latched Note Trigger and automatable Q-Link STOP | Installed for testing; offline checks pass, Live III acceptance pending; next release only |
+| 0.5.0 | Four-slot matrix with native MODS pages, 8 source choices / 14 destinations, expanded LFO destination; Host Transport / Note Gate-Hold / latched Note Trigger and automatable Q-Link STOP | Installed; maintainer confirmed it works; next release only |
+| 0.6.0 | Independent Circuit/Osc/Filter/four-slot bypass, LFO phase/key sync/contour, Accent Sweep/global Reverse Gate, hardware-Stop MIDI regression | Installed for testing; hardware acceptance pending; next release only |
 
 The 64-step editor includes:
 
@@ -71,22 +72,32 @@ Implemented for the **next public release**, not in the current 0.2.3 download:
   their existing LFO route and host clock; new routes are neutral. Held/latched
   triggers do not resume when loading a project. Older builds cannot read JC8.
 
-**Device acceptance of 0.5.0 is pending.** There is no new public binary release
+**The maintainer confirmed 0.5.0 works.** There is no new public binary release
 or release benchmark. See [the test guide](TESTPLAN-0.5.0-DE.md).
+
+## Local 0.6.0 candidate: independent MODS and phase 2
+
+- MODS MASTER remains global; Circuit, Oscillator, Filter and each matrix slot
+  have separate saved bypasses with Q-Links. LFO shares the slot-1 switch.
+- Start phase, key sync and bipolar contour use the pinned v0.14 LFO.
+- Accent Sweep (15–2000 ms) and global Reverse Gate are on the Circuit page.
+- Hardware Stop/All Notes Off clears a latched note trigger even when host
+  transport is already stopped. Mode selection remains; a new note can restart.
+  This MIDI path is tested offline; actual hardware acceptance remains pending.
+- JC9 stores switches and new settings. JC8 defaults to enabled pages and neutral
+  new effects; bypass retains knob values. Earlier versions cannot read JC9.
+
+See [the 0.6.0 test guide](TESTPLAN-0.6.0-DE.md). Not publicly released.
 
 ## Remaining planned JC303 work
 
-1. LFO extensions: start phase, key sync, contour and remaining modulation routing.
-2. Additional MODS controls: Accent Sweep and global Reverse Gate. Per-step
-   reverse is already present.
-3. Drive extensions: Pre-VCA routing and Disperse. Current post-VCA GuitarML
-   models and the optimized inference path are already available.
-4. Original factory JSON sounds/banks and practical preset import/export and
-   management alongside the existing MPC preset browser.
-5. Deferred sequencer extras: pitch-only/rhythm-only randomization, optional
-   internal/MIDI clock and sequencer MIDI output. Host clock plus the two
-   note-start modes already work in the local candidate.
-6. Release validation: extended sessions, multiple instances, parameter-change
+1. Drive extensions: Pre-VCA routing and Disperse.
+2. Original factory JSON sounds/banks and practical preset import/export and
+   management. Deferred; not part of the current authorized implementation.
+3. Deferred sequencer extras: pitch-only/rhythm-only randomization, optional
+   internal/MIDI clock and sequencer MIDI output. Host clock and both note-start
+   modes are already implemented; additional host MIDI capability needs checking.
+4. Release validation: extended sessions, multiple instances, parameter-change
    spikes and the final-release Store benchmark, then public source/release and
    catalog update.
 
@@ -127,6 +138,6 @@ the current key/scale feature is a visual guide.
 - Development installers stay under build/releases; no Desktop copies by default.
 - Builds must remain OpenMPC Installer compatible, with scripts, manifests and
   checksums. Native and ARM64 tests precede packaging.
-- Device installation/application restart currently require the maintainer's Go.
+- Development installation and hardware acceptance are separate from a public release.
 - The v0.14 port combines GPLv3 and file-specific AGPLv3 parts; existing MIT/BSD
   notices remain. See LICENSE-AUDIT.md and src/VENDORED.md in the matching source.

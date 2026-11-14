@@ -16,4 +16,16 @@ constexpr int matrixSource2=599;
 constexpr int seqStartMode=600;
 constexpr int seqTriggerStatus=601;
 constexpr int seqTriggerStop=602;
+constexpr int circuitEnabled=603;
+constexpr int oscModsEnabled=604;
+constexpr int filterModsEnabled=605;
+constexpr int modSlot1Enabled=606;
+constexpr int modSlot2Enabled=607;
+constexpr int modSlot3Enabled=608;
+constexpr int modSlot4Enabled=609;
+constexpr int lfoPhase014=610;
+constexpr int lfoSync014=611;
+constexpr int lfoContour014=612;
+constexpr int accentSweep014=613;
+constexpr int reverseGate014=614;
 }

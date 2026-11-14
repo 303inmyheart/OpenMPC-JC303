@@ -122,12 +122,8 @@ def background(index,tab):
         text(d,(1200,548),'BASS LINE / ACID MACHINE',13,MUTED,'rm')
     elif index==1:
         section(d,74,126,1126,'CIRCUIT MODIFICATIONS')
-        box(d,(684,476,1205,578),None,'#929D86',6)
-        text(d,(706,499),'BEYOND THE ORIGINAL',16,INK,'lm')
-        text(d,(706,526),'ENVELOPE  /  SLIDE  /  DIODE FILTER',11,MUTED,'lm')
-        text(d,(706,553),'ENABLE MODS TO ENGAGE THE EXTENDED CIRCUIT',10,MUTED,'lm')
     elif index==2:
-        section(d,74,294,1126,'SLOT 1 / FIXED LFO SOURCE / DESTINATION SHARED WITH MOD MATRIX 1')
+        pass
     elif index==3:
         pass
     elif index==4:
@@ -147,6 +143,8 @@ def background(index,tab):
         section(d,74,198,1126,'ENGINE: JC303 0.14 / MODS ON')
     if tab['name'].startswith('MATRIX'):
         text(d,(640,594),'JC303 0.14 ENGINE + MODS REQUIRED   /   OVERDRIVE MODULATES DRIVE DRY / WET',12,MUTED)
+    if tab['name'] in ('MODS','ENGINE','FILTER'):
+        box(d,(535,24,765,99),PAPER,'#647358',5)
     save(im,SKIN/f'sh_bg_{index}.png')
 
 

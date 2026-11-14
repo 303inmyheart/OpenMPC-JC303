@@ -10,6 +10,7 @@ extern "C" {
 #include "drive/Drive.h"
 #include "ModernVoice.h"
 #include "MatrixParams.h"
+#include "ModSettings.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -35,6 +36,8 @@ struct Voice {
     ModernVoice modern;
     std::array<float,ModernVoice::Count> extra{};
     std::array<float,matrixparam::Count> matrix{};
+    std::array<float,pageparam::Count> pages{1,1,1,1,1,1,1};
+    std::array<float,extmod::Count> extensions{};
     int lastMatrixStatus=-1;
     MpcSequence sequence{core};
     GuitarDrive drive;
@@ -69,7 +72,7 @@ struct Voice {
     int matrixStatus()const{return !isModern()?0:values[Mod]<.5f?1:2;}
     void apply(int i) {
         const double x = values[i];
-        const bool mod = values[Mod] >= 0.5f;
+        const bool mod = values[Mod] >= 0.5f && pages[0]>.5f;
         switch (i) {
         case Wave: core.setWaveform(x); break;
         case Tune: core.setTuning(linear(x, 400, 480)); break;
@@ -93,7 +96,7 @@ struct Voice {
         case LfoDepth: core.setLfoDepth(x); break;
         case LfoDest: core.setLfoDestination(x); break;
         case Mod:
-            core.setLfoOn(mod);
+            core.setLfoOn(values[Mod]>=.5f && pages[3]>.5f);
             apply(Decay);
             for (int j = NormalDecay; j <= Bass; ++j) apply(j);
             break;
@@ -101,9 +104,9 @@ struct Voice {
     }
     void applyAll() {
         for (int i = 0; i < voiceParams; ++i) if (i != Mod) apply(i);
-        core.setLfoOn(values[Mod] >= 0.5f);
-        modern.configure(values.data(),extra.data());
-        modern.configureMatrix(matrix.data());
+        core.setLfoOn(values[Mod] >= 0.5f && pages[3]>.5f);
+        modern.configure(values.data(),extra.data(),pages.data(),extensions.data());
+        modern.configureMatrix(matrix.data(),pages.data());
     }
     void stop(bool immediate = false) {
         core.allNotesOff();modern.allNotesOff();
@@ -113,7 +116,7 @@ struct Voice {
     }
     void loadPreset(int index) {
         if(index<0 || index>=presetCount || index==preset) return;
-        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();
+        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();pages.fill(1);extensions.fill(0);
         for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
         switch(index) {
         case 1: values[Wave]=0;values[Cutoff]=.35f;values[EnvMod]=.6f;values[Decay]=.45f;break;
@@ -142,6 +145,7 @@ struct Voice {
         default:break;
         }
         applyAll();preset=index;
+        for(int j=pageparam::First;j<extmod::End;++j)dirty[j]=true;
         for(int j=matrixparam::First;j<matrixparam::First+matrixparam::Count;++j)dirty[j]=true;
         for(int j=ModernVoice::First;j<ModernVoice::First+ModernVoice::Count;++j)dirty[j]=true;
         for(int i=0;i<=presetParam;++i)
@@ -161,7 +165,7 @@ struct Voice {
         std::istringstream input(text);
         std::string version;
         input >> version;
-        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7" && version != "JC303-MPC-8") return;
+        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7" && version != "JC303-MPC-8" && version != "JC303-MPC-9") return;
         const int stateVersion=version.back()-'0';
         auto restored = values;
         for (int i = 0; i < voiceParams; ++i) {
@@ -199,6 +203,14 @@ struct Voice {
             if(!(input>>tag>>startMode)||tag!="RUNMODE"||startMode<0||startMode>2)return;
             if(startMode>0 && extended.settings[0]<.5f)return;
         }
+        std::array<float,pageparam::Count> restoredPages{1,1,1,1,1,1,1};
+        std::array<float,extmod::Count> restoredExtensions{};
+        if(stateVersion>=9){
+            std::string tag,key;if(!(input>>tag)||tag!="SUBMODS")return;
+            for(int j=0;j<pageparam::Count;++j)if(!(input>>key>>restoredPages[j])||key!=PARAMS[pageparam::First+j].key||!valid(pageparam::First+j,restoredPages[j]))return;
+            if(!(input>>tag)||tag!="EXTMODS")return;
+            for(int j=0;j<extmod::Count;++j)if(!(input>>key>>restoredExtensions[j])||key!=PARAMS[extmod::First+j].key||!valid(extmod::First+j,restoredExtensions[j]))return;
+        }
         std::string trailing;
         if (input >> trailing) return;
         if (version == "JC303-MPC-1") restored[Slide] *= 358.0f/998.0f;
@@ -206,7 +218,7 @@ struct Voice {
         if(hasSequence) sequence.load(pattern); else sequence.legacyReset();
         if(stateVersion>=6)sequence.loadExtended(extended);
         drive.load(driveSettings);preset=restoredPreset;
-        values = restored;extra=restoredExtra;matrix=restoredMatrix;
+        values = restored;extra=restoredExtra;matrix=restoredMatrix;pages=restoredPages;extensions=restoredExtensions;
         sequence.set(runparam::Mode,startMode);
         applyAll();
     }
@@ -263,17 +275,19 @@ void set(void* instance, const char* key, const char* text) {
                  std::min(PARAMS[i].nopts ? static_cast<float>(PARAMS[i].nopts - 1) : PARAMS[i].max, x));
     if (PARAMS[i].nopts) x = std::round(x);
     if (PARAMS[i].int_display) x=std::round(x);
+    if(i>=pageparam::First && i<pageparam::End){if(v.pages[i-pageparam::First]!=x){v.pages[i-pageparam::First]=x;v.applyAll();}return;}
+    if(i>=extmod::First && i<extmod::End){v.extensions[i-extmod::First]=x;v.modern.configure(v.values.data(),v.extra.data(),v.pages.data(),v.extensions.data());return;}
     if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count){
         if(v.matrix[i-matrixparam::First]==x)return;
         v.matrix[i-matrixparam::First]=x;
         if(i==matrixparam::matrixDest1 && x<=2){v.values[LfoDest]=x;v.apply(LfoDest);v.dirty[LfoDest]=true;}
-        v.modern.configureMatrix(v.matrix.data());return;
+        v.modern.configureMatrix(v.matrix.data(),v.pages.data());return;
     }
     if(i>=matrixparam::matrixStatus && i<matrixparam::End && i!=runparam::Mode)return;
     if(i==runparam::Mode){if(x!=v.sequence.get(i)){v.sequence.set(i,x);v.stop(true);}return;}
     if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count){
         if(i==ModernVoice::Engine && x!=v.extra[0]){v.sequence.stop();v.stop(true);}
-        v.extra[i-ModernVoice::First]=x;v.modern.configure(v.values.data(),v.extra.data());return;
+        v.extra[i-ModernVoice::First]=x;v.modern.configure(v.values.data(),v.extra.data(),v.pages.data(),v.extensions.data());return;
     }
     if(i==Voice::presetParam) {v.loadPreset(static_cast<int>(x));return;}
     if(i>=GuitarDrive::First && i<=GuitarDrive::Status) {v.drive.set(i,x);return;}
@@ -281,12 +295,12 @@ void set(void* instance, const char* key, const char* text) {
     if(i==LfoDest){
         if(x==v.values[i] && x==v.matrix[0])return;
         v.values[i]=x;v.matrix[0]=x;v.apply(i);v.dirty[matrixparam::matrixDest1]=true;
-        v.modern.configure(v.values.data(),v.extra.data());v.modern.configureMatrix(v.matrix.data());return;
+        v.modern.configure(v.values.data(),v.extra.data(),v.pages.data(),v.extensions.data());v.modern.configureMatrix(v.matrix.data(),v.pages.data());return;
     }
     if (x == v.values[i]) return;
     v.values[i] = x;
     v.apply(i);
-    v.modern.configure(v.values.data(),v.extra.data());
+    v.modern.configure(v.values.data(),v.extra.data(),v.pages.data(),v.extensions.data());
 }
 int get(void* instance, const char* key, char* out, int size) {
     if (!out || size < 1) return 0;
@@ -294,7 +308,7 @@ int get(void* instance, const char* key, char* out, int size) {
     if (!std::strcmp(key, "state")) {
         std::ostringstream state;
         state.precision(9);
-        state << "JC303-MPC-8\n";
+        state << "JC303-MPC-9\n";
         for (int i = 0; i < voiceParams; ++i) state << PARAMS[i].key << ' ' << v.values[i] << '\n';
         v.sequence.save(state);
         v.drive.save(state);
@@ -305,12 +319,18 @@ int get(void* instance, const char* key, char* out, int size) {
         state<<"MATRIX\n";
         for(int j=0;j<matrixparam::Count;++j)state<<PARAMS[matrixparam::First+j].key<<' '<<v.matrix[j]<<'\n';
         state<<"RUNMODE "<<v.sequence.get(runparam::Mode)<<'\n';
+        state<<"SUBMODS\n";
+        for(int j=0;j<pageparam::Count;++j)state<<PARAMS[pageparam::First+j].key<<' '<<v.pages[j]<<'\n';
+        state<<"EXTMODS\n";
+        for(int j=0;j<extmod::Count;++j)state<<PARAMS[extmod::First+j].key<<' '<<v.extensions[j]<<'\n';
         const auto text = state.str();
         if (text.size() >= static_cast<size_t>(size)) return 0;
         std::memcpy(out, text.c_str(), text.size() + 1);
         return static_cast<int>(text.size());
     }
     const int i = indexOf(key);
+    if(i>=pageparam::First && i<pageparam::End)return std::snprintf(out,size,"%.9g",v.pages[i-pageparam::First]);
+    if(i>=extmod::First && i<extmod::End)return std::snprintf(out,size,"%.9g",v.extensions[i-extmod::First]);
     if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count)return std::snprintf(out,size,"%.9g",v.matrix[i-matrixparam::First]);
     if(i==matrixparam::matrixStatus)return std::snprintf(out,size,"%d",v.matrixStatus());
     if(i==matrixparam::matrixSource1)return std::snprintf(out,size,"LFO (fixed)");
@@ -328,6 +348,12 @@ int get(void* instance, const char* key, char* out, int size) {
     if (name.size() > 8 && name.substr(name.size() - 8) == "_display") {
         const int j = indexOf(name.substr(0, name.size() - 8).c_str());
         if (j < 0) return 0;
+        if(j>=extmod::First && j<extmod::End){
+            float x=v.extensions[j-extmod::First];
+            if(j==extmod::First)return std::snprintf(out,size,"%.1f deg",x*360);
+            if(j==extmod::First+3)return std::snprintf(out,size,"%.1f ms",15.0*std::pow(2000.0/15.0,x));
+            return std::snprintf(out,size,"%+.1f %%",100*x);
+        }
         if(j>=matrixparam::First && j<matrixparam::First+matrixparam::Count)return std::snprintf(out,size,"%+.1f %%",100*v.matrix[j-matrixparam::First]);
         if(j>=ModernVoice::First && j<ModernVoice::First+ModernVoice::Count){
             float x=v.extra[j-ModernVoice::First];
@@ -342,7 +368,7 @@ int get(void* instance, const char* key, char* out, int size) {
         case Wave: return std::snprintf(out, size, "%.0f %%", 100*x);
         case Tune: return std::snprintf(out, size, "%.1f Hz", linear(x, 400, 480));
         case Cutoff: return std::snprintf(out, size, "%.0f Hz", exponential(x, 314, 2394));
-        case Decay: return std::snprintf(out, size, "%.0f ms", exponential(x, v.values[Mod] >= .5 ? 30 : 200, v.values[Mod] >= .5 ? 3000 : 2000));
+        case Decay: return std::snprintf(out, size, "%.0f ms", exponential(x, v.values[Mod] >= .5 && v.pages[0]>.5 ? 30 : 200, v.values[Mod] >= .5 && v.pages[0]>.5 ? 3000 : 2000));
         case Volume: return std::snprintf(out, size, "%.1f dB", linear(x, -60, 0));
         case NormalDecay: case AccentDecay: return std::snprintf(out, size, "%.0f ms", linear(x, 30, 3000));
         case Feedback: return std::snprintf(out, size, "%.0f Hz", exponential(x, 350, 100));

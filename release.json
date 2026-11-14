@@ -1,11 +1,11 @@
 {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "id": "jc303-mpc",
   "repo": "303inmyheart/OpenMPC-JC303",
   "license": "GPL-3.0-only AND AGPL-3.0-or-later",
   "tools_ref": "a2dd2b78a19c4cd46257c09eb9a485a155ab2968",
   "asset_pattern": "JC303-MPC-*-mpc-aarch64.zip",
   "requires": "Gen2 MPC (aarch64), MPC OS 3.10.1 or newer",
-  "about": "JC303 MPC: v0.14 synthesis, four-slot modulation matrix, 64-step piano roll with Host/Gate/Trigger modes, legacy compatibility and neural drive.",
-  "tag": "jc303-mpc-v0.5.0"
+  "about": "JC303 MPC: v0.14 synthesis, independent Mods and four-slot matrix, advanced LFO/Circuit, 64-step Host/Gate/Trigger sequencer and neural drive.",
+  "tag": "jc303-mpc-v0.6.0"
 }
