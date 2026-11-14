@@ -1,116 +1,99 @@
 > **100% AI-generated MPC port and design — tested by the maintainer on a real MPC Live III.**
 >
-> The MPC-specific integration, interface, artwork tooling, optimizations and documentation were developed with Codex. The original JC303, Open303, Aciduino, GuitarML models and bundled libraries are existing upstream work by their respective authors; the AI statement does not claim authorship of those components.
+> The MPC integration, interface, artwork tooling, optimizations and documentation were developed with Codex. JC303, Open303, Aciduino, GuitarML models and bundled libraries are existing upstream work by their respective authors; this statement does not claim authorship of them.
 
 # JC303 MPC
 
-An Acid / TB-303-style instrument for **Gen2 MPCs (ARM64)**, based on [midilab/jc303](https://github.com/midilab/jc303). It runs as a native ARM64 VST2 plugin on **MPC OS 3.10.1 or newer**, with a touchscreen interface, Q-Links, MPC presets and project save/restore.
+An Acid / TB-303-style instrument for **Gen2 MPCs (aarch64), MPC OS 3.10.1+**, based on [midilab/jc303](https://github.com/midilab/jc303). Hardware tests have been performed on **MPC Live III only**.
 
-The project and installed instrument are named **JC303 MPC**. The catalog display name is **JC303**. The repository URL and existing plugin identifier remain unchanged, so projects made with this port keep recognizing it. It is a separate plugin from other Open303 ports.
+> **Release status: the public download is still 0.2.3.**
+> **The new synthesis, 64-step sequencer, key/scale guide and updated screenshots below are a preview for the NEXT release. They are not included in the current 0.2.3 download.**
+> Development build **0.4.2** is installed and being tested by the maintainer. The modulation matrix is in progress. There is no public release date or new binary release yet.
 
-![JC303 MPC — SYNTH page](docs/screenshots/synth.png)
+The project/installed name is **JC303 MPC**, the catalog display name is **JC303**. The repository URL and plugin identity remain unchanged.
 
-These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The maintainer also confirmed Candidate 5 of 0.2.3 on that device and authorized its release.
+## Available now: release 0.2.3
 
-## Features
+[Download the published 0.2.3 installer](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3).
 
-- Open303-based mono voice with waveform morph, tuning, cutoff, resonance, envelope modulation, decay, accent and output level.
-- TeeBee, Diode Octave and Diode filters, plus the JC303 modifications and LFO.
-- Extended Slide Time up to **1 second**, with migration of older saved slide durations.
-- **16-step sequencer** synchronized to MPC tempo/transport: adjustable length, notes, rests, accents, slides, ties and transpose.
-- Pattern generator with fill, accent/slide/tie probabilities, pitch-class count and note-range controls.
-- MIDI/pad step recording: velocity 100+ records accent; overlapping notes record slide; sustain-pedal down enters a rest.
-- **37 embedded GuitarML drive models**, with level/gain, equal-power dry/wet mixing, background model preparation and fades during model changes.
-- **12 factory programs** in the native MPC preset browser, including dry **Init** and two sequenced patches. New instances start with Drive and Sequencer off.
-- Six native pages: **SYNTH, MODS, LFO, SEQUENCE, GENERATE, DRIVE**, with Q-Link mappings and complete sound/pattern/drive project state.
-- Custom 303-style panels, rotary knobs, switches and Acid smiley. Step selection uses a bright border that leaves its caption visible.
-- A **Sounds → Plugin** browser tile and a loadable **Init `.xpl`** preset.
-- OpenMPC Installer-compatible packaging with installation scripts, manifests and checksums.
+This release contains:
 
-## Screenshots
+- Open303 mono voice, original filter models, circuit modifications and LFO.
+- 16-step sequencer synchronized to MPC transport/tempo, with note/rest, accent, slide, tie, generation and MIDI step recording.
+- 37 embedded GuitarML amp/pedal models with gain, dry/wet and background preparation.
+- Native MPC preset browser with 12 programs and a dry Init preset.
+- Acid artwork, custom knobs, Q-Link mappings and a Sounds-browser tile.
+- MPC project/preset state and an OpenMPC Installer-compatible ZIP.
 
-| MODS | LFO |
+The maintainer confirmed this release on Live III / MPC OS 3.10.1. Gen1/ARM32 and desktop plugin formats are outside this port's support scope.
+
+## Next release preview — not in 0.2.3
+
+The following changes are implemented in local development builds through **0.4.2** and are planned for the next public release:
+
+- **JC303 v0.14 synthesis:** eight filters, TB-303 / Alpha Juno / Phaseshaper oscillators, Circuit square, sub oscillator and filter-shaping controls. ENGINE and FILTER are subpages of MODS.
+- **64-step piano roll:** four 16-step pages, touch note/octave entry, a selected-step frame and moving playhead line.
+- **Step articulation:** gate, slide, accent, vibrato, tie, mute, hammer and reverse.
+- **Timing/editing:** shuffle, fractional gate length, Full/Dotted/Triplet step scale, reverse playback, pitch polymeter, clipboard and undo/redo.
+- **Generate length 1–64:** only the active length is regenerated; later stored steps are retained.
+- **Key/scale guide:** all 12 roots and 19 scales plus Off. It highlights note rows without changing notes, quantizing input or restricting the generator.
+- **Touch feedback:** updates while stopped and playing; persistent switches use the same native recipe as MODS, independently of momentary note/octave triggers.
+- **Compatibility:** the original synthesis/timing remain available for old projects. JC7 stores the 64-step pattern and key/scale guide. Older plugin versions cannot read JC7.
+
+The maintainer confirmed the corrected pitch and ARTIC/front-lane touch controls in 0.4.2. Native sanitizer, actual ARM64/QEMU and skin/installer checks are separate from real-device acceptance. Extended stability and release validation remain.
+
+**Currently being implemented for the next release:** the v0.14 modulation matrix. It has four slots: LFO, envelope and two selectable-source slots. It is not yet a working installed feature. Remaining LFO controls, Accent Sweep/global Reverse Gate, Pre-VCA/Disperse and original JSON preset banks remain on the [roadmap](ROADMAP.md).
+
+Microtuning and additional external MIDI/macro controls are no longer planned. Existing MIDI note input, pad playing, recording and Q-Links remain.
+
+## Screenshots — next release preview
+
+**Every plugin-interface image in this section shows the unreleased development skin. These changes become available with the NEXT public release, not with the current 0.2.3 download.**
+
+These are offline renders of the actual native skin using values queried from the compiled development plugin. They are not MPC screen captures; host fonts are approximated with DejaVu. No D16 code, artwork or reference image is distributed.
+
+![Next release preview: JC303 MPC SYNTH](docs/screenshots/synth.png)
+
+| Next release: MODS | Next release: LFO |
 |---|---|
-| ![Circuit modifications](docs/screenshots/mods.png) | ![LFO](docs/screenshots/lfo.png) |
+| ![Unreleased circuit controls](docs/screenshots/mods.png) | ![Unreleased native LFO page](docs/screenshots/lfo.png) |
 
-![16-step sequencer with selected-step border](docs/screenshots/sequence.png)
-
-| GENERATE | DRIVE |
+| Next release: ENGINE | Next release: FILTER |
 |---|---|
-| ![Pattern generator and step recording](docs/screenshots/generate.png) | ![GuitarML drive model selection](docs/screenshots/drive.png) |
+| ![Unreleased oscillator models](docs/screenshots/engine.png) | ![Unreleased filter models](docs/screenshots/filter.png) |
 
-Native Sounds-browser artwork:
+![Next release preview: 64-step piano roll with A Minor guide](docs/screenshots/sequence.png)
 
-![JC303 / ACID BASS browser tile](art/browser-tile.png)
+| Next release: ARTIC | Next release: SEQTOOLS |
+|---|---|
+| ![Unreleased step articulation lanes](docs/screenshots/artic.png) | ![Unreleased timing and editing tools](docs/screenshots/seqtools.png) |
+
+| Next release: SEQLIVE | Next release: SEQKEY |
+|---|---|
+| ![Unreleased live overrides](docs/screenshots/seqlive.png) | ![Unreleased key and scale selection](docs/screenshots/seqkey.png) |
+
+| Next release: GENERATE | Next release: DRIVE |
+|---|---|
+| ![Unreleased generator with length 1–64](docs/screenshots/generate.png) | ![Development drive page](docs/screenshots/drive.png) |
+
+There is no matrix screenshot yet: the matrix is still being implemented.
 
 ## Installation and use
 
-Target: **Gen2 MPCs, aarch64, MPC OS 3.10.1+**. Hardware testing has been performed on **MPC Live III only**; other Gen2 models have not been individually tested. Gen1 ARM32 devices and desktop plugin formats are outside this port’s current support scope.
+Download the [published release ZIP](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3), keep it intact and import it into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). It includes the plugin, skin, Init preset, licenses, scripts and checksums. The repository's preview screenshots do not change the contents of that release ZIP.
 
-Build an installation ZIP as described in [BUILDING.md](BUILDING.md), then import the release ZIP into the [OpenMPC Installer](https://github.com/open-mpc/mpc-vst-plugins). Keep the ZIP intact. The installer package includes the plugin, skin, browser artwork, Init preset, licenses, installation scripts and checksums. Download the [0.2.3 Gen2 release](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3). This exact installer was confirmed by the maintainer on Live III / OS 3.10.1. See [STORE.md](STORE.md) for catalog status.
+Enable **Preferences → Enhancements → External Plugin Support** and choose **JC303 MPC** under External VST Plugins. Play from pads, keys or MIDI clips. Overlapping notes slide; velocities of 100+ accent. MODS enables the extended circuit/LFO settings. DRIVE provides the embedded amp/pedal models.
 
-Enable **Preferences → Enhancements → External Plugin Support** and select **JC303 MPC** under External VST Plugins.
+Published-source build instructions are in [BUILDING.md](BUILDING.md). Instructions for testing the upcoming sequencer are in [the German development test guide](TESTPLAN-0.4.0-DE.md). Matching updated source and build instructions will accompany the next public binary release.
 
-Play from pads, keys or MIDI clips. Overlapping notes slide and velocities of 100 or more accent. Enable **MODS** to engage the extra circuit/LFO settings. Filter Drive affects the diode filter's input saturator; its display indicates when MODS is off or a non-diode filter is selected.
+## Validation and performance
 
-On **SEQUENCE**, enable SEQUENCER and press MPC Play. Tap a step or use EDIT STEP, then edit NOTE, REST, ACCENT, SLIDE and TIE. The SEQUENCER switch is beside TIE. On **GENERATE**, set probabilities/range and generate a pattern, or enable RECORD for step input. GENERATE and CLEAR replace pattern data and currently have no undo.
+The published 0.2.3 Store benchmark is **WARN** (p99 16.5%, maximum 24.6%); see [PERFORMANCE.md](PERFORMANCE.md). This historical result does not describe 0.4.2 or the upcoming matrix.
 
-On **DRIVE**, enable the effect and choose a model. LEVEL / GAIN controls the second input of conditioned models or the input gain of fixed models, following JC303's original mapping. Models are embedded; no model files or downloads are needed at runtime. Bypass returns to dry audio.
+Development builds are checked with native ASan/UBSan/leak tests, actual ARM64 shared-object tests under QEMU, state/timing/scale oracles and skin/installer validation. QEMU checks are not hardware benchmarks. The formal benchmark for the next release is reserved for its completed release build.
 
-## Performance and validation
+## Roadmap and license
 
-Native ASan/UBSan/leak tests and ARM64 shared-object tests under QEMU pass. Isolated ARM64 host/voice tests also passed on the real Live III. These are separate from the maintainer's hands-on tests of the installed instrument.
+See [ROADMAP.md](ROADMAP.md) for published, working-but-unreleased, in-progress and deferred work, including the other planned MPC ports.
 
-The 0.2.1 optimization reduced measured audio-thread CPU for **Blackstar HT40 GainKnob SM57mic + sequencer from 17.76% to 6.78% of one fast CPU core**. The stopped case went from 16.44% to 5.45%. TS9 and RAT showed similar improvements. Captured Blackstar audio was bit-identical before/after. These isolated benchmark percentages are **not the MPC's overall CPU meter**.
-
-Details, limits and reproducible measurement data: [PERFORMANCE.md](PERFORMANCE.md), [TESTING.md](TESTING.md), [benchmarks](benchmarks/live-iii-0.2.1.json). Multiple wet instances, parameter-sweep spikes and extended project stability still need broader testing.
-
-The official 0.2.3 benchmark on MPC Live III / OS 3.10.1 reports **WARN**: p99 **16.5%**, worst block **24.6%** of one fast core during the random Q-Link stress stage. WARN is permitted with a note; it is not a FAIL. Full result: [benchmarks/0.2.3/bench.txt](benchmarks/0.2.3/bench.txt).
-
-## Roadmap
-
-Implemented through **0.2.3**: synth/mods/LFO, host-synchronized sequencer and recording/generator, 37 drive models, native preset bank, Acid interface, CPU optimization, complete Q-Link frames, border-only step selection and Sounds-browser artwork.
-
-Next validation:
-
-- The [catalog entry was accepted](https://github.com/open-mpc/mpc-vst-plugins/pull/845); future releases are discovered by the catalog build.
-- Broaden multi-instance, parameter-sweep and long-session testing.
-- Measure multiple instances and parameter-change spikes; run longer stability sessions.
-
-The following original-desktop features are **deferred for now**:
-
-- Desktop JC303 preset import and custom drive-model import.
-- Sequencer MIDI output to other instruments.
-- Internal clock, direct MIDI-clock synchronization and note-trigger start. Currently the sequencer follows MPC transport.
-- The desktop on-screen keyboard is replaced by MPC pads and the NOTE control.
-
-Other planned ports, in order: **Geonkick MPC → Fire MPC → Wolf Shaper MPC → BYOD MPC feasibility review → Surge MPC**. BYOD first requires an assessment of whether effect-chain navigation/editing works well on MPC. Full project queue and status: [ROADMAP.md](ROADMAP.md).
-
-### Drive-model naming
-
-The 0.2.3 skin uses neutral model names to comply with the catalog’s branding policy. For example, **Valve Combo / Dynamic Mic** is the original Blackstar HT40 SM57 capture. All 37 original names and stable file identities are credited in [MODELS.md](MODELS.md). Model order, weights and saved sound identities are unchanged.
-
-## Source and build
-
-The default **`mpc-live-iii`** branch contains this port. The fork's **`main`** branch preserves the original JC303 source. This port is based on upstream commit `25d0ed1dab6d0edffc0e28c7d68c170a8af71aee`.
-
-The MPC adapter uses the [OpenMPC toolchain](https://github.com/open-mpc/mpc-vst-plugins), pinned to `ef05a26c6e59f1bfd3ef2023e6a9d8b371b61310` with the included [float/host integration patch](patches/mpc-float32.patch). DSP/model dependencies are vendored. A C++20 compiler, ARM64 cross compiler, Python and Pillow are required. See [BUILDING.md](BUILDING.md) for checkout, build, tests and packaging.
-
-## License and credits
-
-The complete MPC port is **GPL-3.0-only**. See [LICENSE](LICENSE) for the full license text. Source and modifications must be distributed in accordance with the applicable licenses; the AI-generated development process does not replace upstream licensing or credits.
-
-| Component | License / notice |
-|---|---|
-| JC303 and MPC adaptation | [GPL-3.0](LICENSE); original [JC303 by midilab and contributors](https://github.com/midilab/jc303) |
-| Open303 engine | [MIT](src/dsp/open303/LICENSE), Robin Schmidt and contributors |
-| Aciduino sequencer/harmonizer | [MIT](src/sequencer/LICENSE), Romulo Silva and contributors |
-| OpenMPC wrapper/toolchain | [MIT](https://github.com/open-mpc/mpc-vst-plugins/blob/main/LICENSE) |
-| RTNeural | [BSD-3-Clause](vendor/RTNeural/LICENSE) |
-| xsimd | [BSD-3-Clause](vendor/xsimd/LICENSE) |
-| math_approx | [BSD-3-Clause](vendor/math_approx/LICENSE) |
-| nlohmann JSON | MIT, [bundled header notice](vendor/RTNeural/modules/json/json.hpp) |
-| ChowDSP-derived RNN integration | GPL-3.0; [notice](src/drive/CHOWDSP-LICENSE.md) |
-| DejaVu artwork font | [DejaVu/Bitstream notice](art/FONT-LICENSE.txt) |
-
-The 37 model files are taken from the pinned JC303 distribution. Original identities, names, credits and dependency notices are retained. Exact provenance and local DSP/library changes are recorded in [src/VENDORED.md](src/VENDORED.md).
+Release **0.2.3** is **GPL-3.0-only**. The upcoming v0.14-based release combines **GPL-3.0-only AND AGPL-3.0-or-later**, with file-specific MIT/BSD notices retained. The [development license audit](LICENSE-AUDIT.md) describes that upcoming source; the matching notices and corresponding source must accompany the next binary release. Original authors retain their respective copyrights.

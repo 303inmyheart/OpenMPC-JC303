@@ -1,49 +1,123 @@
-# MPC Live III porting queue
+# JC303 MPC and MPC porting roadmap
 
-Target: Gen2 MPCs, aarch64, MPC OS 3.10.1+. Hardware tested: MPC Live III only.
-Every deliverable goes to the desktop as an OpenMPC Installer compatible ZIP.
+Status: 2026-11-14. Target: Gen2 MPCs (aarch64), MPC OS 3.10.1+.
+Hardware testing has been performed on MPC Live III only.
 
-1. **JC303 MPC** — released; remaining feature-parity work deferred.
-   - Synth voice, filter models, mods and LFO: implemented, user testing ongoing.
-   - Stabilise rotary/selection synchronisation; extend slide time to 1 second.
-   - 0.1.0: host-synchronised 16-step sequencer, pattern editing, accents,
-     slides/ties, generator, MIDI step recording, and project save/restore are
-     implemented. The user confirmed the 0.1.0 build works on Live III.
-   - 0.2.0: 37 GuitarML models, DRIVE page, native MPC program bank and dry Init.
-   - User confirmed 0.2.0 works, including the preset browser (2026-11-13).
-   - Deferred by the user for now (resume only as a later milestone): desktop preset/custom model import,
-     sequencer MIDI output, internal/MIDI clock modes and note-trigger start.
-     The desktop keyboard is replaced by MPC pads and the NOTE control.
-   - 0.2.1: Acid / 303 design on all six pages, custom knobs, switches, selectors
-     and model chooser; Acid smiley on the first SYNTH page.
-   - 0.2.1: measured directly on Live III; Blackstar + sequencer CPU per core
-     reduced from 17.76% to 6.78%, with bit-identical captured audio. TS9/RAT
-     show similar savings. Device host/voice tests pass; see PERFORMANCE.md.
-   - 0.2.2: complete Q-Link control bounds, border-only step selection and
-     Sounds-browser banner with a real Init .xpl. Confirmed by the maintainer
-     on Live III / OS 3.10.1, including the Sounds tile.
-   - 0.2.3: Gen2 scope, neutral drive-model labels, current catalog packaging,
-     official CPU benchmark (WARN, p99 16.5%, max 24.6%), catalog entry and published release. Candidate 5 was confirmed on Live III; catalog PR #845 is merged.
-   - Remaining validation: multiple instances, parameter
-     sweep spikes and extended stability. Feature-parity work stays deferred.
-2. **Geonkick MPC** — active next port after JC303 MPC.
-   - Upstream: https://github.com/quamplex/geonkick
-   - Start with source/build/license/dependency review and ARM64 feasibility.
-   - 0.0.1 local single-instrument prototype exists: three layers, nine oscillators, native pages and OpenMPC Installer ZIP. Native sanitizer and ARM64 QEMU tests pass; hardware tests are pending.
-3. **Fire** — queued after Geonkick from the user's follow-up link.
-   - Upstream: https://github.com/jerryuhoo/Fire
-   - Source/build/license/dependency review and ARM64 feasibility are pending.
-4. **Wolf Shaper** — queued after Fire.
-   - Upstream: https://github.com/wolf-plugins/wolf-shaper
-   - Source/build/license/dependency review and ARM64 feasibility are pending.
-5. **BYOD** — feasibility review before deciding to implement a port.
-   - Upstream: https://github.com/Chowdhury-DSP/BYOD
-   - Explicit user requirement: when this target comes up, first assess whether
-     navigation and editing effect chains make sense on MPC touchscreen/Q-Links.
-     Evaluate adding/removing/reordering/connecting blocks, parameter access,
-     browsing and presets. Recommend implementation only if the interaction is
-     practical; do not equate successful audio compilation with a useful port.
-6. **Surge** — queued after BYOD.
-   - Upstream: https://github.com/surge-synthesizer/surge
-   - Source/build/license/dependency review, ARM64 performance and MPC navigation
-     feasibility are pending. No implementation has started.
+## Published release
+
+**JC303 MPC 0.2.3** is the latest published GitHub release and the catalog/store
+version. [Release and installer](https://github.com/303inmyheart/OpenMPC-JC303/releases/tag/jc303-mpc-v0.2.3).
+
+It includes the original synthesis/mods/LFO, 16-step host-synchronised sequencer,
+37 GuitarML models, native MPC preset browser with dry Init, Acid artwork,
+Q-Link mappings and Sounds-browser tile. The maintainer tested the release on
+Live III / OS 3.10.1. Its recorded Store benchmark is WARN; that historical
+result does not describe the newer development builds below.
+
+## Working development builds — not publicly released
+
+**0.4.2 is currently installed on the maintainer's Live III.** The maintainer
+confirmed the corrected ARTIC switches and the SEQUENCE Slide/Accent/Vibrato
+touch lanes. This is a tested development build, not a published release or
+catalog update. Full extended stability/multiple-instance validation is separate.
+
+Development milestones since 0.2.3:
+
+| Build | Implemented locally | Validation/status |
+|---|---|---|
+| 0.3.0 | JC303 v0.14.0 synthesis: eight filter models, TB-303 / Alpha Juno / Phaseshaper oscillators, Circuit square, sub oscillator and filter shaping; original engine retained for older projects | Installed and exercised on Live III; native sanitizer and ARM64 checks passed |
+| 0.3.1 | ENGINE and FILTER grouped beneath MODS, with matching Q-Link banks | Installed; maintainer confirmed navigation |
+| 0.4.0 | 64-step piano roll on four 16-step pages; active-length generation; mute, hammer, reverse, swing, fractional gates, pitch polymeter, clipboard and undo/redo | Installed; superseded after touch/input feedback |
+| 0.4.1 | Moving playhead line; 12 keys and 19 scales plus Off; canonical touch feedback during Stop/Play | Installed; pitch improvement confirmed, persistent switch problem identified |
+| 0.4.2 | Separate native input recipes for persistent switches and momentary cells; reversible GATE/TIE editing | Installed; maintainer confirmed the touch correction works |
+
+The 64-step editor includes:
+
+- SEQUENCE, ARTIC, SEQTOOLS, SEQLIVE and SEQKEY under one main function key.
+- Direct note/octave entry, selected-step frame and moving playhead line.
+- GATE, SLIDE, ACCENT, VIBRATO, TIE, MUTE, HAMMER and REVERSE lanes.
+- Length 1–64 on both the editor and GENERATE. Generation affects only the active
+  length; later stored steps remain available when the pattern is lengthened.
+- Shuffle, step length, Full/Dotted/Triplet scale, reverse playback, 303 timing,
+  pitch length, step/pitch rotation, page/pattern clipboard and undo/redo.
+- Key/scale row highlighting on all four pages, stored with the pattern. It does
+  not transpose existing notes, quantize input or constrain the generator.
+- Older project migration: legacy synthesis/timing remain available; JC7 stores
+  all 64 steps and the key/scale guide. Older plugin versions cannot read JC7.
+
+Native ASan/UBSan/leak checks, actual ARM64 shared-object tests under QEMU,
+independent timing/scale oracles, native-skin checks and OpenMPC Installer
+validation pass. These are distinct from the maintainer's real-device tests.
+**No formal/store benchmark has been run for these development builds.** It is
+reserved for the completed release build. Matching source and release metadata
+must be published together before a new public binary release.
+
+## Active work: modulation matrix
+
+Port the JC303 v0.14.0 matrix into native MPC pages and project state:
+
+- Four slots, retaining the original roles: slot 1 is LFO, slot 2 is envelope,
+  slots 3 and 4 have selectable sources.
+- Destination selection, modulation amount and appropriate Q-Link controls.
+- Preserve old parameter IDs and existing project sounds; new routes start off.
+- Explicit MODS/engine status, native touch testing, state migration and audible
+  routing checks before delivery.
+
+**Implementation is in progress. There is no released or installed matrix build.**
+
+## Remaining planned JC303 work
+
+1. LFO extensions: start phase, key sync, contour and remaining modulation routing.
+2. Additional MODS controls: Accent Sweep and global Reverse Gate. Per-step
+   reverse is already present.
+3. Drive extensions: Pre-VCA routing and Disperse. Current post-VCA GuitarML
+   models and the optimized inference path are already available.
+4. Original factory JSON sounds/banks and practical preset import/export and
+   management alongside the existing MPC preset browser.
+5. Deferred sequencer extras: pitch-only/rhythm-only randomization, optional
+   internal/MIDI clock, note-trigger start and sequencer MIDI output. The current
+   host-clock sequencer works independently of those optional modes.
+6. Release validation: extended sessions, multiple instances, parameter-change
+   spikes and the final-release Store benchmark, then public source/release and
+   catalog update.
+
+## Deliberately out of scope
+
+The maintainer removed these from future plans:
+
+- Microtuning / AnaMark .tun file import.
+- Additional MIDI/macro controls: external pitch-wheel/mod-wheel integration and
+  the original desktop's assignable mod-knob workflow.
+
+Existing MIDI note input, pad playing, sustain/step recording and native MPC
+Q-Link control remain. Optional key/scale snapping is a separate future decision;
+the current key/scale feature is a visual guide.
+
+## Other ports
+
+1. **Geonkick MPC** — local 0.0.13 prototype installed on Live III; development
+   paused while the JC303 update is completed. Three layers/nine oscillators,
+   waveform/envelope display and touch point editing exist. Further validation,
+   interface refinement and release work remain. Curve points receive no Q-Links.
+   Upstream: https://github.com/quamplex/geonkick
+2. **Fire** — queued; source/license/dependency and ARM64 feasibility review.
+   Upstream: https://github.com/jerryuhoo/Fire
+3. **Wolf Shaper** — queued after Fire; feasibility review pending.
+   Upstream: https://github.com/wolf-plugins/wolf-shaper
+4. **BYOD** — navigation/usability feasibility review before committing to a port:
+   adding, connecting and editing blocks must be practical on MPC touch/Q-Links.
+   Upstream: https://github.com/Chowdhury-DSP/BYOD
+5. **Surge** — queued after BYOD; license, dependency, ARM64 performance and MPC
+   navigation feasibility review pending.
+   Upstream: https://github.com/surge-synthesizer/surge
+
+## Delivery and licensing
+
+- Product/installed name: JC303 MPC; catalog display name: JC303. Repository URL
+  and plugin identity stay unchanged.
+- Development installers stay under build/releases; no Desktop copies by default.
+- Builds must remain OpenMPC Installer compatible, with scripts, manifests and
+  checksums. Native and ARM64 tests precede packaging.
+- Device installation/application restart currently require the maintainer's Go.
+- The v0.14 port combines GPLv3 and file-specific AGPLv3 parts; existing MIT/BSD
+  notices remain. See LICENSE-AUDIT.md and src/VENDORED.md in the matching source.
