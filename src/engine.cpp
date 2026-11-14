@@ -150,7 +150,8 @@ struct Voice {
         std::istringstream input(text);
         std::string version;
         input >> version;
-        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6") return;
+        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7") return;
+        const int stateVersion=version.back()-'0';
         auto restored = values;
         for (int i = 0; i < voiceParams; ++i) {
             std::string key;
@@ -159,11 +160,11 @@ struct Voice {
             restored[i] = value;
         }
         MpcSequence::Snapshot pattern;
-        const bool hasSequence=version=="JC303-MPC-3" || version=="JC303-MPC-4" || (version=="JC303-MPC-5" || version=="JC303-MPC-6");
+        const bool hasSequence=stateVersion>=3;
         if(hasSequence && !MpcSequence::parse(input,pattern)) return;
         GuitarDrive::Settings driveSettings;
         int restoredPreset=0;
-        if(version=="JC303-MPC-4" || (version=="JC303-MPC-5" || version=="JC303-MPC-6")) {
+        if(stateVersion>=4) {
             std::string tag;
             if(!GuitarDrive::parse(input,driveSettings) || !(input>>tag>>restoredPreset) ||
                tag!="preset" || restoredPreset<0 || restoredPreset>=presetCount) return;
@@ -171,18 +172,19 @@ struct Voice {
         std::array<float,ModernVoice::Count> restoredExtra{};
         for(int j=0;j<ModernVoice::Count;++j){const auto& p=PARAMS[ModernVoice::First+j];restoredExtra[j]=p.nopts?p.def*(p.nopts-1):p.min+(p.max-p.min)*p.def;}
         restoredExtra[0]=0; // Old chunks select the unchanged legacy engine.
-        if((version=="JC303-MPC-5" || version=="JC303-MPC-6")) {
+        if(stateVersion>=5) {
             std::string key;for(int j=0;j<ModernVoice::Count;++j)
                 if(!(input>>key>>restoredExtra[j]) || key!=PARAMS[ModernVoice::First+j].key || !valid(ModernVoice::First+j,restoredExtra[j]))return;
         }
         MpcSequence::Extended extended;
-        if(version=="JC303-MPC-6" && !MpcSequence::parseExtended(input,extended))return;
+        if(stateVersion>=6 && !MpcSequence::parseExtended(input,extended))return;
+        if(stateVersion>=7 && !MpcSequence::parseGuide(input,extended))return;
         std::string trailing;
         if (input >> trailing) return;
         if (version == "JC303-MPC-1") restored[Slide] *= 358.0f/998.0f;
         stop();
         if(hasSequence) sequence.load(pattern); else sequence.legacyReset();
-        if(version=="JC303-MPC-6")sequence.loadExtended(extended);
+        if(stateVersion>=6)sequence.loadExtended(extended);
         drive.load(driveSettings);preset=restoredPreset;
         values = restored;extra=restoredExtra;
         applyAll();
@@ -258,13 +260,14 @@ int get(void* instance, const char* key, char* out, int size) {
     if (!std::strcmp(key, "state")) {
         std::ostringstream state;
         state.precision(9);
-        state << "JC303-MPC-6\n";
+        state << "JC303-MPC-7\n";
         for (int i = 0; i < voiceParams; ++i) state << PARAMS[i].key << ' ' << v.values[i] << '\n';
         v.sequence.save(state);
         v.drive.save(state);
         state<<"preset "<<v.preset<<'\n';
         for(int j=0;j<ModernVoice::Count;++j)state<<PARAMS[ModernVoice::First+j].key<<' '<<v.extra[j]<<'\n';
         v.sequence.saveExtended(state);
+        v.sequence.saveGuide(state);
         const auto text = state.str();
         if (text.size() >= static_cast<size_t>(size)) return 0;
         std::memcpy(out, text.c_str(), text.size() + 1);

@@ -343,3 +343,57 @@ claimed for this candidate. See TESTPLAN-0.4.0-DE.md for the hands-on test list.
 No formal/store performance benchmark was run or attached. It is reserved for
 the final release build at the user's explicit instruction. This development
 candidate is local/installed only; it is not a published GitHub/store release.
+
+
+## 0.4.1 — touch feedback, playhead line and key/scale guide
+
+Installed on Live III after native sanitizer, actual ARM64/QEMU VST, final skin
+and catalog checks. 354 plugin files were backed up/staged/hash-verified;
+MPC.settings stayed unchanged during replacement. The application restarted and
+returned active/running. Installed stripped binary SHA-256:
+`81709a093a9d11cecb64637ccc50e9b267ff622d87411c9b20d6795fced0c997`.
+
+The old 0.4.0 ARM64 binary fails the offline host-model regression: momentary
+UI actions remain armed without audio rendering. A separate baseline run also
+shows global parameter-screen rebuilds during playback. The opt-in async idle
+feedback patch returns action values and derived cells without audio blocks;
+callbacks run on the UI worker, and hidden legacy clock/tile polling is off.
+Stopped-input, Play/Stop persistence, canonical host-cache values, octave
+72/60/48/24, duplicate touch-lift writes and deliberately blocked UI callbacks
+pass native/ARM64 checks. These are host-model tests, not replayed MPC touches.
+
+All 12 roots and 19 scales plus Off match independent interval definitions.
+The guide does not alter stored notes or rendered audio. JC7 stores the guide;
+JC6 imports preserve 64 steps with guide Off. All prior parameter IDs remain.
+The moving playhead uses existing read-only indicators. The user confirmed that
+pitch now fits, but reported persistent flag touch problems on ARTIC and the
+three SEQUENCE lanes. 0.4.1 therefore does not have full touch acceptance.
+
+## 0.4.2 — persistent switch correction (local candidate)
+
+Persistent grid cells now use the device-tested MODS toggle recipe: native
+Button handles touch, parent Mouse Down selects Q-Link, Enter toggles. Momentary
+note/octave triggers retain their separate trigger/debounce behavior. The old
+shared trigger recipe on persistent cells could undo a touch or cause two
+related edits. GATE now always clears TIE when explicitly setting note/rest,
+so a tied rest can be restored without losing its stored pitch.
+
+The generated-skin test compares switch actions to MODS, resolves all 176 cell
+centers on ARTIC/SEQUENCE, and checks ON and OFF against the real VST. It checks
+TIE -> tied rest -> GATE -> restored note explicitly. Native ASan/UBSan/leak and actual ARM64/QEMU shared-object tests pass, as do
+final native geometry and skin-to-VST input checks. Installer validation reports
+zero warnings, with all file hashes verified. The installer privacy scan passes.
+No public release or formal/store benchmark is part of this candidate.
+
+Latest user instruction: do not install 0.4.2 or restart the MPC application
+until their explicit Go. Device remains on 0.4.1. Hardware touch acceptance of
+0.4.2 is pending; no offline test is described as a real touch test.
+
+
+0.4.2 completed local verification: the persistent switch action list matches
+MODS, all 176 flag-cell hit targets resolve to their printed row/column and
+support ON/OFF, and GATE/TIE restoration is covered in native/ARM tests. Final
+installer: JC303-MPC-0.4.2-mpc-aarch64.zip under ignored build/releases; SHA-256
+`df36aa0e80c6058a8f539c0700695e71c2e033f946ea06ec399310aaceea8294`.
+No Desktop copy, public push/release, device install, device restart or benchmark
+was performed for 0.4.2. Installation is held for the user's explicit Go.

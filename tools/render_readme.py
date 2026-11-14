@@ -43,7 +43,7 @@ def xywh(bounds):return tuple(int(float(x)) for x in bounds['bounds'].split())
 try:
     for n,tab in enumerate(tui['tabs']):
         role=tab['componentName'].split('|')[0]
-        call(e,2,0,10 if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE') else 0,None,0)
+        call(e,2,0,10 if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE','SEQKEY') else 0,None,0)
         if role in ('MODS','LFO'):setparam(e,ids['switchModState'],1)
         if role=='LFO':setparam(e,ids['lfoDepth'],.4)
         if role=='DRIVE':
@@ -52,8 +52,10 @@ try:
         if role in ('ENGINE','FILTER'):
             setparam(e,ids['engine014'],1);setparam(e,ids['switchModState'],1)
             setparam(e,ids['filterModel014'],1/7)
-        if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE'):
+        if role in ('SEQUENCE','GENERATE','ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'):
             setparam(e,ids['seqTiming'],1);setparam(e,ids['seqLength64'],1)
+        if role in ('SEQUENCE','SEQKEY'):
+            setparam(e,ids['seqKeyRoot'],9/11);setparam(e,ids['seqKeyScale'],2/19)
         state={i:round(get(e,i)*(len(q['options'])-1)) for i,q in enumerate(params) if q.get('options')}
         im=Image.new('RGBA',(1280,628));draw=ImageDraw.Draw(im)
         for c in studio.tab_components(tab,defs):
@@ -73,7 +75,7 @@ try:
                 elif sd['type']=='Button':
                     count=d['numButtonsInGroup'];bid=d['buttonId']
                     if 43<=i<=58:value=1 if i-43==round(get(e,25)*15) else 0
-                    on=value>=.5 if count==1 else round(value*(count-1))==bid
+                    on=round(value*max(count-1,1))==bid
                     pic=Image.open(skin/d['onImage' if on else 'offImage']).convert('RGBA')
                     im.alpha_composite(pic,(x+sx,y+sy))
                 elif sd['type']=='Label':

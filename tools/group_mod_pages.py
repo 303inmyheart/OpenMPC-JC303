@@ -9,7 +9,7 @@ p=skin/'TUI.json';d=json.loads(p.read_text());page=d['pageData']
 original_definitions=deepcopy(page['componentDefinitions'])
 mapping={}
 main=next(t['fnKeyIndex'] for t in page['tabs'] if t['tabName']=='MODS')
-for parent,names in [('MODS',('ENGINE','FILTER')),('SEQUENCE',('ARTIC','SEQTOOLS','SEQLIVE'))]:
+for parent,names in [('MODS',('ENGINE','FILTER')),('SEQUENCE',('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'))]:
     mainIndex=next(t['fnKeyIndex'] for t in page['tabs'] if t['tabName']==parent)
     for sub,name in enumerate(names,1):
         tab=next(t for t in page['tabs'] if t['tabName']==name)

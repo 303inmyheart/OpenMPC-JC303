@@ -363,7 +363,8 @@
       "default": 0,
       "display": "int",
       "live": true,
-      "dynamic_display": true
+      "dynamic_display": true,
+      "poll": false
     },
     {
       "key": "seqStatus",
@@ -374,7 +375,8 @@
         "Playing"
       ],
       "default": 0,
-      "live": true
+      "live": true,
+      "poll": false
     },
     {
       "key": "seqStep_1",
@@ -384,7 +386,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_2",
@@ -394,7 +396,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_3",
@@ -404,7 +406,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_4",
@@ -414,7 +416,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_5",
@@ -424,7 +426,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_6",
@@ -434,7 +436,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_7",
@@ -444,7 +446,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_8",
@@ -454,7 +456,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_9",
@@ -464,7 +466,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_10",
@@ -474,7 +476,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_11",
@@ -484,7 +486,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_12",
@@ -494,7 +496,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_13",
@@ -504,7 +506,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_14",
@@ -514,7 +516,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_15",
@@ -524,7 +526,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "seqStep_16",
@@ -534,7 +536,7 @@
       "default": 0,
       "display": "string",
       "live": true,
-      "poll": true
+      "poll": false
     },
     {
       "key": "driveEnabled",
@@ -7453,6 +7455,462 @@
     {
       "key": "seqSelectedView16",
       "name": "Selected Column 16",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqKeyRoot",
+      "name": "Root Note",
+      "min": 0,
+      "max": 11,
+      "default": 9,
+      "options": [
+        "C",
+        "C# / Db",
+        "D",
+        "D# / Eb",
+        "E",
+        "F",
+        "F# / Gb",
+        "G",
+        "G# / Ab",
+        "A",
+        "A# / Bb",
+        "B"
+      ]
+    },
+    {
+      "key": "seqKeyScale",
+      "name": "Scale",
+      "min": 0,
+      "max": 19,
+      "default": 0,
+      "options": [
+        "Off",
+        "Major",
+        "Minor",
+        "Harmonic Minor",
+        "Melodic Minor",
+        "Dorian",
+        "Phrygian",
+        "Lydian",
+        "Mixolydian",
+        "Locrian",
+        "Major Pentatonic",
+        "Minor Pentatonic",
+        "Minor Blues",
+        "Major Blues",
+        "Whole Tone",
+        "Dim Half-Whole",
+        "Dim Whole-Half",
+        "Phrygian Dominant",
+        "Double Harmonic",
+        "Chromatic"
+      ]
+    },
+    {
+      "key": "seqKeyInfo",
+      "name": "Key / Scale",
+      "min": 0,
+      "max": 239,
+      "default": 180,
+      "live": true,
+      "options": [
+        "Key / Scale Off",
+        "C Major",
+        "C Minor",
+        "C Harmonic Minor",
+        "C Melodic Minor",
+        "C Dorian",
+        "C Phrygian",
+        "C Lydian",
+        "C Mixolydian",
+        "C Locrian",
+        "C Major Pentatonic",
+        "C Minor Pentatonic",
+        "C Minor Blues",
+        "C Major Blues",
+        "C Whole Tone",
+        "C Dim Half-Whole",
+        "C Dim Whole-Half",
+        "C Phrygian Dominant",
+        "C Double Harmonic",
+        "C Chromatic",
+        "Key / Scale Off",
+        "C# Major",
+        "C# Minor",
+        "C# Harmonic Minor",
+        "C# Melodic Minor",
+        "C# Dorian",
+        "C# Phrygian",
+        "C# Lydian",
+        "C# Mixolydian",
+        "C# Locrian",
+        "C# Major Pentatonic",
+        "C# Minor Pentatonic",
+        "C# Minor Blues",
+        "C# Major Blues",
+        "C# Whole Tone",
+        "C# Dim Half-Whole",
+        "C# Dim Whole-Half",
+        "C# Phrygian Dominant",
+        "C# Double Harmonic",
+        "C# Chromatic",
+        "Key / Scale Off",
+        "D Major",
+        "D Minor",
+        "D Harmonic Minor",
+        "D Melodic Minor",
+        "D Dorian",
+        "D Phrygian",
+        "D Lydian",
+        "D Mixolydian",
+        "D Locrian",
+        "D Major Pentatonic",
+        "D Minor Pentatonic",
+        "D Minor Blues",
+        "D Major Blues",
+        "D Whole Tone",
+        "D Dim Half-Whole",
+        "D Dim Whole-Half",
+        "D Phrygian Dominant",
+        "D Double Harmonic",
+        "D Chromatic",
+        "Key / Scale Off",
+        "D# Major",
+        "D# Minor",
+        "D# Harmonic Minor",
+        "D# Melodic Minor",
+        "D# Dorian",
+        "D# Phrygian",
+        "D# Lydian",
+        "D# Mixolydian",
+        "D# Locrian",
+        "D# Major Pentatonic",
+        "D# Minor Pentatonic",
+        "D# Minor Blues",
+        "D# Major Blues",
+        "D# Whole Tone",
+        "D# Dim Half-Whole",
+        "D# Dim Whole-Half",
+        "D# Phrygian Dominant",
+        "D# Double Harmonic",
+        "D# Chromatic",
+        "Key / Scale Off",
+        "E Major",
+        "E Minor",
+        "E Harmonic Minor",
+        "E Melodic Minor",
+        "E Dorian",
+        "E Phrygian",
+        "E Lydian",
+        "E Mixolydian",
+        "E Locrian",
+        "E Major Pentatonic",
+        "E Minor Pentatonic",
+        "E Minor Blues",
+        "E Major Blues",
+        "E Whole Tone",
+        "E Dim Half-Whole",
+        "E Dim Whole-Half",
+        "E Phrygian Dominant",
+        "E Double Harmonic",
+        "E Chromatic",
+        "Key / Scale Off",
+        "F Major",
+        "F Minor",
+        "F Harmonic Minor",
+        "F Melodic Minor",
+        "F Dorian",
+        "F Phrygian",
+        "F Lydian",
+        "F Mixolydian",
+        "F Locrian",
+        "F Major Pentatonic",
+        "F Minor Pentatonic",
+        "F Minor Blues",
+        "F Major Blues",
+        "F Whole Tone",
+        "F Dim Half-Whole",
+        "F Dim Whole-Half",
+        "F Phrygian Dominant",
+        "F Double Harmonic",
+        "F Chromatic",
+        "Key / Scale Off",
+        "F# Major",
+        "F# Minor",
+        "F# Harmonic Minor",
+        "F# Melodic Minor",
+        "F# Dorian",
+        "F# Phrygian",
+        "F# Lydian",
+        "F# Mixolydian",
+        "F# Locrian",
+        "F# Major Pentatonic",
+        "F# Minor Pentatonic",
+        "F# Minor Blues",
+        "F# Major Blues",
+        "F# Whole Tone",
+        "F# Dim Half-Whole",
+        "F# Dim Whole-Half",
+        "F# Phrygian Dominant",
+        "F# Double Harmonic",
+        "F# Chromatic",
+        "Key / Scale Off",
+        "G Major",
+        "G Minor",
+        "G Harmonic Minor",
+        "G Melodic Minor",
+        "G Dorian",
+        "G Phrygian",
+        "G Lydian",
+        "G Mixolydian",
+        "G Locrian",
+        "G Major Pentatonic",
+        "G Minor Pentatonic",
+        "G Minor Blues",
+        "G Major Blues",
+        "G Whole Tone",
+        "G Dim Half-Whole",
+        "G Dim Whole-Half",
+        "G Phrygian Dominant",
+        "G Double Harmonic",
+        "G Chromatic",
+        "Key / Scale Off",
+        "G# Major",
+        "G# Minor",
+        "G# Harmonic Minor",
+        "G# Melodic Minor",
+        "G# Dorian",
+        "G# Phrygian",
+        "G# Lydian",
+        "G# Mixolydian",
+        "G# Locrian",
+        "G# Major Pentatonic",
+        "G# Minor Pentatonic",
+        "G# Minor Blues",
+        "G# Major Blues",
+        "G# Whole Tone",
+        "G# Dim Half-Whole",
+        "G# Dim Whole-Half",
+        "G# Phrygian Dominant",
+        "G# Double Harmonic",
+        "G# Chromatic",
+        "Key / Scale Off",
+        "A Major",
+        "A Minor",
+        "A Harmonic Minor",
+        "A Melodic Minor",
+        "A Dorian",
+        "A Phrygian",
+        "A Lydian",
+        "A Mixolydian",
+        "A Locrian",
+        "A Major Pentatonic",
+        "A Minor Pentatonic",
+        "A Minor Blues",
+        "A Major Blues",
+        "A Whole Tone",
+        "A Dim Half-Whole",
+        "A Dim Whole-Half",
+        "A Phrygian Dominant",
+        "A Double Harmonic",
+        "A Chromatic",
+        "Key / Scale Off",
+        "A# Major",
+        "A# Minor",
+        "A# Harmonic Minor",
+        "A# Melodic Minor",
+        "A# Dorian",
+        "A# Phrygian",
+        "A# Lydian",
+        "A# Mixolydian",
+        "A# Locrian",
+        "A# Major Pentatonic",
+        "A# Minor Pentatonic",
+        "A# Minor Blues",
+        "A# Major Blues",
+        "A# Whole Tone",
+        "A# Dim Half-Whole",
+        "A# Dim Whole-Half",
+        "A# Phrygian Dominant",
+        "A# Double Harmonic",
+        "A# Chromatic",
+        "Key / Scale Off",
+        "B Major",
+        "B Minor",
+        "B Harmonic Minor",
+        "B Melodic Minor",
+        "B Dorian",
+        "B Phrygian",
+        "B Lydian",
+        "B Mixolydian",
+        "B Locrian",
+        "B Major Pentatonic",
+        "B Minor Pentatonic",
+        "B Minor Blues",
+        "B Major Blues",
+        "B Whole Tone",
+        "B Dim Half-Whole",
+        "B Dim Whole-Half",
+        "B Phrygian Dominant",
+        "B Double Harmonic",
+        "B Chromatic"
+      ]
+    },
+    {
+      "key": "seqScaleView0",
+      "name": "Scale Pitch 0",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView1",
+      "name": "Scale Pitch 1",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView2",
+      "name": "Scale Pitch 2",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView3",
+      "name": "Scale Pitch 3",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView4",
+      "name": "Scale Pitch 4",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView5",
+      "name": "Scale Pitch 5",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView6",
+      "name": "Scale Pitch 6",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView7",
+      "name": "Scale Pitch 7",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView8",
+      "name": "Scale Pitch 8",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView9",
+      "name": "Scale Pitch 9",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView10",
+      "name": "Scale Pitch 10",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "live": true,
+      "legacy": true,
+      "options": [
+        "Off",
+        "On"
+      ]
+    },
+    {
+      "key": "seqScaleView11",
+      "name": "Scale Pitch 11",
       "min": 0,
       "max": 1,
       "default": 0,

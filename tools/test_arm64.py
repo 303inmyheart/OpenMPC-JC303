@@ -7,6 +7,7 @@ import os
 import hashlib
 import json
 import build
+import framework_test
 
 dest=build.ROOT/'build/aarch64'
 common=build.flags('aarch64',False)
@@ -20,7 +21,7 @@ sysroots=[build.Path(os.environ['QEMU_LD_PREFIX'])] if os.environ.get('QEMU_LD_P
     build.LOCAL/'aarch64-linux-gnu',build.Path('/usr/aarch64-linux-gnu')]
 sysroot=next((p for p in sysroots if p.exists()),None)
 if sysroot is None:raise SystemExit('ARM64 runtime missing; set QEMU_LD_PREFIX to its sysroot.')
-for source,name in [(build.MPC/'tools/host_test.c','host_test'),(build.ROOT/'tests/voice_test.cpp','voice_test')]:
+for source,name in [(framework_test.source(build,dest),'host_test'),(build.ROOT/'tests/voice_test.cpp','voice_test')]:
     cpp=source.suffix=='.cpp'
     obj=dest/(name+'.o')
     build.run([cxx if cpp else cc,'-std=c++20' if cpp else '-std=gnu11',*common,
@@ -45,7 +46,7 @@ for source,name in [(build.MPC/'tools/host_test.c','host_test'),(build.ROOT/'tes
     'tests': ['framework host', 'reference voice', 'state and MIDI', '54 filter/LFO combinations',
               'stepped Q-Link host/touch synchronisation with host echoes',
               'six-waveform rotary sweeps and one-second slide migration',
-              'legacy sequencer exact audio/migration, 64-step grid/pages, generator length, swing/fractional gates, CPU timing oracle, scaled host clock, step articulation DSP and JC6 state',
+              'legacy sequencer exact audio/migration, 64-step grid/pages, generator length, swing/fractional gates, CPU timing oracle, scaled host clock, step articulation DSP, JC7 state and 12-key/19-scale interval oracle',
               '37 GuitarML models, independent LSTM oracle, rapid switching and bypass',
               '12 MPC browser programs, dry Init, edited state restore and wet VST audio'],
     'environment': 'QEMU ARM64, offline only; no hardware benchmark',

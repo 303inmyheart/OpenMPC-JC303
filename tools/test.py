@@ -3,13 +3,14 @@
 import os
 from pathlib import Path
 import build
+import framework_test
 
 os.environ['ASAN_OPTIONS']='detect_leaks=1:halt_on_error=1'
 os.environ['UBSAN_OPTIONS']='halt_on_error=1:print_stacktrace=1'
 objects=build.build('native',sanitize=True)
 dest=build.ROOT/'build/native-san'
 common=build.flags('native',True)
-for source,name in [(build.MPC/'tools/host_test.c','host_test'),(build.ROOT/'tests/voice_test.cpp','voice_test')]:
+for source,name in [(framework_test.source(build,dest),'host_test'),(build.ROOT/'tests/voice_test.cpp','voice_test')]:
     cpp=source.suffix=='.cpp'
     obj=dest/(name+'.o')
     build.run([build.compiler('native','c++' if cpp else 'c'),'-std=c++20' if cpp else '-std=gnu11',

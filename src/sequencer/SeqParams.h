@@ -1,6 +1,6 @@
 #pragma once
 namespace seqparam {
-constexpr int First=86, End=573;
+constexpr int First=86, End=588;
 constexpr int seqTiming=86;
 constexpr int seqPage=87;
 constexpr int seqLength64=88;
@@ -488,6 +488,21 @@ constexpr int seqSelectedView13=569;
 constexpr int seqSelectedView14=570;
 constexpr int seqSelectedView15=571;
 constexpr int seqSelectedView16=572;
+constexpr int seqKeyRoot=573;
+constexpr int seqKeyScale=574;
+constexpr int seqKeyInfo=575;
+constexpr int seqScaleView0=576;
+constexpr int seqScaleView1=577;
+constexpr int seqScaleView2=578;
+constexpr int seqScaleView3=579;
+constexpr int seqScaleView4=580;
+constexpr int seqScaleView5=581;
+constexpr int seqScaleView6=582;
+constexpr int seqScaleView7=583;
+constexpr int seqScaleView8=584;
+constexpr int seqScaleView9=585;
+constexpr int seqScaleView10=586;
+constexpr int seqScaleView11=587;
 constexpr int GateFirst=125;
 constexpr int SlideFirst=141;
 constexpr int AccentFirst=157;
@@ -502,4 +517,5 @@ constexpr int PlayViewFirst=285;
 constexpr int NoteActionFirst=301;
 constexpr int OctActionFirst=493;
 constexpr int SelectedViewFirst=557;
+constexpr int ScaleViewFirst=576;
 }

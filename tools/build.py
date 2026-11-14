@@ -44,6 +44,8 @@ def compiler(target, language):
 
 def prepare():
     sequence_spec.generate()
+    if 'ASYNC_IDLE_FEEDBACK' not in (MPC/'wrapper/vst2_wrap.c').read_text():
+        raise SystemExit('Apply patches/mpc-async-revision-cache.patch to MPC_VST; see BUILDING.md.')
     if not (MPC/'wrapper/audio_format.h').exists():
         raise SystemExit('Apply patches/mpc-float32.patch to MPC_VST first; see BUILDING.md.')
     run([sys.executable, MPC/'tools/gen_vst.py', ROOT/'vst.json', '--params-h'])
@@ -93,6 +95,7 @@ def skin():
     run([sys.executable, ROOT/'tools/model_overlay.py'])
     run([sys.executable, ROOT/'tools/browser_preset.py'])
     run([sys.executable, ROOT/'tools/group_mod_pages.py'])
+    run([sys.executable, ROOT/'tools/test_sequencer_skin.py'])
     folder=next((ROOT/'build/skin').glob('*/Plugin Skins/TUI.json')).parent
     run([sys.executable, MPC/'tools/studio.py','preview',folder,'-o', ROOT/'build/preview_%d.png'])
 

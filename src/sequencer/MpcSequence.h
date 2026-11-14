@@ -2,6 +2,7 @@
 #include "LegacyMpcSequence.h"
 #include "v014/AcidSequencer303.h"
 #include "SeqParams.h"
+#include "ScaleGuide.h"
 
 // Append-only host adapter. Legacy chunks retain the original event engine;
 // the 64-step editor uses the upstream v0.14 event engine under the host lock.
@@ -9,6 +10,7 @@ class MpcSequence : public LegacyMpcSequence {
     using Step=jc303seq014::StepData303;
     using Sequencer=jc303seq014::AcidSequencer303;
     Sequencer seq;
+    ScaleGuide guide;
     HostClock clock;
     std::array<float,seqparam::seqFollow-seqparam::First+1> cfg{};
     std::array<float,stored> base{};
@@ -41,7 +43,9 @@ class MpcSequence : public LegacyMpcSequence {
         for(int p=Note;p<=Tie;++p)refresh(p);
         for(int p=seqparam::seqMute;p<=seqparam::seqVibrato;++p)refresh(p);
         for(int p=seqparam::GateFirst;p<seqparam::NoteActionFirst;++p)refresh(p);
-        for(int p=seqparam::SelectedViewFirst;p<seqparam::End;++p)refresh(p);
+        for(int p=seqparam::SelectedViewFirst;p<seqparam::SelectedViewFirst+16;++p)refresh(p);
+        for(int p=seqparam::ScaleViewFirst;p<seqparam::ScaleViewFirst+12;++p)refresh(p);
+        dirty[seqparam::seqKeyInfo]=true;
         refresh(seqparam::seqCanUndo);refresh(seqparam::seqCanRedo);
         dirty[seqparam::seqInfo]=true;
     }
@@ -89,7 +93,7 @@ class MpcSequence : public LegacyMpcSequence {
     void editFlag(int n,int kind,bool on){
         auto s=step(n);
         switch(kind){
-        case 0:s.rest=!on;if(!on)s.tie=false;break;
+        case 0:s.rest=!on;s.tie=false;break;
         case 1:s.slide=on;if(on)s.hammer=false;break;
         case 2:s.accent=on;if(on)s.mute=false;break;
         case 3:s.vibrato=on;break;
@@ -104,6 +108,7 @@ public:
     struct Extended {
         std::array<float,seqparam::seqFollow-seqparam::First+1> settings{};
         std::array<Step,64> steps{};
+        ScaleGuide guide;
     };
     explicit MpcSequence(rosic::Open303& voice):LegacyMpcSequence(voice){
         for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);
@@ -186,6 +191,11 @@ public:
             if(p==Enable||p==Transpose){stop();}configure();publish();return;
         }
         if(p>=End)return;
+        if(p==seqKeyRoot||p==seqKeyScale){
+            if(x==get(p))return;
+            if(p==seqKeyRoot)guide.root=int(x);else guide.kind=int(x);
+            changedViews();return;
+        }
         if(p>=SelectedViewFirst)return;
         if(p>=PitchViewFirst&&p<NoteActionFirst)return; // host cannot write views
         if(p==seqInfo||p==seqCanUndo||p==seqCanRedo)return;
@@ -257,7 +267,11 @@ public:
         }
         if(p==seqCanUndo)return seq.canUndo();
         if(p==seqCanRedo)return seq.canRedo();
-        if(p>=SelectedViewFirst&&p<End)return selected()==page()*16+p-SelectedViewFirst;
+        if(p==seqKeyInfo)return guide.root*ScaleGuide::Count+guide.kind;
+        if(p==seqKeyRoot)return guide.root;
+        if(p==seqKeyScale)return guide.kind;
+        if(p>=ScaleViewFirst&&p<ScaleViewFirst+12)return guide.includes(p-ScaleViewFirst);
+        if(p>=SelectedViewFirst&&p<SelectedViewFirst+16)return selected()==page()*16+p-SelectedViewFirst;
         if(p>=NoteActionFirst)return 0;
         if(p>=GateFirst&&p<NoteActionFirst){
             int col=(p-GateFirst)%16;auto s=step(page()*16+col);
@@ -281,6 +295,10 @@ public:
         return std::snprintf(out,size,"%.9g",get(p));
     }
     int display(int p,char*out,int size)const{
+        if(p==seqparam::seqKeyInfo){
+            static const char* roots[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};
+            return guide.kind?std::snprintf(out,size,"%s %s",roots[guide.root],ScaleGuide::Names[guide.kind]):std::snprintf(out,size,"Key / Scale Off");
+        }
         if(p==seqparam::seqInfo)return std::snprintf(out,size,"STEPS %02d-%02d  |  LENGTH %02d  |  %s",page()*16+1,page()*16+16,int(get(seqparam::seqLength64)),modern()?"NEW 64":"LEGACY");
         if(p==Note){int n=get(p);static const char* names[]{"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};return std::snprintf(out,size,"%d / %s%d",n,names[n%12],n/12-1);}
         if(p==Current&&!modern())return LegacyMpcSequence::display(p,out,size);
@@ -304,6 +322,12 @@ public:
         out<<"SEQ64\n";for(int p=seqparam::First;p<=seqparam::seqFollow;++p)out<<PARAMS[p].key<<' '<<get(p)<<'\n';
         for(int n=0;n<64;++n){auto s=step(n);out<<n<<' '<<int(s.note)<<' '<<s.rest<<' '<<s.accent<<' '<<s.slide<<' '<<s.tie<<' '<<s.mute<<' '<<s.hammer<<' '<<s.reverse<<' '<<s.vibrato<<'\n';}
     }
+    void saveGuide(std::ostream&out)const{out<<"KEYSCALE "<<guide.root<<' '<<guide.kind<<'\n';}
+    static bool parseGuide(std::istream&in,Extended&snap){
+        std::string tag;int root,kind;
+        if(!(in>>tag>>root>>kind)||tag!="KEYSCALE"||root<0||root>11||kind<0||kind>=ScaleGuide::Count)return false;
+        snap.guide.root=root;snap.guide.kind=kind;return true;
+    }
     static bool parseExtended(std::istream&in,Extended&snap){
         std::string key;if(!(in>>key)||key!="SEQ64")return false;
         for(int p=seqparam::First;p<=seqparam::seqFollow;++p){float x;const auto&q=PARAMS[p];if(!(in>>key>>x)||key!=q.key||!std::isfinite(x)||x<(q.nopts?0:q.min)||x>(q.nopts?q.nopts-1:q.max)||((q.nopts||q.int_display)&&x!=std::round(x)))return false;snap.settings[p-seqparam::First]=x;}
@@ -312,7 +336,7 @@ public:
             if((s.accent&&s.mute)||(s.slide&&s.hammer))return false;
         }return true;
     }
-    void load(const Snapshot&snap){stop();seq.clearHistory();LegacyMpcSequence::load(snap);base=snap.settings;for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);c(seqparam::seqTiming)=0;c(seqparam::seqLength64)=snap.settings[Length-first];c(seqparam::seqSelected64)=snap.settings[Selected-first];for(int n=0;n<64;++n){Step s;s.rest=true;seq.replaceStep(n,s);}changedViews();}
-    void loadExtended(const Extended&snap){stop();cfg=snap.settings;for(int n=0;n<64;++n)seq.replaceStep(n,snap.steps[n]);configure();changedViews();}
+    void load(const Snapshot&snap){stop();guide=ScaleGuide{};seq.clearHistory();LegacyMpcSequence::load(snap);base=snap.settings;for(int p=seqparam::First;p<=seqparam::seqFollow;++p)c(p)=def(p);c(seqparam::seqTiming)=0;c(seqparam::seqLength64)=snap.settings[Length-first];c(seqparam::seqSelected64)=snap.settings[Selected-first];for(int n=0;n<64;++n){Step s;s.rest=true;seq.replaceStep(n,s);}changedViews();}
+    void loadExtended(const Extended&snap){stop();guide=snap.guide;cfg=snap.settings;for(int n=0;n<64;++n)seq.replaceStep(n,snap.steps[n]);configure();changedViews();}
     void legacyReset(){Snapshot s;for(int p=first;p<first+stored;++p)s.settings[p-first]=std::round(def(p));load(s);}
 };

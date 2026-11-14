@@ -125,3 +125,13 @@ MpcSequence provides the host bindings, page aliases, grid actions, clipboard,
 new JC303-MPC-6 extension and independent alternating/smoothed pitch vibrato.
 No D16 code or artwork is used. The local, user-supplied reference image remains
 untracked and is not included in source or install archives.
+
+
+0.4.1/0.4.2 UI feedback: patches/mpc-async-revision-cache.patch applies after
+the float patch on the documented wrapper pin. It includes opt-in async idle
+engine-change delivery, canonical momentary reset without audio blocks, atomic
+pending flags and the UI-thread revision snapshot cache. Its output against
+the pinned base plus float patch was byte-compared to the tested wrapper/header.
+The core API/header is unchanged. Other ports do not opt into ASYNC_IDLE_NOTIFY
+unless explicitly configured. Persistent switches use the existing native MODS
+recipe; note/octave actions use the native momentary trigger recipe.

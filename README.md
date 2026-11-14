@@ -29,16 +29,33 @@ new modulation-matrix features, pre-VCA routing, JSON banks and microtuning
 file import are later milestones. Public release/source update is pending.
 See [the German test guide](TESTPLAN-0.3.0.md) and [license audit](LICENSE-AUDIT.md).
 
-## Local 0.4.0 sequencer candidate
+## Local 0.4.x sequencer candidate
 
 A new piano roll offers **64 steps on four pages**, octave and note touch entry,
 step articulation lanes, shuffle, fractional gate lengths, step scale/modifiers,
 reverse, pitch polymeter and transient clipboard/undo. SEQUENCE cycles through
-**SEQUENCE → ARTIC → SEQTOOLS → SEQLIVE**. GENERATE exposes length 1–64 and
-changes only the active length. New JC303-MPC-6 state stores all 64 steps;
+**SEQUENCE → ARTIC → SEQTOOLS → SEQLIVE → SEQKEY**. GENERATE exposes length 1–64 and
+changes only the active length. JC303-MPC-7 state stores all 64 steps plus the key/scale guide;
 versions 1–5 retain the original sequencer timing on import. Hardware acceptance
 and a public release are pending; a formal store benchmark is deferred to the
 final release build. See [the German test guide](TESTPLAN-0.4.0-DE.md).
+
+0.4.1 corrects the native grid's touch-toggle wiring (single-button ID 1 and
+Toggle Switch actions), adds a thin moving playhead line through the piano
+roll, and provides 12 root notes / 19 scales plus Off on SEQKEY. Highlighting
+is purely visual; it does not quantize existing notes or constrain generation. A skin-to-VST binding regression now verifies note, octave and articulation
+input. Async UI feedback also resets momentary actions without audio blocks
+and keeps the playhead from rebuilding the whole page. Stopped/playing host
+tests cover canonical views, octave input, duplicate touch-lift events and
+Play/Stop persistence. This does not replace acceptance testing on the MPC
+touchscreen.
+
+0.4.2 separates persistent grid switches from momentary note/octave triggers.
+GATE, SLIDE, ACCENT, VIBRATO, TIE, MUTE, HAMMER and REVERSE now use the same
+native input recipe as the existing MODS switch. All 176 flag-cell centers and
+ON/OFF transitions are covered by the skin-to-VST check. Explicitly enabling
+GATE restores a tied rest's stored note and clears TIE. Hardware touch acceptance
+of this correction is pending.
 
 ## Features
 
@@ -73,6 +90,8 @@ final release build. See [the German test guide](TESTPLAN-0.4.0-DE.md).
 | ![Step articulation lanes](docs/screenshots/artic.png) | ![Sequencer timing and editing tools](docs/screenshots/seqtools.png) |
 
 [Live overrides and page editing preview](docs/screenshots/seqlive.png)
+
+![Key and scale selection, offline native-skin preview](docs/screenshots/seqkey.png)
 
 Native Sounds-browser artwork:
 

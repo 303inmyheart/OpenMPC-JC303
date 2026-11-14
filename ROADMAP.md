@@ -68,15 +68,17 @@ User requests exact control names and a practical test list for each delivered
 milestone. Do not describe step one as full v0.14 parity. New license notices are
 combined GPLv3/AGPLv3; see LICENSE-AUDIT.md. No new Desktop copies by default.
 
-## Sequencer: requested scale guide (deferred)
+## Sequencer: key/scale guide (0.4.1 candidate)
 
-Add a root-note / key-and-scale menu to the new piano-roll sequencer, e.g.
-**A Minor**. Highlight the corresponding allowed note rows across all octaves
-and all four 16-step pages, so the user can see the notes of the chosen scale
-while entering a sequence. Store the selected key/scale with the pattern.
-Highlighting must not silently transpose, quantize or rewrite existing notes;
-optional scale snapping is a separate later decision. This is a roadmap item,
-not a requirement to block the current 64-step editor milestone.
+Implemented at the user's request: all 12 root notes and 19 scales/modes, plus
+Off, on SEQKEY. Includes Major/Minor, harmonic/melodic minor, all church modes,
+major/minor pentatonic and blues, whole tone, both diminished scales, Phrygian
+dominant, double harmonic and chromatic. Allowed note rows are highlighted
+across all four piano-roll pages; the main header shows e.g. A Minor. JC7 stores
+the guide with the pattern; JC6 imports keep their 64 steps with guide Off.
+Existing notes, playback and generation remain unchanged. Optional scale snapping
+is still a separate future decision. Touch-grid fix and running playhead line
+are included in the same candidate. Device acceptance is pending.
 
 Current sequencer milestone: Phoscyon-2-inspired piano roll in our own Acid
 artwork, 64 steps on four pages, JC303 v0.14 sequencer features. GENERATE must

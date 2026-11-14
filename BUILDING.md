@@ -13,11 +13,16 @@ cd OpenMPC-JC303
 git clone https://github.com/open-mpc/mpc-vst-plugins.git ../mpc-vst-plugins
 git -C ../mpc-vst-plugins checkout ef05a26c6e59f1bfd3ef2023e6a9d8b371b61310
 git -C ../mpc-vst-plugins apply "$PWD/patches/mpc-float32.patch"
+git -C ../mpc-vst-plugins apply "$PWD/patches/mpc-async-revision-cache.patch"
 ```
 
-Use that commit and apply the included patch once to a clean checkout. The
+Use that commit and apply both included patches once, in that order, to a clean checkout. The
 patch supplies the float engine ABI, stepped Q-Link feedback and host loop
-metadata this port expects. It includes the new audio_format.h file.
+metadata this port expects. It includes the new audio_format.h file. The second
+patch supplies the async UI path and opt-in ASYNC_IDLE_NOTIFY: stopped-input
+feedback and momentary spring-back run without requiring audio blocks. Revision
+cache updates and atomic pending flags prevent stale or duplicate delivery.
+Native test hosts allow async callbacks to drain; callback counters are atomic.
 
 Release templates/checks are pinned separately to the current catalog revision:
 

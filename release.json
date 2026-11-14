@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0",
+  "version": "0.4.2",
   "id": "jc303-mpc",
   "repo": "303inmyheart/OpenMPC-JC303",
   "license": "GPL-3.0-only AND AGPL-3.0-or-later",
@@ -7,5 +7,5 @@
   "asset_pattern": "JC303-MPC-*-mpc-aarch64.zip",
   "requires": "Gen2 MPC (aarch64), MPC OS 3.10.1 or newer",
   "about": "JC303 MPC: v0.14 synthesis, 64-step piano roll, legacy project compatibility and optimized neural drive.",
-  "tag": "jc303-mpc-v0.4.0"
+  "tag": "jc303-mpc-v0.4.2"
 }

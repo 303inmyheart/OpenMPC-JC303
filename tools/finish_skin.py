@@ -76,8 +76,10 @@ def background(index,tab):
     line(d,[(252,87),(420,87)],GREEN,4)
     badge_right=1140 if index==0 else 1210
     badge_left=badge_right-240
-    page_index=3 if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE') else 1 if tab['name'] in ('ENGINE','FILTER') else index
+    page_index=3 if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY') else 1 if tab['name'] in ('ENGINE','FILTER') else index
     caption='MODS / '+tab['name'] if tab['name'] in ('ENGINE','FILTER') else f'{index+1:02d} / {tab["name"]}'
+    if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'):
+        caption='SEQUENCE / '+{'ARTIC':'ARTIC','SEQTOOLS':'TOOLS','SEQLIVE':'LIVE','SEQKEY':'KEY'}[tab['name']]
     text(d,(badge_right-16,49),caption,20,'#EEF3E5','rm')
     for n in range(6):
         x=badge_right-6*16+n*16

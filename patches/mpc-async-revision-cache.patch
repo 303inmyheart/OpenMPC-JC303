@@ -1,0 +1,440 @@
+diff --git a/wrapper/vst2_wrap.c b/wrapper/vst2_wrap.c
+--- a/wrapper/vst2_wrap.c
++++ b/wrapper/vst2_wrap.c
+@@ -150,6 +150,8 @@
+     int has_pend0;            /* (see setParameter) */
+     char last_rev[16];       /* HAS_DISPLAY_REV: the "display_rev" last seen */
+     float last_norm[NPARAMS];   /* HAS_DISPLAY_REV: value last reported per param (-1 = never) */
++    uint64_t last_input_ns; int graph_deferred;
++    unsigned char notify_pending[NPARAMS]; int notify_cursor, notify_update;
+ #ifdef DISPLAY_REV_THREAD
+     pthread_t rev_th; volatile int rev_stop; int rev_th_on;   /* the display_rev reporter thread (see rev_scan) */
+ #endif
+@@ -178,6 +180,61 @@
+ #endif
+ } wrap_t;
+ 
++#ifndef ASYNC_HOST_NOTIFY
++#define ASYNC_HOST_NOTIFY 0
++#endif
++#if ASYNC_HOST_NOTIFY && !defined(DISPLAY_REV_THREAD)
++#error ASYNC_HOST_NOTIFY requires DISPLAY_REV_THREAD
++#endif
++#ifndef ASYNC_IDLE_NOTIFY
++#define ASYNC_IDLE_NOTIFY 0
++#endif
++#if ASYNC_IDLE_NOTIFY && (!ASYNC_HOST_NOTIFY || !defined(DISPLAY_REV_THREAD))
++#error ASYNC_IDLE_NOTIFY requires ASYNC_HOST_NOTIFY and DISPLAY_REV_THREAD
++#endif
++#ifndef FINE_TRACK_RAW_INPUT
++#define FINE_TRACK_RAW_INPUT 0
++#endif
++#ifndef FINE_INPUT_CONTINUOUS
++#define FINE_INPUT_CONTINUOUS 0
++#endif
++#ifndef GRAPH_REBIND_ON_REFRESH
++#define GRAPH_REBIND_ON_REFRESH 0
++#endif
++#ifndef GRAPH_INVALIDATION_ONLY
++#define GRAPH_INVALIDATION_ONLY 0
++#endif
++#ifndef LIVE_PARAMS_READONLY
++#define LIVE_PARAMS_READONLY 0
++#endif
++#ifndef GRAPH_UPDATE_IDLE_MS
++#define GRAPH_UPDATE_IDLE_MS 0
++#endif
++/* Derived display values are readable host parameters, never automation inputs. */
++static int live_readonly(int i) {
++#if LIVE_PARAMS_READONLY && defined(PLUG_LIVE_COUNT)
++    int lo=0,hi=PLUG_LIVE_COUNT;
++    while(lo<hi) { int mid=(lo+hi)/2; if(PLUG_LIVE[mid]<i)lo=mid+1;else hi=mid; }
++    return lo<PLUG_LIVE_COUNT && PLUG_LIVE[lo]==i;
++#else
++    (void)i;return 0;
++#endif
++}
++static int graph_param(int i) { return i>=0 && i<NPARAMS && !strncmp(PARAMS[i].key,"viz_",4); }
++static int graph_feedback(int i) { return graph_param(i) || (GRAPH_INVALIDATION_ONLY && i>=0 && i<NPARAMS && !strcmp(PARAMS[i].key,"graph_revision")); }
++static uint64_t monotonic_ns(void) { struct timespec t;clock_gettime(CLOCK_MONOTONIC,&t);return (uint64_t)t.tv_sec*1000000000u+t.tv_nsec; }
++static int graph_quiet(wrap_t *w) {
++    return GRAPH_UPDATE_IDLE_MS<=0 || monotonic_ns()-__atomic_load_n(&w->last_input_ns,__ATOMIC_ACQUIRE)>=(uint64_t)GRAPH_UPDATE_IDLE_MS*1000000u;
++}
++static __thread wrap_t *reporting_instance;
++static __thread int reporting_index;
++static __thread float reporting_value;
++static void report_value(wrap_t *w,int i,float value) {
++    wrap_t *saved=reporting_instance;int saved_i=reporting_index;float saved_value=reporting_value;
++    reporting_instance=w;reporting_index=i;reporting_value=value;
++    w->master(&w->fx,audioMasterAutomate,i,0,0,value);
++    reporting_instance=saved;reporting_index=saved_i;reporting_value=saved_value;
++}
+ static const mpc_engine_t *g_api;
+ 
+ /* One engine call at a time per instance. A JUCE host (MPC's) sets and reads parameters, chunks and displays on its
+@@ -260,7 +317,7 @@
+     return dir > 0 ? ceilf(pos - 0.001f) : floorf(pos + 0.001f);
+ }
+ 
+-static void set_param_now(AEffect *e, int32_t i, float n) {
++static void set_param_now_unlocked(AEffect *e, int32_t i, float n) {
+     wrap_t *w = e->object;
+     TRACE(0, i, n);
+     char buf[64];
+@@ -297,7 +354,7 @@
+                 idx = ((idx % tp->nopts) + tp->nopts) % tp->nopts;
+                 norm_to_str(tp, (float)idx / (tp->nopts - 1), buf, sizeof buf);
+                 eng_set(w, tp->key, buf);
+-                w->changed[p->step_target] = 1;
++                __atomic_store_n(&w->changed[p->step_target], 1, __ATOMIC_RELEASE);
+             } else if (eng_get(w, tp->key, buf, sizeof buf) > 0) {
+                 float cur = (float)atof(buf) + p->step_delta;
+                 if (cur < tp->min) cur = tp->min;
+@@ -356,8 +413,31 @@
+          * move that lands on the minimum or maximum from within that distance is a tick too, not a jump to the end. */
+         float span = p->max - p->min, pos = clamp01(n) * span, cur = get_norm(w, i) * span, steps;
+         float tickmax = p->nudge_pct > 0 ? fmaxf(0.5f, span * p->nudge_pct / 100.0f) : 0.5f;
++        if(FINE_TRACK_RAW_INPUT && p->nudge_pct>0) {
++            /* MPC can accumulate raw wheel/Q-Link positions without rebasing
++             * to our accepted one-step value. Follow consecutive input deltas,
++             * not their growing distance to the engine value. */
++            float last=w->last_pos[i],event=last>=0?pos-last:pos-cur;
++            int endpoint=pos<0.001f || pos>span-0.001f;
++            if(absolute_set)steps=roundf(pos);
++            else if(last>=0 && fabsf(event)>0.001f && fabsf(event)<0.5f)
++                steps=settle(pos,cur,last);
++            else {
++                float d=(last>=0 && fabsf(event)>=0.5f && fabsf(event)<tickmax)?event:pos-cur;
++                if(last>=0 && fabsf(event)<=0.001f && endpoint)d=pos>span*0.5f?1:-1;
++                if(fabsf(d)>=0.5f && fabsf(d)<tickmax)steps=roundf(cur)+(d>0?1:-1);
++                else steps=settle(pos,cur,last);
++            }
++            w->last_pos[i]=pos;
++        } else {
+         int edge = (pos < 0.001f || pos > span - 0.001f) && fabsf(pos - cur) >= 0.5f;
+-        if ((p->qlink_ticks > 1 || p->nudge_pct > 0) && (fabsf(pos - roundf(pos)) > 0.001f || edge) && fabsf(pos - cur) < tickmax) {
++        /* Fine sub-step gestures must use settle()'s direction history. Counting
++         * them against cur instead makes a rising drag reverse after rounding. */
++        if ((p->qlink_ticks > 1 || p->nudge_pct > 0) &&
++            (p->nudge_pct == 0 || (fabsf(pos - cur) >= 0.5f &&
++             !(w->last_pos[i] >= 0 && fabsf(pos - w->last_pos[i]) > 0.001f &&
++               fabsf(pos - w->last_pos[i]) < 0.5f))) &&
++            ((FINE_INPUT_CONTINUOUS && p->nudge_pct>0 && !absolute_set) || fabsf(pos - roundf(pos)) > 0.001f || edge) && fabsf(pos - cur) < tickmax) {
+             float d = pos - cur;
+             w->last_pos[i] = pos;
+             if (p->qlink_ticks > 1) {
+@@ -372,6 +452,7 @@
+             steps = settle(pos, cur, w->last_pos[i]);
+             w->last_pos[i] = pos;
+         }
++        }
+         n = clamp01(steps / span);
+     }
+     /* List tiles: housekeeping pushes "<key>_on" with audioMasterAutomate, and MPC calls
+@@ -391,14 +472,24 @@
+      * selections follow the engine. An echo of that exact value schedules nothing,
+      * avoiding recursion and feedback loops. Ordinary continuous writes stay quiet. */
+     if ((p->nopts > 1 || p->int_display) && fabsf(n - requested_n) > 1e-6f)
+-        w->changed[i] = 1;
++        __atomic_store_n(&w->changed[i], 1, __ATOMIC_RELEASE);
+     if (PARAMS[i].momentary && n > 0.5f) w->holdFrames[i] = PARAMS[i].hold_ms > 0 ? (int)(PARAMS[i].hold_ms * 44.1f) : 1;
++    if (ASYNC_IDLE_NOTIFY && PARAMS[i].momentary && n > 0.5f)
++        __atomic_store_n(&w->notify_pending[i],1,__ATOMIC_RELEASE);
+     if (!nudge) popup_picked(w->open, w->holdFrames, i);   /* a list pick closes it; a Q-Link nudge doesn't */
+     /* No UpdateDisplay for a plain host write: the host knows the value it sent, and MPC answers every UpdateDisplay by
+      * rebuilding its parameter screen, so asking on each write (each automation step, each Q-Link event) left Q-Links
+      * unable to move a param on the track's automation screen (docs/NOTES.md, 2026-10-21). Polled readouts see the
+      * change within 100 ms (housekeeping); "refresh_display" opts a param back in for unpolled text that depends on it. */
+     if (p->refresh_display) w->need_update_display = 1;   /* deferred to processReplacing(), see the step_target branch */
++    TRACE(2, i, get_norm(w,i)); /* optional dev trace: accepted value */
++}
++
++static void set_param_now(AEffect *e,int32_t i,float n) {
++    wrap_t *w=e->object;
++    if(FINE_TRACK_RAW_INPUT)pthread_mutex_lock(&w->lock);
++    set_param_now_unlocked(e,i,n);
++    if(FINE_TRACK_RAW_INPUT)pthread_mutex_unlock(&w->lock);
+ }
+ 
+ /* MPC's plugin host (JUCE) sets parameter 0 to the far end of its range and straight back whenever it gets ready to play:
+@@ -416,8 +507,10 @@
+     if (fabsf(to - from) > 1e-6f) set_param_now(e, 0, to);
+ }
+ 
+-static void setParameter(AEffect *e, int32_t i, float n) {
++static void setParameter_locked(AEffect *e, int32_t i, float n) {
+     wrap_t *w = e->object;
++    if(live_readonly(i))return;
++    if(FINE_TRACK_RAW_INPUT && reporting_instance==w && reporting_index==i && fabsf(n-reporting_value)<1e-6f)return;
+     /* An acknowledgement of our accepted stepped value is not a new turn.
+      * Feeding it into settle() overwrites the fractional gesture history and
+      * reverses the next absolute knob event. Track only values actually reported
+@@ -427,6 +520,8 @@
+         __atomic_load(&w->stepped_echo_value[i], &reported, __ATOMIC_RELAXED);
+         if (fabsf(n - reported) < 1e-6f && fabsf(get_norm(w, i) - reported) < 1e-6f) return;
+     }
++    if(GRAPH_UPDATE_IDLE_MS>0 && i>=0 && i<NPARAMS && fabsf(n-get_norm(w,i))>1e-6f)
++        __atomic_store_n(&w->last_input_ns,monotonic_ns(),__ATOMIC_RELEASE);
+     if (i == 0 && NPARAMS > 0) {
+         if (!__atomic_load_n(&w->has_pend0, __ATOMIC_ACQUIRE)) { float f = get_norm(w, 0); __atomic_store(&w->pend0_from, &f, __ATOMIC_RELAXED); }
+         __atomic_store(&w->pend0, &n, __ATOMIC_RELAXED);
+@@ -435,6 +530,13 @@
+     }
+     flush_pend0(e);
+     set_param_now(e, i, n);
++}
++
++static void setParameter(AEffect *e,int32_t i,float n) {
++    wrap_t *w=e->object;
++    if(FINE_TRACK_RAW_INPUT)pthread_mutex_lock(&w->lock);
++    setParameter_locked(e,i,n);
++    if(FINE_TRACK_RAW_INPUT)pthread_mutex_unlock(&w->lock);
+ }
+ 
+ static float getParameter(AEffect *e, int32_t i) {
+@@ -541,6 +643,18 @@
+ }
+ #endif
+ 
++/* ASYNC_HOST_NOTIFY: audio-side housekeeping only posts a bounded flag.
++ * Host UI callbacks may block; the display thread delivers the latest value. */
++static void notify_value(wrap_t *w, int i, float value) {
++    if(GRAPH_INVALIDATION_ONLY && graph_param(i))return;
++    if (ASYNC_HOST_NOTIFY) __atomic_store_n(&w->notify_pending[i], 1, __ATOMIC_RELEASE);
++    else report_value(w,i,value);
++}
++static void notify_display(wrap_t *w) {
++    if (ASYNC_HOST_NOTIFY) __atomic_store_n(&w->notify_update, 1, __ATOMIC_RELEASE);
++    else w->master(&w->fx, audioMasterUpdateDisplay, 0, 0, 0, 0.0f);
++}
++
+ /* HAS_DISPLAY_REV: when the engine's "display_rev" moved, report every param whose value changed, so the host moves controls
+  * and re-evaluates IndexedEnabling (when= panels), not only text. Each report is an audioMasterAutomate, which MPC handles
+  * synchronously and which can wait on its UI thread: a plugin whose display_rev moves all the time (meters) stalled MPC's
+@@ -548,13 +662,17 @@
+  * runs this on a normal-priority thread of the wrapper's own instead (rev_thread), every 100 ms. */
+ static void rev_scan(wrap_t *w) {
+     char rev[16];
+-    if (eng_get(w, "display_rev", rev, sizeof rev) > 0 && strcmp(rev, w->last_rev)) {
++    int quiet=graph_quiet(w);
++    if (eng_get(w, "display_rev", rev, sizeof rev) > 0 && (strcmp(rev, w->last_rev) || (w->graph_deferred && quiet))) {
+         snprintf(w->last_rev, sizeof w->last_rev, "%s", rev);
+         if (!DISPLAY_REV_NO_UPDATE) w->need_update_display = 1;
++        w->graph_deferred=0;
+         for (int i = 0; i < NPARAMS; i++) {
+             if (PARAMS[i].momentary || popup_is(i) || PARAMS[i].string_display) continue;
++            if(GRAPH_INVALIDATION_ONLY && graph_param(i))continue;
++            if(graph_feedback(i) && !quiet) { w->graph_deferred=1;continue; }
+             float v = get_norm(w, i);
+-            if (fabsf(v - w->last_norm[i]) > 1e-4f) { w->last_norm[i] = v; w->master(&w->fx, audioMasterAutomate, i, 0, 0, v); }
++            if (fabsf(v - w->last_norm[i]) > 1e-4f) { w->last_norm[i] = v; notify_value(w, i, v); }
+         }
+     }
+ }
+@@ -563,10 +681,60 @@
+ static void *rev_thread(void *arg) {
+     wrap_t *w = arg;
+     pthread_setname_np(pthread_self(), "vst-rev");
+-    while (!w->rev_stop) {
+-        struct timespec ts = {0, 100000000};
++    int scan_ticks = 0;
++    while (!__atomic_load_n(&w->rev_stop, __ATOMIC_ACQUIRE)) {
++        struct timespec ts = {0, ASYNC_HOST_NOTIFY ? 10000000 : 100000000};
+         nanosleep(&ts, NULL);
+-        if (!w->rev_stop) rev_scan(w);
++        if (__atomic_load_n(&w->rev_stop, __ATOMIC_ACQUIRE)) break;
++        if (!ASYNC_HOST_NOTIFY || ++scan_ticks >= 10) { scan_ticks = 0; rev_scan(w); }
++        if (ASYNC_HOST_NOTIFY) {
++#if ASYNC_IDLE_NOTIFY
++            /* ASYNC_IDLE_FEEDBACK: touch actions and derived cells must settle
++             * even when a stopped instrument receives no audio blocks. */
++            for(int i=0;i<NPARAMS;++i)
++                if(__atomic_exchange_n(&w->changed[i],0,__ATOMIC_ACQ_REL))
++                    __atomic_store_n(&w->notify_pending[i],1,__ATOMIC_RELEASE);
++            if(mpc_engine_changed) {
++                char key[64];
++                pthread_mutex_lock(&w->lock);
++                for(int k=0;k<NPARAMS && mpc_engine_changed(w->dsp,key,sizeof key)>0;++k)
++                    for(int i=0;i<NPARAMS;++i)if(!strcmp(PARAMS[i].key,key)) {
++                        w->last_pos[i]=-1;
++                        __atomic_store_n(&w->notify_pending[i],1,__ATOMIC_RELEASE);
++                        if(PARAMS[i].string_display && !PARAMS[i].no_poll)
++                            __atomic_store_n(&w->notify_update,1,__ATOMIC_RELEASE);
++                        break;
++                    }
++                pthread_mutex_unlock(&w->lock);
++            }
++#endif
++            struct timespec begin, now; clock_gettime(CLOCK_MONOTONIC, &begin);
++            for (int k = 0; k < NPARAMS; k++) {
++                if (__atomic_load_n(&w->rev_stop, __ATOMIC_ACQUIRE)) break;
++                int i = w->notify_cursor; w->notify_cursor = (i + 1) % NPARAMS;
++                if(graph_feedback(i) && !graph_quiet(w))continue;
++                if (!__atomic_exchange_n(&w->notify_pending[i], 0, __ATOMIC_ACQ_REL)) continue;
++                float value = get_norm(w, i);
++                /* ASYNC_REVISION_CACHE: rev_scan and delivery share this UI thread.
++                 * Keep its snapshot current for audio-side pending notifications too. */
++                w->last_norm[i] = value;
++                if (PARAMS[i].nopts > 1 || PARAMS[i].int_display) {
++                    __atomic_store(&w->stepped_echo_value[i], &value, __ATOMIC_RELAXED);
++                    __atomic_store_n(&w->stepped_echo_pending[i], 1, __ATOMIC_RELEASE);
++                }
++                report_value(w,i,value);
++                if(GRAPH_REBIND_ON_REFRESH && !strcmp(PARAMS[i].key,"graph_revision")) {
++                    /* One host rebind after quiet, never a column event burst.
++                     * Some MPC bindings cache values despite bounds invalidation. */
++                    __atomic_exchange_n(&w->notify_update,0,__ATOMIC_ACQ_REL);
++                    w->master(&w->fx,audioMasterUpdateDisplay,0,0,0,0.0f);
++                }
++                clock_gettime(CLOCK_MONOTONIC, &now);
++                if ((now.tv_sec-begin.tv_sec)*1000000000LL+now.tv_nsec-begin.tv_nsec > 5000000) break;
++            }
++            if (__atomic_exchange_n(&w->notify_update, 0, __ATOMIC_ACQ_REL))
++                w->master(&w->fx, audioMasterUpdateDisplay, 0, 0, 0, 0.0f);
++        }
+     }
+     return NULL;
+ }
+@@ -579,16 +747,15 @@
+      * buttons bound to it drop their highlight. Done here, not inside
+      * setParameter, so the host is not re-entered from its own call. */
+     for (int i = 0; i < NPARAMS; i++)
+-        if (w->holdFrames[i] > 0 && (w->holdFrames[i] -= n) <= 0) { w->holdFrames[i] = 0; w->master(&w->fx, audioMasterAutomate, i, 0, 0, 0.0f); }
++        if (w->holdFrames[i] > 0 && (w->holdFrames[i] -= n) <= 0) { w->holdFrames[i] = 0; notify_value(w, i, 0.0f); }
+     for (int i = 0; i < NPARAMS; i++)
+-        if (w->changed[i]) {
+-            w->changed[i] = 0;
++        if (!ASYNC_IDLE_NOTIFY && __atomic_exchange_n(&w->changed[i], 0, __ATOMIC_ACQ_REL)) {
+             float value = get_norm(w, i);
+             if (PARAMS[i].nopts > 1 || PARAMS[i].int_display) {
+                 __atomic_store(&w->stepped_echo_value[i], &value, __ATOMIC_RELAXED);
+                 __atomic_store_n(&w->stepped_echo_pending[i], 1, __ATOMIC_RELEASE);
+             }
+-            w->master(&w->fx, audioMasterAutomate, i, 0, 0, value);
++            notify_value(w, i, value);
+         }
+     /* Text params are polled, not only read after a screen tap, because MIDI alone can change them (a pad plays
+      * a chord, nothing on screen touched):
+@@ -623,7 +790,7 @@
+                 int on = atoi(b2) ? 1 : 0;
+                 if (w->last_on[i] != on + 1) {
+                     w->last_on[i] = (signed char)(on + 1);
+-                    w->master(&w->fx, audioMasterAutomate, i, 0, 0, (float)on);
++                    notify_value(w, i, (float)on);
+                     w->need_update_display = 1;
+                 }
+             } else {
+@@ -651,7 +818,7 @@
+     (void)poll_rev;
+ #endif
+     /* parameters the engine changed by itself (engine.h mpc_engine_changed): reported as a CC's are, just below */
+-    if (mpc_engine_changed) {
++    if (!ASYNC_IDLE_NOTIFY && mpc_engine_changed) {
+         char key[64];
+         pthread_mutex_lock(&w->lock);
+         for (int k = 0; k < NPARAMS && mpc_engine_changed(w->dsp, key, sizeof key) > 0; k++)
+@@ -659,7 +826,7 @@
+                 if (!strcmp(PARAMS[i].key, key)) {
+                     w->last_pos[i] = -1;   /* the host's last position no longer stands (settle()) */
+                     w->cc_changed[i] = 1;
+-                    if (PARAMS[i].nopts > 1) w->need_update_display = 1;
++                    if (PARAMS[i].nopts > 1 && !ASYNC_HOST_NOTIFY) w->need_update_display = 1;
+                     break;
+                 }
+         pthread_mutex_unlock(&w->lock);
+@@ -667,7 +834,7 @@
+     if ((w->cc_report -= n) <= 0) {
+         w->cc_report = 1024;
+         for (int i = 0; i < NPARAMS; i++)
+-            if (w->cc_changed[i]) { w->cc_changed[i] = 0; w->master(&w->fx, audioMasterAutomate, i, 0, 0, get_norm(w, i)); }
++            if (w->cc_changed[i]) { w->cc_changed[i] = 0; notify_value(w, i, get_norm(w, i)); }
+     }
+     /* At most one UpdateDisplay per 50 ms (2205 frames); a request inside that window waits, it is not dropped. MPC rebuilds its
+      * parameter screen on each one, so a burst (a held stepper, readouts that change every poll) must not become a rebuild per block. */
+@@ -675,7 +842,7 @@
+     if (w->need_update_display && w->update_wait <= 0) {
+         w->need_update_display = 0;
+         w->update_wait = 2205;
+-        w->master(&w->fx, audioMasterUpdateDisplay, 0, 0, 0, 0.0f);
++        notify_display(w);
+     }
+ }
+ 
+@@ -811,7 +978,7 @@
+ #if defined(NPRESETS)
+     for (int i = 0; i < PRESETS[idx].n; i++) {
+         eng_set(w, PARAMS[PRESETS[idx].values[i].param].key, PRESETS[idx].values[i].value);
+-        w->changed[PRESETS[idx].values[i].param] = 1;   /* reported to the host from housekeeping() */
++        __atomic_store_n(&w->changed[PRESETS[idx].values[i].param], 1, __ATOMIC_RELEASE);   /* reported to the host from housekeeping() */
+     }
+     w->program = idx;
+ #elif defined(PROG_PARAM)
+@@ -819,7 +986,7 @@
+     const param_t *pp = &PARAMS[PROG_PARAM];
+     snprintf(buf, sizeof buf, "%d", pp->nopts > 1 ? idx : (int)lroundf(pp->min) + idx);
+     eng_set(w, pp->key, buf);
+-    for (int i = 0; i < NPARAMS; i++) w->changed[i] = !popup_is(i);   /* a preset may change anything */
++    for (int i = 0; i < NPARAMS; i++) __atomic_store_n(&w->changed[i], !popup_is(i), __ATOMIC_RELEASE);   /* a preset may change anything */
+ #endif
+     w->need_update_display = 1;
+ }
+@@ -893,7 +1060,7 @@
+         sample_page_close(w->spage);   /* first: its thread reads the engine */
+ #endif
+ #ifdef DISPLAY_REV_THREAD
+-        if (w->rev_th_on) { w->rev_stop = 1; pthread_join(w->rev_th, NULL); }
++        if (w->rev_th_on) { __atomic_store_n(&w->rev_stop, 1, __ATOMIC_RELEASE); pthread_join(w->rev_th, NULL); }
+ #endif
+         g_api->destroy(w->dsp);
+         pthread_mutex_destroy(&w->lock);
+@@ -909,7 +1076,7 @@
+     case effGetVendorString: copy_str(p, PLUG_VENDOR, 32); return 1;
+     case effGetVendorVersion: return PLUG_VERSION;
+     case effGetVstVersion: return 2400;
+-    case effCanBeAutomated: return idx >= 0 && idx < NPARAMS;
++    case effCanBeAutomated: return idx >= 0 && idx < NPARAMS && !live_readonly(idx);
+     case effGetParamName:
+         if (idx >= 0 && idx < NPARAMS) param_name_text(w, idx, p, 32);
+         return 1;
+@@ -1008,17 +1175,7 @@
+     w->pos = DSP_BLOCK;
+     for (int i = 0; i < NPARAMS; i++) w->last_pos[i] = w->last_norm[i] = -1;
+     w->nrpn = -1;
+-#ifdef DISPLAY_REV_THREAD
+-    {   /* a normal-priority thread whatever the creating thread is (explicit, not inherited) */
+-        pthread_attr_t ta; struct sched_param sp = {0};
+-        pthread_attr_init(&ta);
+-        pthread_attr_setinheritsched(&ta, PTHREAD_EXPLICIT_SCHED);
+-        pthread_attr_setschedpolicy(&ta, SCHED_OTHER);
+-        pthread_attr_setschedparam(&ta, &sp);
+-        w->rev_th_on = pthread_create(&w->rev_th, &ta, rev_thread, w) == 0;
+-        pthread_attr_destroy(&ta);
+-    }
+-#endif
++
+     AEffect *e = &w->fx;
+     e->magic = 0x56737450; /* 'VstP' */
+     e->dispatcher = dispatcher;
+@@ -1043,5 +1200,22 @@
+ #ifdef SAMPLE_PAGE
+     w->page_prog = -1;   /* the page itself opens at effMainsChanged, only on an MPC Sample with mpc-addin-sample-draw-handler */
+ #endif
++    if (ASYNC_HOST_NOTIFY) {
++        for (int i = 0; i < NPARAMS; i++) w->last_norm[i] = get_norm(w, i);
++    }
++#ifdef DISPLAY_REV_THREAD
++    {   /* a normal-priority thread whatever the creating thread is (explicit, not inherited) */
++        pthread_attr_t ta; struct sched_param sp = {0};
++        pthread_attr_init(&ta);
++        pthread_attr_setinheritsched(&ta, PTHREAD_EXPLICIT_SCHED);
++        pthread_attr_setschedpolicy(&ta, SCHED_OTHER);
++        pthread_attr_setschedparam(&ta, &sp);
++        w->rev_th_on = pthread_create(&w->rev_th, &ta, rev_thread, w) == 0;
++        pthread_attr_destroy(&ta);
++        if (ASYNC_HOST_NOTIFY && !w->rev_th_on) {
++            g_api->destroy(w->dsp); pthread_mutex_destroy(&w->lock); free(w); return NULL;
++        }
++    }
++#endif
+     return e;
+ }

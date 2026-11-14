@@ -10,6 +10,10 @@ void sequence64Checks(){
     require(seq.get(seqSelectedView16)==1 && seq.get(seqSelectedView1)==0,"selected-step frame does not match the fourth-page edit cursor");
     seq.set(MpcSequence::Rest,0);seq.set(seqGridAccent16,1);seq.set(seqGridHammer16,1);
     require(seq.get(seqPitchView16)==12 && seq.get(seqGridHammer16)==1,"step 64 or fourth-page alias missing");
+    seq.set(seqGridTie16,1);
+    require(seq.get(seqGridGate16)==0 && seq.get(seqGridTie16)==1,"TIE must be a visible tied rest");
+    seq.set(seqGridGate16,1);
+    require(seq.get(seqGridGate16)==1 && seq.get(seqGridTie16)==0 && seq.get(MpcSequence::Note)==59,"GATE must restore a tied step without losing its stored pitch");
     seq.set(seqCell16_0,1);require(seq.get(MpcSequence::Note)==48,"piano-roll pitch must preserve the stored octave");
     seq.set(seqCell16_0,1);require(seq.get(seqPitchView16)==0,"tapping an entered pitch must make a rest");
     seq.set(seqCell16_7,1);require(seq.get(seqPitchView16)==8,"rest-to-note piano entry failed");
@@ -98,10 +102,15 @@ void sequence64Checks(){
     }
     // Full project serialization, legacy v5 import, malformed extension rollback.
     Plugin plugin;plugin.units("seqTiming",1);plugin.units("seqLength64",64);plugin.units("seqSelected64",64);plugin.units("seqNote",61);
+    plugin.units("seqKeyRoot",9);plugin.units("seqKeyScale",2);
     plugin.units("seqGridVibrato16",1);std::string state=chunk(plugin);Plugin loaded;loadChunk(loaded,state);
-    require(chunk(loaded)==state,"full JC6 project failed exact roundtrip");
+    require(chunk(loaded)==state,"full JC7 project failed exact roundtrip");
     auto broken=state.substr(0,state.size()-5);loadChunk(loaded,broken);require(chunk(loaded)==state,"truncated 64-step state partially changed the plugin");
+    auto v6=state;v6.replace(0,11,"JC303-MPC-6");v6.erase(v6.find("KEYSCALE "));
+    loadChunk(loaded,v6);require(loaded.fx->get(loaded.fx,index("seqKeyScale"))==0,"JC6 import must default the visual guide to Off");
+    loadChunk(loaded,state);
+    auto invalidKey=state;invalidKey.replace(invalidKey.find("KEYSCALE "),std::string::npos,"KEYSCALE 12 2\n");loadChunk(loaded,invalidKey);require(chunk(loaded)==state,"invalid key partially changed project state");
     auto old=state;old.replace(0,11,"JC303-MPC-5");old.erase(old.find("SEQ64\n"));loadChunk(loaded,old);
     require(loaded.fx->get(loaded.fx,index("seqTiming"))==0,"old v5 project did not retain legacy timing");
-    std::puts("64-step editor: pages, grid input, exclusive flags, active-only generation, clipboard, undo/redo, fractional swing/gates, wrap, JC6 roundtrip and JC5 migration PASS");
+    std::puts("64-step editor: pages, grid input, exclusive flags, active-only generation, clipboard, undo/redo, fractional swing/gates, wrap, JC7 roundtrip and JC6/JC5 migration PASS");
 }

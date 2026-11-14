@@ -4,6 +4,9 @@ import json
 ROOT=Path(__file__).resolve().parents[1]
 def generate():
     path=ROOT/'params.json';data=json.loads(path.read_text());params=data['params'][:86];defs=[]
+    # Retain old parameter IDs, but do not poll invisible legacy clock/tiles.
+    for p in params:
+        if p['key'] in ('seqCurrent','seqStatus') or p['key'].startswith('seqStep_'):p['poll']=False
     def add(key,name,lo=0,hi=1,default=0,options=None,**kwargs):
         x=dict(key=key,name=name,min=lo,max=hi,default=default,**kwargs)
         if options:x['options']=options
@@ -51,6 +54,13 @@ def generate():
         for row in range(4):add(f'seqOctCell{col+1}_{row}',f'Octave Cell {col+1}/{row}',0,1,0,['Off','Tap'],momentary=True,debounce_ms=250,legacy=True)
     ranges['SelectedView']=len(params)
     for col in range(16):add(f'seqSelectedView{col+1}',f'Selected Column {col+1}',0,1,0,['Off','On'],live=True,legacy=True)
+    add('seqKeyRoot','Root Note',0,11,9,['C','C# / Db','D','D# / Eb','E','F','F# / Gb','G','G# / Ab','A','A# / Bb','B'])
+    add('seqKeyScale','Scale',0,19,0,['Off','Major','Minor','Harmonic Minor','Melodic Minor','Dorian','Phrygian','Lydian','Mixolydian','Locrian','Major Pentatonic','Minor Pentatonic','Minor Blues','Major Blues','Whole Tone','Dim Half-Whole','Dim Whole-Half','Phrygian Dominant','Double Harmonic','Chromatic'])
+    roots=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+    names=params[-1]['options']
+    add('seqKeyInfo','Key / Scale',0,239,180,[f'{root} {scale}' if scale!='Off' else 'Key / Scale Off' for root in roots for scale in names],live=True)
+    ranges['ScaleView']=len(params)
+    for pitch in range(12):add(f'seqScaleView{pitch}',f'Scale Pitch {pitch}',0,1,0,['Off','On'],live=True,legacy=True)
     path.write_text(json.dumps(data|{'params':params},indent=2)+'\n')
     (ROOT/'params.lock').write_text('\n'.join(p['key'] for p in params)+'\n')
     lines=['#pragma once','namespace seqparam {',f'constexpr int First=86, End={len(params)};']

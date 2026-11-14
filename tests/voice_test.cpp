@@ -15,6 +15,10 @@ extern "C" {
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <atomic>
+#include <mutex>
+#include <thread>
+#include <chrono>
 
 struct Effect;
 using Callback = intptr_t (*)(Effect*,int32_t,int32_t,intptr_t,void*,float);
@@ -43,24 +47,40 @@ void require(bool condition, const char* message) {
     if (!condition) throw std::runtime_error(message);
 }
 struct HostUi {
-    std::array<float,NPARAMS> cached{};
-    std::array<int,NPARAMS> reports{};
-    bool inWrite=false;
-    bool echo=false;
+    std::array<std::atomic<float>,NPARAMS> cached{};
+    std::array<std::atomic<int>,NPARAMS> reports{};
+    inline static thread_local bool inWrite=false;
+    std::atomic<bool> echo=false;
 };
-HostUi* activeUi=nullptr;
+struct ActiveUi {
+    std::recursive_mutex mutex;
+    HostUi* ptr=nullptr;
+    void operator=(HostUi* p){std::lock_guard<std::recursive_mutex> lock(mutex);ptr=p;}
+    explicit operator bool(){std::lock_guard<std::recursive_mutex> lock(mutex);return ptr!=nullptr;}
+} activeUi;
 struct TimeInfo {
     double samplePos=0,sampleRate=44100,nanos=0,ppq=0,bpm=120,bar=0,cycleStart=0,cycleEnd=4;
     int32_t numerator=4,denominator=4,smpteOffset=0,smpteRate=0,nextClock=0,flags=0;
 };
 TimeInfo* activeTime=nullptr;
+thread_local bool audioRender=false;
+std::atomic<int> audioCallbacks=0,displayUpdates=0,totalUiCallbacks=0;
+std::atomic<bool> blockUiCallbacks=false;
 intptr_t host(Effect* fx,int32_t opcode,int32_t parameter,intptr_t,void*,float value) {
+    if(opcode==0||opcode==42){
+        ++totalUiCallbacks;if(audioRender)++audioCallbacks;
+        if(opcode==42)++displayUpdates;
+        if(blockUiCallbacks)std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
     if(opcode==7) return reinterpret_cast<intptr_t>(activeTime);
-    if (activeUi && opcode==0 && parameter>=0 && parameter<NPARAMS) {
-        require(!activeUi->inWrite,"wrapper called the host recursively from setParameter");
-        activeUi->cached[parameter]=value;
-        ++activeUi->reports[parameter];
-        if(activeUi->echo) fx->set(fx,parameter,value);
+    if (opcode==0 && parameter>=0 && parameter<NPARAMS) {
+        std::lock_guard<std::recursive_mutex> lock(activeUi.mutex);
+        if(auto* ui=activeUi.ptr){
+            require(!HostUi::inWrite,"wrapper called the host recursively from setParameter");
+            ui->cached[parameter]=value;
+            ++ui->reports[parameter];
+            if(ui->echo)fx->set(fx,parameter,value);
+        }
     }
     return opcode == 1 ? 2400 : 0;
 }
@@ -85,7 +105,10 @@ struct Plugin {
     std::vector<float> render(int frames) {
         std::vector<float> left(frames),right(frames);
         float* out[]{left.data(),right.data()};
+        audioRender=true;
         fx->replace(fx,nullptr,out,frames);
+        audioRender=false;
+        if(activeUi)std::this_thread::sleep_for(std::chrono::milliseconds(20));
         require(left==right,"mono voice must reach both stereo channels identically");
         for (float x:left) require(std::isfinite(x),"non-finite plugin output");
         return left;
@@ -315,8 +338,10 @@ void slideRangeMigration() {
 #include "drive_checks.h"
 #include "modern_checks.h"
 #include "sequence64_checks.h"
+#include "scale_checks.h"
+#include "playback_ui_checks.h"
 int main() {
-    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); sequence64Checks(); }
+    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); sequence64Checks(); scaleChecks(); playbackUiChecks(); }
     catch(const std::exception& e) { std::fprintf(stderr,"FAIL: %s\n",e.what()); return 1; }
     std::puts("JC303 behavioural tests PASSED");
     return 0;

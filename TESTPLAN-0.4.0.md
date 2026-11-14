@@ -6,7 +6,7 @@ Touch, sound and host integration still require a real MPC acceptance test.
 
 ## Navigation and note input
 
-SEQUENCE cycles through **SEQUENCE / ARTIC / SEQTOOLS / SEQLIVE**; the six main
+SEQUENCE cycles through **SEQUENCE / ARTIC / SEQTOOLS / SEQLIVE / SEQKEY**; the six main
 page keys and MODS / ENGINE / FILTER grouping remain. This is our own Acid
 interface inspired by a piano-roll workflow, not a copy of Phoscyon 2.
 
@@ -86,10 +86,10 @@ sustain pedal can record a rest. New flags are entered in ARTIC/SEQUENCE.
 Save an MPC project/preset with edits on all four pages, a short active length,
 shuffle, reverse and pitch length. Reload and verify all settings/notes. Load
 an older project and verify **TIMING = Legacy 16** and the original sound.
-The new JC303-MPC-6 chunk preserves all 64 steps. Older plugin versions cannot
+The new JC303-MPC-7 chunk preserves all 64 steps. Older plugin versions cannot
 read this new chunk: keep a copy of older projects before saving new edits.
 
-The requested key/scale highlighting (e.g. A Minor) remains a roadmap item.
+Key/scale highlighting is available on SEQKEY from 0.4.1: 12 roots and 19 scales plus Off, stored in JC7. It does not alter existing notes or generator pitches. JC6 imports preserve their patterns with guide Off.
 No scale snapping, Phoscyon pattern-bank import, arp or Phoscyon effects are
 included in this candidate. Other upstream synthesis/modulation/import roadmap
 items remain separate work.

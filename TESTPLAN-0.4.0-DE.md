@@ -5,13 +5,14 @@ Kontrollenkatalog steht in [TESTPLAN-0.4.0.md](TESTPLAN-0.4.0.md).
 Ein Store-Benchmark folgt erst beim endgültigen Release-Build.
 
 1. **Neue Instanz / Init:** SEQUENCE mehrfach drücken. Es wechselt zwischen
-   **SEQUENCE → ARTIC → SEQTOOLS → SEQLIVE**. MODS / ENGINE / FILTER und der
+   **SEQUENCE → ARTIC → SEQTOOLS → SEQLIVE → SEQKEY**. MODS / ENGINE / FILTER und der
    Preset-Browser sollen weiterhin funktionieren.
 2. **Noten eingeben:** Im Raster eine Notenreihe antippen. Grün bedeutet Note;
    dieselbe Note erneut antippen ergibt eine Pause. Die vier Zeilen darüber
    wählen **+3 / +2 / +1 / -1 Oktaven** relativ zu BASE OCTAVE. Erneut auf die
    gewählte Oktave tippen setzt die Grundoktave. Der Rahmen markiert den
-   bearbeiteten Schritt, Orange oben den laufenden Schritt.
+   bearbeiteten Schritt, Orange oben und der durchgehende orange Strich zeigen den laufenden Schritt
+   (ab 0.4.1).
 3. **64 Schritte:** LENGTH auf 64 stellen. Mit **STEP PAGE** alle vier Seiten
    bearbeiten: **1–16 / 17–32 / 33–48 / 49–64**. Auf jeder Seite eine gut
    erkennbare Note setzen. SEQUENCER einschalten und MPC Play drücken. Auf
@@ -56,8 +57,51 @@ Ein Store-Benchmark folgt erst beim endgültigen Release-Build.
     verkürzter Länge, Shuffle und neuen Flags speichern und neu laden. Alle
     gespeicherten Schritte müssen erhalten bleiben. Ein altes Projekt soll
     **TIMING = Legacy 16** und seinen bisherigen Klang behalten. Neue Projekte
-    verwenden JC303-MPC-6; ältere Plugin-Versionen können dieses Format nicht
+    verwenden JC303-MPC-7; ältere Plugin-Versionen können dieses Format nicht
     laden. Alte Projekte deshalb vor dem erneuten Speichern als Kopie behalten.
 
-Tonart-/Skalenmarkierungen wie A Minor sind weiterhin für später vorgemerkt.
+**Neu in 0.4.1: SEQKEY**
+
+Unter ROOT NOTE / KEY den Grundton und unter SCALE / MODE die Skala wählen.
+Alle zwölf Grundtöne sind vorhanden, einschließlich der #/b-Bezeichnungen.
+B entspricht dem deutschen H. Major bedeutet Dur/Ionisch, Minor natürliches
+Moll/Äolisch. Melodic Minor verwendet die aufwärts/Jazz-Moll-Form.
+
+Enthalten: Major, Minor, Harmonic Minor, Melodic Minor, Dorian, Phrygian, Lydian,
+Mixolydian, Locrian, Major Pentatonic, Minor Pentatonic, Minor Blues, Major Blues,
+Whole Tone, Dim Half-Whole, Dim Whole-Half, Phrygian Dominant, Double Harmonic
+und Chromatic. Off schaltet die Markierung aus.
+
+Zum Test A + Minor wählen: A, B, C, D, E, F und G müssen im Raster hervorgehoben
+sein; die Kopfzeile zeigt A Minor. Danach D + Minor wählen: A# (Bb) gehört nun
+dazu, B nicht. Alle vier STEP PAGE-Seiten kontrollieren. Vorhandene Noten sollen
+bei jedem Wechsel erhalten bleiben und gleich klingen; auch Noten außerhalb
+der Skala bleiben spielbar. Generate wird durch diese Auswahl nicht eingeschränkt.
+Das Projekt speichern/neuladen: Key und Scale müssen erhalten bleiben.
+Projekte aus 0.4.0/JC6 behalten ihre 64 Schritte; die Skalenanzeige beginnt Off.
+
+Die Touch-Eingabe für Noten, Oktaven sowie Slide-/Accent-/Vibrato-Schalter bitte
+noch einmal auf der MPC testen; 0.4.1 korrigiert deren native Button-Bindings.
+Beim Abspielen soll ein orangefarbener Strich durch die aktuelle Spalte laufen.
+
 Phoscyon-Bänke, dessen Arpeggiator und Effekte sind nicht Bestandteil des Ports.
+
+
+**Gezielter Stop/Play-Test für 0.4.1:** In einer neuen Init-Instanz zuerst
+LENGTH 16, STEP PAGE 1–16 und FOLLOW Off einstellen. Im Stillstand eine Note
+setzen, Play drücken, eine weitere Note hinzufügen und wieder Stop/Play
+betätigen. Beide Noten müssen im Raster erhalten bleiben. Bei BASE OCTAVE 3
+und einer C-Note müssen die Oktavzeilen +3 / +2 / +1 / -1 in ARTIC → NOTE
+72/C5, 60/C4, 48/C3 bzw. 24/C1 ergeben. Ein zweiter bewusster Tap auf dieselbe
+Oktavzeile setzt die Grundoktave zurück. Die Touch-Lift-Doppelmeldung einer
+einzelnen Berührung darf die Note nicht sofort wieder löschen.
+
+
+**Neu in 0.4.2: ARTIC und die Schalterzeilen**
+
+Bitte SLIDE, ACCENT und VIBRATO auf SEQUENCE jeweils ein- und ausschalten.
+Auf ARTIC anschließend jede der acht Zeilen gezielt antippen. Die betroffene
+Zelle soll in derselben Zeile leuchten und sich wieder ausschalten lassen.
+TIE ist die Ausnahme in der musikalischen Bedeutung: Es erzeugt eine gebundene
+Pause, daher ist GATE dann aus. TIE selbst muss sichtbar an sein. Mit GATE
+lässt sich die gespeicherte Note wieder einschalten; dabei geht TIE aus.
