@@ -62,7 +62,9 @@ These are offline renders of the actual native skin using values queried from th
 |---|---|
 | ![Unreleased oscillator models](docs/screenshots/engine.png) | ![Unreleased filter models](docs/screenshots/filter.png) |
 
-![Next release preview: 64-step piano roll with A Minor guide](docs/screenshots/sequence.png)
+![Next release preview: 64-step piano roll with A Minor guide](docs/screenshots/sequence-next-release-0.4.2.png)
+
+**Next release: 64 steps on four pages. This image shows page 1–16; the other page buttons are 17–32, 33–48 and 49–64.**
 
 | Next release: ARTIC | Next release: SEQTOOLS |
 |---|---|
