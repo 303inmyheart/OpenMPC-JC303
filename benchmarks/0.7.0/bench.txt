@@ -1,0 +1,13 @@
+plugin jc303_mpc.so: instrument, 618 params, open 4.7 ms; block 128 @ 44100 Hz = 2902 us budget
+  270 one-shot trigger(s) excluded from the sweep, fired in their own stage
+stage               mean%     p99%     max%  threads%    peak
+idle                  0.1      0.2      0.5       0.0    0.00
+1 voices              3.9      4.0      5.5       0.0    0.32
+4 voices              4.0      4.1      4.3       0.0    0.31
+8 voices              3.9      4.1      4.3       0.0    0.29
+16 voices             4.0      4.1      4.5       0.0    0.30
+all-param sweep     160.4    188.5    201.7     191.3    0.32
+release tail          3.4      5.0      5.3       0.1    0.00
+trigger fire          2.2      2.6      3.0       0.0    0.00
+worst p99 188.5%, worst block 201.7%, background threads up to 191.3% of a core, trigger max 3.0% of a block -> FAIL
+{"plugin":"jc303_mpc.so","instrument":1,"open_ms":4.7,"p99_pct":188.5,"max_pct":201.7,"threads_pct":191.3,"verdict":"FAIL","triggers":270,"trigger_max_pct":3.0,"binary_sha256":"e2beacd52606c00c00838ae703e169e6c6a1fe3a208764850b05ecf48bea8d6e","device":"MPC Live III","os_version":"3.10.1 (maintainer reported)","tool_ref":"a2dd2b78a19c4cd46257c09eb9a485a155ab2968","version":"0.7.0","arguments":"-s 10 -v 1,4,8,16 -p -j","affinity":"Cortex-A76 core 4","priority":"SCHED_OTHER, nice 19","cpu_governor":"performance","cpu_frequency_khz":2400000,"mpc_state":"new empty project; MPC application kept running","bench_source_sha256":"6a839caaf0482f401c32838123adf1405b248f096d4d210179d7b47df693bca5","host_wrapper":"affinity and nice only; official benchmark stages/timing/thresholds unchanged","wall_seconds":38.791,"date_utc":"2026-11-14T23:24:18Z"}

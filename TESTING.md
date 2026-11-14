@@ -529,3 +529,16 @@ No manual settings/project/unrelated-plugin changes, full device reboot, Desktop
 copy, public source push/release or formal Store/CPU benchmark.
 
 See [test guide](TESTPLAN-0.7.0-DE.md) and [exact Q-Link table](QLINKS-0.7.0-DE.md).
+
+
+## 0.7.0 benchmark baseline (user explicitly requested)
+
+The user explicitly authorized benchmarking the finished installed candidate,
+overriding the earlier hold for this exact binary. The new empty project was
+maintainer-confirmed. Official default run: WARN (p99 34.5%, max57.4%). Additional
+full-parameter stress: FAIL (p99 188.5%, max201.7%). All results and 21 fixed-
+configuration repeats are preserved in [the report](benchmarks/0.7.0/README.md).
+Same installed/installer binary, hash verified. Temporary copies cleaned; MPC
+app/services/settings/projects were not modified. No report was attached to a
+new installer and no public release/push was performed. Baseline must remain
+unchanged during subsequent optimization.
