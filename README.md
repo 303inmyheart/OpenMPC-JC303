@@ -12,12 +12,13 @@ The project and installed instrument are named **JC303 MPC**. The catalog displa
 
 These are **offline renders of the actual built skin with values queried from the compiled plugin**, not photographs or captures of the MPC display. Host fonts are approximated using DejaVu. The maintainer confirmed the 0.2.2 controls, Q-Link frames, step selection and Sounds tile on a real MPC Live III with MPC OS 3.10.1. The maintainer also confirmed Candidate 5 of 0.2.3 on that device and authorized its release.
 
-## Local 0.3.0 synthesis milestone
+## Local 0.3.x synthesis milestone
 
 The new synthesis core is pinned to JC303 **v0.14.0**
 (`b0ff26011f80e45c7796cad7b29fbc7f347b9337`). This local candidate adds eight
 filter models, TB-303 / Alpha Juno / Phaseshaper oscillators, Circuit square,
-sub oscillator and filter-shaping controls on new **ENGINE** and **FILTER** pages.
+sub oscillator and filter-shaping controls on **ENGINE** and **FILTER** pages. From 0.3.1 both are subpages of **MODS**;
+repeatedly press the MODS function key to cycle MODS → ENGINE → FILTER.
 Choose **JC303 0.14** and enable **MODS** to use the extended models.
 
 Older MPC state versions automatically choose **Legacy 0.2.3**, preserving the
@@ -121,7 +122,8 @@ see [LICENSE-AUDIT.md](LICENSE-AUDIT.md). See [LICENSE](LICENSE) for the full li
 | Component | License / notice |
 |---|---|
 | JC303 and MPC adaptation | [GPL-3.0](LICENSE); original [JC303 by midilab and contributors](https://github.com/midilab/jc303) |
-| Open303 engine | [MIT](src/dsp/open303/LICENSE), Robin Schmidt and contributors |
+| Legacy Open303 engine | [MIT](src/dsp/open303/LICENSE), Robin Schmidt and contributors |
+| New v0.14 DSP | File-specific MIT/AGPL-3.0-or-later; [audit](LICENSE-AUDIT.md) |
 | Aciduino sequencer/harmonizer | [MIT](src/sequencer/LICENSE), Romulo Silva and contributors |
 | OpenMPC wrapper/toolchain | [MIT](https://github.com/open-mpc/mpc-vst-plugins/blob/main/LICENSE) |
 | RTNeural | [BSD-3-Clause](vendor/RTNeural/LICENSE) |

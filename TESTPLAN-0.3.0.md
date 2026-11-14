@@ -1,4 +1,4 @@
-# JC303 MPC 0.3.0: Schritt 1 testen
+# JC303 MPC 0.3.x: Schritt 1 testen
 
 Dieser Build bringt die Klangerzeugung von JC303 v0.14.0. Die folgenden Namen
 entsprechen den Reitern und Beschriftungen im Plugin. Es ist noch keine
@@ -6,7 +6,11 @@ vollständige Umsetzung aller Funktionen des neuen Desktop-Releases.
 
 ## Vorbereitung
 
-Eine neue JC303-MPC-Instanz öffnen. Auf **ENGINE** bei **ENGINE** den Eintrag
+Ab **0.3.1** gehören ENGINE und FILTER unter den Hauptreiter **MODS**.
+MODS wiederholt anwählen: **MODS → ENGINE → FILTER**. Q-Links wechseln mit der
+Unterseite; die übrigen Hauptreiter bleiben unverändert.
+
+Eine neue JC303-MPC-Instanz öffnen. Auf **MODS → ENGINE** bei **ENGINE** den Eintrag
 **JC303 0.14** wählen. Auf **MODS** den Schalter **MODS** einschalten. Die
 neuen Modelle sind wie im Original an MODS gebunden; bei ausgeschalteten MODS
 arbeitet die 0.14-Engine mit dem einfachen TeeBee-/Open303-Grundklang.

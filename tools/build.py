@@ -89,6 +89,7 @@ def skin():
     run([sys.executable, ROOT/'tools/finish_skin.py'])
     run([sys.executable, ROOT/'tools/model_overlay.py'])
     run([sys.executable, ROOT/'tools/browser_preset.py'])
+    run([sys.executable, ROOT/'tools/group_mod_pages.py'])
     folder=next((ROOT/'build/skin').glob('*/Plugin Skins/TUI.json')).parent
     run([sys.executable, MPC/'tools/studio.py','preview',folder,'-o', ROOT/'build/preview_%d.png'])
 

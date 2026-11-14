@@ -42,13 +42,14 @@ def display(i):
 def xywh(bounds):return tuple(int(float(x)) for x in bounds['bounds'].split())
 try:
     for n,tab in enumerate(tui['tabs']):
-        call(e,2,0,10 if n in (3,4) else 0,None,0)
-        if n in (1,2):setparam(e,ids['switchModState'],1)
-        if n==2:setparam(e,ids['lfoDepth'],.4)
-        if n==5:
+        role=tab['componentName'].split('|')[0]
+        call(e,2,0,10 if role in ('SEQUENCE','GENERATE') else 0,None,0)
+        if role in ('MODS','LFO'):setparam(e,ids['switchModState'],1)
+        if role=='LFO':setparam(e,ids['lfoDepth'],.4)
+        if role=='DRIVE':
             # Keep the documentation shot dry: all model choices are available without loading a network.
             setparam(e,ids['driveModel'],16/36)
-        if n>=6:
+        if role in ('ENGINE','FILTER'):
             setparam(e,ids['engine014'],1);setparam(e,ids['switchModState'],1)
             setparam(e,ids['filterModel014'],1/7)
         im=Image.new('RGBA',(1280,628));draw=ImageDraw.Draw(im)

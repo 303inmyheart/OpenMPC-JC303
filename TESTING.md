@@ -282,3 +282,29 @@ not updated. Hearing/touch/GUI acceptance of 0.3.0 remains pending. Installer
 checksums, portable catalog check (zero warnings), binary privacy scan, real Init
 preset and native skin checks passed. No Desktop copy or public release was made.
 The exact candidate installer and private deployment record remain in build/.
+
+## 0.3.0 live acceptance and 0.3.1 navigation
+
+The user reported that 0.3.0 appeared to work, including enabling the amp near the
+end. A read-only live recording captured 229 samples over 234.7 seconds. Whole
+MPC process CPU averaged 54.2% of one CPU core, p95 68.4%, maximum sampled interval
+82.7%; busiest AudioWorker averaged 25.1% and peaked at 45.2%. RSS stayed 385.6 MiB,
+hottest sampled sensor 39.8 C. No matching audio warnings appeared in the service
+journal. Amp activation time/model and parameter stages were not marked, so no
+controlled amp comparison is claimed. This is NOT a Store benchmark or individual
+audio-block timing. See docs/performance/jc303-0.3.0-live-2026-11-14.md and CSV.
+
+0.3.1 changes only navigation/artwork/version metadata: ENGINE and FILTER become
+MODS subpages 2 and 3. The control definitions and Q-Link bindings are unchanged;
+only their native tab/subtab addresses change. Six main keys remain. All parameter
+IDs and DSP/state code are unchanged. Native ASan/UBSan and actual ARM64 VST/engine
+tests pass. Native skin structure checks confirm unique matching tab/Q-Link
+addresses; the existing overlay and Init preset are preserved. Offline rendered
+pages reviewed. Actual subpage navigation still needs user acceptance.
+
+0.3.1 was explicitly approved for installation: 179 files staged and hash-verified,
+previous plugin backed up locally and settings unchanged during file replacement.
+MPC application restarted and returned to active/running. Subpage acceptance is
+pending. No benchmark result is attached to this development installer. The user
+requires the formal Store benchmark only at the final release-build milestone;
+a prematurely started development run is not used as release evidence.

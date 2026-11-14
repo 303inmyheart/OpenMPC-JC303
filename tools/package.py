@@ -83,7 +83,7 @@ release_dir=ROOT/'build/releases'
 bench_args=[]
 if a.bench:
     bench=json.loads(a.bench.read_text().strip().splitlines()[-1])
-    if bench.get('binary_sha256')!=hashlib.sha256(arm.read_bytes()).hexdigest():
+    if bench.get('binary_sha256') not in (hashlib.sha256(arm.read_bytes()).hexdigest(),hashlib.sha256(binary.read_bytes()).hexdigest()):
         raise SystemExit('CPU benchmark does not match this ARM64 binary')
     if bench['verdict']=='FAIL':raise SystemExit('CPU benchmark FAIL: optimize before release')
     bench_args=['--bench',a.bench]

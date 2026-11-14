@@ -76,10 +76,12 @@ def background(index,tab):
     line(d,[(252,87),(420,87)],GREEN,4)
     badge_right=1140 if index==0 else 1210
     badge_left=badge_right-240
-    text(d,(badge_right-16,49),f'{index+1:02d} / {tab["name"]}',20,'#EEF3E5','rm')
-    for n in range(len(TABS)):
-        x=badge_right-len(TABS)*16+n*16
-        box(d,(x,77,x+11,81),GREEN if n==index else '#45523C',radius=1)
+    page_index=1 if tab['name'] in ('ENGINE','FILTER') else index
+    caption='MODS / '+tab['name'] if tab['name'] in ('ENGINE','FILTER') else f'{index+1:02d} / {tab["name"]}'
+    text(d,(badge_right-16,49),caption,20,'#EEF3E5','rm')
+    for n in range(6):
+        x=badge_right-6*16+n*16
+        box(d,(x,77,x+11,81),GREEN if n==page_index else '#45523C',radius=1)
     if index==0:smiley(d,1187,59,28)
     # A printed footer, outside all touch regions.
     text(d,(62,621),'JC / 303',7,MUTED,'lm')
