@@ -32,10 +32,14 @@ def generate():
     add('lfoContour014','LFO Contour',-1,1,0,dynamic_display=True)
     add('accentSweep014','Accent Sweep',0,1,0,dynamic_display=True)
     add('reverseGate014','Reverse Gate',0,1,0,dynamic_display=True)
+    add('drivePreVca','Drive Position',0,1,0,['Post VCA','Pre VCA'])
+    add('driveDisperse','Drive Disperse',0,1,0,dynamic_display=True)
+    add('driveRoutingStatus','Drive Routing Status',0,3,3,['Post VCA','Pre VCA','Legacy: Post VCA','Drive Off'],live=True)
     path.write_text(json.dumps(data,indent=2)+'\n')
     (ROOT/'params.lock').write_text('\n'.join(p['key'] for p in params)+'\n')
     lines=['#pragma once','namespace matrixparam {',f'constexpr int First={first}, Count=9, End={first+12};']
     lines += [f'constexpr int {key}={index};' for key,index in defs]
     lines+=['}'];(ROOT/'src/MatrixParams.h').write_text('\n'.join(lines)+'\n')
     (ROOT/'src/ModSettings.h').write_text('#pragma once\nnamespace pageparam { constexpr int First=603, Count=7, End=610; }\nnamespace extmod { constexpr int First=610, Count=5, End=615; }\n')
+    (ROOT/'src/DriveFxParams.h').write_text('#pragma once\nnamespace drivefx { constexpr int First=615, Count=2, PreVca=615, Disperse=616, Status=617, End=618; }\n')
     (ROOT/'src/RunModeParams.h').write_text('#pragma once\nnamespace runparam { constexpr int Mode=600, Status=601, Stop=602; }\n')

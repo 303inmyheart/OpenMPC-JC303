@@ -28,4 +28,7 @@ constexpr int lfoSync014=611;
 constexpr int lfoContour014=612;
 constexpr int accentSweep014=613;
 constexpr int reverseGate014=614;
+constexpr int drivePreVca=615;
+constexpr int driveDisperse=616;
+constexpr int driveRoutingStatus=617;
 }

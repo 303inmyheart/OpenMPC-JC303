@@ -67,7 +67,7 @@ for child in lengthDef['componentsData']:
         child['bounds']['bounds']='56 0 56 22' if name else '56 22 56 30'
         child['componentData']['data']['textStyle']['colour']='ff202820'
 mainTab=next(t for t in pd['tabs'] if t['tabName']=='SEQUENCE')
-mainTab['qlinkBoundsData'][1]='574 60 124 72'
+# Final navigation derives the sole length-knob frame from these native bounds.
 
 # Compact original hardware panel; native header controls above the grid remain.
 im=Image.new('RGBA',(1280*S,628*S),'#AFB7A7');d=ImageDraw.Draw(im)
@@ -87,7 +87,7 @@ for col in range(16):
 for row,label in enumerate(('+3','+2','+1','-1')):text(d,(73,167+row*22),label,14,DARK)
 for pitch,label in enumerate(('C','C#','D','D#','E','F','F#','G','G#','A','A#','B')):text(d,(72,260+(11-pitch)*20),label,13,DARK)
 for y,label in ((500,'SLIDE'),(530,'ACCENT'),(560,'VIBRATO')):text(d,(60,y+13),label,12,DARK)
-text(d,(640,605),'TAP A NOTE TO ENTER / TAP AGAIN FOR REST    |    SEQUENCE: PIANO / ARTIC / TOOLS / LIVE / KEY',12,DARK)
+text(d,(640,605),'TAP A NOTE TO ENTER / TAP AGAIN FOR REST    |    PIANO / ARTIC / TOOLS / LIVE / KEY / GENERATE',12,DARK)
 im.resize((1280,628),Image.Resampling.LANCZOS).save(skin/'sh_bg_3.png')
 # Scale rows are display-only backgrounds. Inputs and entered notes are above them.
 asset('seq_scale_row.png',(1072,19),(198,243,91,55))

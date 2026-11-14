@@ -11,6 +11,7 @@ extern "C" {
 #include "ModernVoice.h"
 #include "MatrixParams.h"
 #include "ModSettings.h"
+#include "DriveFxParams.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -38,6 +39,9 @@ struct Voice {
     std::array<float,matrixparam::Count> matrix{};
     std::array<float,pageparam::Count> pages{1,1,1,1,1,1,1};
     std::array<float,extmod::Count> extensions{};
+    std::array<float,drivefx::Count> driveFx{};
+    int lastRoutingStatus=-1,route=0,routeTarget=0;
+    float routeGain=1;
     int lastMatrixStatus=-1;
     MpcSequence sequence{core};
     GuitarDrive drive;
@@ -68,6 +72,13 @@ struct Voice {
     }
     void resetMatrix(){
         for(int j=0;j<matrixparam::Count;++j){const auto&p=PARAMS[matrixparam::First+j];matrix[j]=p.nopts?p.def*(p.nopts-1):p.min+(p.max-p.min)*p.def;}
+    }
+    int routingStatus()const{return drive.get(GuitarDrive::Enable)<.5f?3:driveFx[0]<.5f?0:isModern()?1:2;}
+    float advanceRoute(){
+        constexpr float step=1.0f/441;
+        if(route!=routeTarget){routeGain=std::max(0.f,routeGain-step);if(routeGain==0)route=routeTarget;}
+        else if(routeGain<1)routeGain=std::min(1.f,routeGain+step);
+        return routeGain;
     }
     int matrixStatus()const{return !isModern()?0:values[Mod]<.5f?1:2;}
     void apply(int i) {
@@ -107,6 +118,7 @@ struct Voice {
         core.setLfoOn(values[Mod] >= 0.5f && pages[3]>.5f);
         modern.configure(values.data(),extra.data(),pages.data(),extensions.data());
         modern.configureMatrix(matrix.data(),pages.data());
+        drive.setDisperse(driveFx[1]);
     }
     void stop(bool immediate = false) {
         core.allNotesOff();modern.allNotesOff();
@@ -116,7 +128,7 @@ struct Voice {
     }
     void loadPreset(int index) {
         if(index<0 || index>=presetCount || index==preset) return;
-        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();pages.fill(1);extensions.fill(0);
+        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();pages.fill(1);extensions.fill(0);driveFx.fill(0);
         for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
         switch(index) {
         case 1: values[Wave]=0;values[Cutoff]=.35f;values[EnvMod]=.6f;values[Decay]=.45f;break;
@@ -145,13 +157,14 @@ struct Voice {
         default:break;
         }
         applyAll();preset=index;
-        for(int j=pageparam::First;j<extmod::End;++j)dirty[j]=true;
+        for(int j=pageparam::First;j<drivefx::End;++j)dirty[j]=true;
         for(int j=matrixparam::First;j<matrixparam::First+matrixparam::Count;++j)dirty[j]=true;
         for(int j=ModernVoice::First;j<ModernVoice::First+ModernVoice::Count;++j)dirty[j]=true;
         for(int i=0;i<=presetParam;++i)
             if(!PARAMS[i].string_display && !PARAMS[i].momentary && i!=GuitarDrive::Status) dirty[i]=true;
     }
     int changed(char* key,int size) {
+        const int rs=routingStatus();if(rs!=lastRoutingStatus){lastRoutingStatus=rs;dirty[drivefx::Status]=true;}
         const int ms=matrixStatus();if(ms!=lastMatrixStatus){lastMatrixStatus=ms;dirty[matrixparam::matrixStatus]=true;}
         const int status=static_cast<int>(drive.get(GuitarDrive::Status));
         if(status!=lastDriveStatus) {lastDriveStatus=status;dirty[GuitarDrive::Status]=true;}
@@ -165,8 +178,8 @@ struct Voice {
         std::istringstream input(text);
         std::string version;
         input >> version;
-        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7" && version != "JC303-MPC-8" && version != "JC303-MPC-9") return;
-        const int stateVersion=version.back()-'0';
+        if (version != "JC303-MPC-1" && version != "JC303-MPC-2" && version != "JC303-MPC-3" && version != "JC303-MPC-4" && version != "JC303-MPC-5" && version != "JC303-MPC-6" && version != "JC303-MPC-7" && version != "JC303-MPC-8" && version != "JC303-MPC-9" && version != "JC303-MPC-10") return;
+        const int stateVersion=version=="JC303-MPC-10"?10:version.back()-'0';
         auto restored = values;
         for (int i = 0; i < voiceParams; ++i) {
             std::string key;
@@ -211,6 +224,11 @@ struct Voice {
             if(!(input>>tag)||tag!="EXTMODS")return;
             for(int j=0;j<extmod::Count;++j)if(!(input>>key>>restoredExtensions[j])||key!=PARAMS[extmod::First+j].key||!valid(extmod::First+j,restoredExtensions[j]))return;
         }
+        std::array<float,drivefx::Count> restoredDriveFx{};
+        if(stateVersion>=10){
+            std::string tag,key;if(!(input>>tag)||tag!="DRIVEFX")return;
+            for(int j=0;j<drivefx::Count;++j)if(!(input>>key>>restoredDriveFx[j])||key!=PARAMS[drivefx::First+j].key||!valid(drivefx::First+j,restoredDriveFx[j]))return;
+        }
         std::string trailing;
         if (input >> trailing) return;
         if (version == "JC303-MPC-1") restored[Slide] *= 358.0f/998.0f;
@@ -218,7 +236,7 @@ struct Voice {
         if(hasSequence) sequence.load(pattern); else sequence.legacyReset();
         if(stateVersion>=6)sequence.loadExtended(extended);
         drive.load(driveSettings);preset=restoredPreset;
-        values = restored;extra=restoredExtra;matrix=restoredMatrix;pages=restoredPages;extensions=restoredExtensions;
+        values = restored;extra=restoredExtra;matrix=restoredMatrix;pages=restoredPages;extensions=restoredExtensions;driveFx=restoredDriveFx;route=routeTarget=isModern()&&driveFx[0]>.5f;routeGain=1;
         sequence.set(runparam::Mode,startMode);
         applyAll();
     }
@@ -275,6 +293,8 @@ void set(void* instance, const char* key, const char* text) {
                  std::min(PARAMS[i].nopts ? static_cast<float>(PARAMS[i].nopts - 1) : PARAMS[i].max, x));
     if (PARAMS[i].nopts) x = std::round(x);
     if (PARAMS[i].int_display) x=std::round(x);
+    if(i>=drivefx::First && i<drivefx::First+drivefx::Count){v.driveFx[i-drivefx::First]=x;if(i==drivefx::Disperse)v.drive.setDisperse(x);return;}
+    if(i==drivefx::Status)return;
     if(i>=pageparam::First && i<pageparam::End){if(v.pages[i-pageparam::First]!=x){v.pages[i-pageparam::First]=x;v.applyAll();}return;}
     if(i>=extmod::First && i<extmod::End){v.extensions[i-extmod::First]=x;v.modern.configure(v.values.data(),v.extra.data(),v.pages.data(),v.extensions.data());return;}
     if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count){
@@ -308,7 +328,7 @@ int get(void* instance, const char* key, char* out, int size) {
     if (!std::strcmp(key, "state")) {
         std::ostringstream state;
         state.precision(9);
-        state << "JC303-MPC-9\n";
+        state << "JC303-MPC-10\n";
         for (int i = 0; i < voiceParams; ++i) state << PARAMS[i].key << ' ' << v.values[i] << '\n';
         v.sequence.save(state);
         v.drive.save(state);
@@ -323,12 +343,16 @@ int get(void* instance, const char* key, char* out, int size) {
         for(int j=0;j<pageparam::Count;++j)state<<PARAMS[pageparam::First+j].key<<' '<<v.pages[j]<<'\n';
         state<<"EXTMODS\n";
         for(int j=0;j<extmod::Count;++j)state<<PARAMS[extmod::First+j].key<<' '<<v.extensions[j]<<'\n';
+        state<<"DRIVEFX\n";
+        for(int j=0;j<drivefx::Count;++j)state<<PARAMS[drivefx::First+j].key<<' '<<v.driveFx[j]<<'\n';
         const auto text = state.str();
         if (text.size() >= static_cast<size_t>(size)) return 0;
         std::memcpy(out, text.c_str(), text.size() + 1);
         return static_cast<int>(text.size());
     }
     const int i = indexOf(key);
+    if(i>=drivefx::First && i<drivefx::First+drivefx::Count)return std::snprintf(out,size,"%.9g",v.driveFx[i-drivefx::First]);
+    if(i==drivefx::Status)return std::snprintf(out,size,"%d",v.routingStatus());
     if(i>=pageparam::First && i<pageparam::End)return std::snprintf(out,size,"%.9g",v.pages[i-pageparam::First]);
     if(i>=extmod::First && i<extmod::End)return std::snprintf(out,size,"%.9g",v.extensions[i-extmod::First]);
     if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count)return std::snprintf(out,size,"%.9g",v.matrix[i-matrixparam::First]);
@@ -348,6 +372,7 @@ int get(void* instance, const char* key, char* out, int size) {
     if (name.size() > 8 && name.substr(name.size() - 8) == "_display") {
         const int j = indexOf(name.substr(0, name.size() - 8).c_str());
         if (j < 0) return 0;
+        if(j==drivefx::Disperse)return v.driveFx[1]<=0?std::snprintf(out,size,"Off"):std::snprintf(out,size,"%.0f Hz",150.0*std::pow(20.0,v.driveFx[1]));
         if(j>=extmod::First && j<extmod::End){
             float x=v.extensions[j-extmod::First];
             if(j==extmod::First)return std::snprintf(out,size,"%.1f deg",x*360);
@@ -389,12 +414,16 @@ void render(void* instance, mpc_sample_t* out, int frames) {
     auto& v = *static_cast<Voice*>(instance);
     v.drive.setMixModulation(v.isModern()&&v.values[Mod]>=.5f?static_cast<float>(v.modern.driveModulation()):0.0f);
     v.drive.beginRender();
+    v.routeTarget=v.isModern()&&v.driveFx[0]>.5f;
+    if(!v.drive.processing() || v.silenced){v.route=v.routeTarget;v.routeGain=1;}
     for (int i = 0; i < frames; ++i) {
         v.sequence.sample();
         double pitch=v.sequence.pitchMod();
         if(pitch!=v.lastPitchMod){if(v.isModern())v.modern.pitchBend(pitch);else v.core.setPitchBend(pitch);v.lastPitchMod=pitch;}
-        const float dry = static_cast<float>(v.isModern()?v.modern.sample():v.core.getSample());
-        const float x=v.drive.process(v.silenced ? 0.0f : dry);
+        const float routeGain=v.advanceRoute();
+        const bool pre=v.isModern() && v.route==1 && v.drive.processing();
+        const float dry = static_cast<float>(v.isModern()?v.modern.sample(pre?&v.drive:nullptr):v.core.getSample());
+        const float x=(pre?dry:v.drive.process(v.silenced ? 0.0f : dry))*routeGain;
         out[2*i] = out[2*i+1] = v.silenced ? 0.0f : x;
     }
 }

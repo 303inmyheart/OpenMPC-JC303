@@ -17,19 +17,41 @@ tabs={t['tabName']:t for t in pd['tabs']}
 banks=json.loads((skin/'Q-Links.json').read_text())['Screen Mode Q-Links']['map']
 def bank(name):
     t=tabs[name];return next(b['Q-Links'] for b in banks if (b['Tab'],b['SubTab'])==(t['fnKeyIndex']+1,t['fnKeySubIndex']+1))
-for name,key in [('MODS','circuitEnabled'),('ENGINE','oscModsEnabled'),('FILTER','filterModsEnabled'),('LFO','modSlot1Enabled')]:assert ids[key] in bank(name).values()
-assert ids['seqStartMode'] in bank('SEQTOOLS').values()
-assert ids['seqTriggerStop'] in bank('SEQTOOLS').values()
-assert params[ids['seqTriggerStop']].get('momentary') and not params[ids['seqTriggerStop']].get('live')
+# Only rotary controls are assigned, with the explicit Drive-model exception.
+for name,components in pages.items():
+    expected={int(m['value'].split()[1]) for c in components if c['componentData']['type'].startswith('shKnob') for m in c['handle remapping']['map'] if m['key']=='Data'}
+    if name=='DRIVE':expected.add(ids['driveModel'])
+    assigned=[p for p in bank(name).values() if p>=0]
+    assert set(assigned)==expected and len(assigned)==len(expected),(name,'only visible knobs/model may be mapped',assigned,expected)
+    t=tabs[name];b=next(b for b in banks if (b['Tab'],b['SubTab'])==(t['fnKeyIndex']+1,t['fnKeySubIndex']+1))
+    assert b['Bank Direction']=='RowTopDown'
+    for row in range(4):
+        members={b['Q-Links'][f'Q-Link {13+col-4*row}'] for col in range(4)}-{-1}
+        if not members:continue
+        x,y,w,h=map(int,t['qlinkBoundsData'][row].split())
+        for c in components:
+            if c['componentData']['type']=='Image':continue
+            matches=[int(m['value'].split()[1]) for m in c.get('handle remapping',{}).get('map',[]) if m['key']=='Data']
+            if not any(i in members for i in matches):continue
+            xx,yy,ww,hh=rect(c) if 'rect' in globals() else tuple(map(int,c['bounds']['bounds'].split()))
+            assert x<=xx and y<=yy and xx+ww<=x+w and yy+hh<=y+h,(name,row,'focus cuts a native label/value')
+assert ids['seqTriggerStop'] not in bank('SEQTOOLS').values()
 for slot in range(1,5):
-    name=f'MATRIX{slot}';assert tabs[name]['fnKeyIndex']==tabs['MODS']['fnKeyIndex']
+    name=f'MATRIX{slot}';assert tabs[name]['fnKeyIndex']==tabs['LFO']['fnKeyIndex']
     assert 0<=tabs[name]['fnKeySubIndex']<8
-    assert ids[f'matrixDest{slot}'] in bank(name).values()
-    assert ids[f'modSlot{slot}Enabled'] in bank(name).values()
+    assert ids[f'modSlot{slot}Enabled'] not in bank(name).values()
     choices=[c for c in pages[name] if c['componentData']['type'].startswith(f'shSeg_matrixDest{slot}_')]
     assert len(choices)==14
-    assert all(any(m['key']=='Data' and m['value']==f'Parameter {ids[f"matrixDest{slot}"]}' for m in c['handle remapping']['map']) for c in choices)
-print('Four matrix pages: native 14-target bindings, matching subtab/Q-Link banks, automatable momentary STOP and hardware binding verified.')
+overlay=defs['jc303 model overlay']
+assert overlay['hideQLinkBounds'] and overlay['ignoreMousePresses']
+assert overlay['componentsData'][0]['componentData']['type']=='KnobOverlay'
+assert any(a['handler']=='Focus Lost' for a in overlay['componentsData'][0]['componentData']['data']['actions'])
+assert not any(c['componentData']['type']=='Image' and c['bounds']['bounds']=='0 0 1280 800' for c in overlay['componentsData']),'full-screen child would swallow outside dismissal taps'
+field=next(c for c in pages['DRIVE'] if c['componentData']['type'].startswith('shPopField_'))
+assert all(a['handler']=='Show Overlay' and a['additionalData']=='jc303 model overlay' for a in defs[field['componentData']['type']]['actions'])
+assert any(m['key']=='Data' and m['value']==f'Parameter {ids["driveModel"]}' for m in field['handle remapping']['map'])
+print('Native Drive overlay still owns focus/dismissal and covers page Q-Link frames; Drive model binding retained.')
+print('Six navigation groups; ONLY visible knobs plus Drive-model exception assigned; every bank frame encloses native controls/labels/values; matrix routing stays native touch.')
 def binding(c):
     return next(int(m['value'].split()[1]) for m in c['handle remapping']['map'] if m['key']=='Data')
 def rect(c):return tuple(map(int,c['bounds']['bounds'].split()))

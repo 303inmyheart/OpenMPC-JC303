@@ -18,7 +18,7 @@ result does not describe the newer development builds below.
 
 The maintainer confirmed **0.5.0** works on Live III, including the matrix and
 note-start modes. **0.6.0** adds independent MODS bypasses and the remaining
-LFO/Circuit controls; its hardware acceptance is pending. These are development
+LFO/Circuit controls. Local **0.7.0** adds Drive Pre-VCA/Disperse and navigation/Q-Link restructuring; hardware acceptance is pending. These are development
 builds, not a published release or catalog update.
 
 Development milestones since 0.2.3:
@@ -32,10 +32,11 @@ Development milestones since 0.2.3:
 | 0.4.2 | Separate native input recipes for persistent switches and momentary cells; reversible GATE/TIE editing | Installed; maintainer confirmed the touch correction works |
 | 0.5.0 | Four-slot matrix with native MODS pages, 8 source choices / 14 destinations, expanded LFO destination; Host Transport / Note Gate-Hold / latched Note Trigger and automatable Q-Link STOP | Installed; maintainer confirmed it works; next release only |
 | 0.6.0 | Independent Circuit/Osc/Filter/four-slot bypass, LFO phase/key sync/contour, Accent Sweep/global Reverse Gate, hardware-Stop MIDI regression | Installed for testing; hardware acceptance pending; next release only |
+| 0.7.0 | Pre/Post-VCA routing, Disperse, six logical function keys, knob-only row banks plus Drive model, native-bound focus frames | Installed for testing; hardware acceptance pending; next release only |
 
 The 64-step editor includes:
 
-- SEQUENCE, ARTIC, SEQTOOLS, SEQLIVE and SEQKEY under one main function key.
+- SEQUENCE, ARTIC, SEQTOOLS, SEQLIVE, SEQKEY and GENERATE under one main function key.
 - Direct note/octave entry, selected-step frame and moving playhead line.
 - GATE, SLIDE, ACCENT, VIBRATO, TIE, MUTE, HAMMER and REVERSE lanes.
 - Length 1–64 on both the editor and GENERATE. Generation affects only the active
@@ -61,7 +62,7 @@ Implemented for the **next public release**, not in the current 0.2.3 download:
 - Four slots: fixed LFO, fixed bipolar envelope and two selectable sources.
 - Eight source choices and fourteen destinations, including transient DRIVE
   Dry/Wet modulation. Source Off / Amount 0 disables the additional route.
-- MATRIX1–4 beneath MODS, with matching Q-Link banks and engine/MODS status.
+- MATRIX1–4 beneath LFO in 0.7.0 (previously MODS), with source/destination touch controls, amount Q-Links and engine/MODS status.
   Expanded destinations require the JC303 0.14 synthesis engine and MODS on.
 - LFO page shares destination/depth with slot 1; old parameter IDs are retained.
 - Host Transport stays the default. Note Gate/Hold plays while notes are held;
@@ -89,17 +90,33 @@ or release benchmark. See [the test guide](TESTPLAN-0.5.0-DE.md).
 
 See [the 0.6.0 test guide](TESTPLAN-0.6.0-DE.md). Not publicly released.
 
+## Local 0.7.0 candidate: Drive and navigation
+
+- Original Pre-VCA insert location for the v0.14 engine; Post VCA remains the
+  default and the legacy-engine fallback. A short fade avoids abrupt route swaps;
+  no double neural inference is used. Routing status distinguishes the fallback.
+- Disperse: original eight-stage allpass, Q=1, two-octave spread, 150–3000 Hz
+  corner with logarithmic smoothing. Zero and disabled Drive retain dry bypass.
+- Six main keys: SYNTH, MODS (Circuit/OSC/Filter/Legacy), LFO (Matrix1–4),
+  SEQUENCE (including Generate), DRIVE and global SETUP.
+- Q-Links only for visible knobs, with the explicitly requested Drive-model
+  exception. Switches/buttons/other selectors remain touch controls. RowTopDown
+  banks follow visible knob groups; native label/value bounds define each frame.
+- Existing parameter IDs and published MIDI CC mappings remain unchanged. JC10
+  stores the two Drive additions; old projects use Post VCA / Disperse Off.
+
+See [the 0.7.0 test guide](TESTPLAN-0.7.0-DE.md). Not publicly released.
+
 ## Remaining planned JC303 work
 
-1. Drive extensions: Pre-VCA routing and Disperse.
-2. Original factory JSON sounds/banks and practical preset import/export and
-   management. Deferred; not part of the current authorized implementation.
-3. Deferred sequencer extras: pitch-only/rhythm-only randomization, optional
-   internal/MIDI clock and sequencer MIDI output. Host clock and both note-start
-   modes are already implemented; additional host MIDI capability needs checking.
-4. Release validation: extended sessions, multiple instances, parameter-change
-   spikes and the final-release Store benchmark, then public source/release and
-   catalog update.
+1. Original factory JSON sounds/banks and practical preset import/export and
+   management. Deferred; not part of the current implementation request.
+2. Deferred sequencer extras: pitch-only/rhythm-only randomization, optional
+   internal/MIDI clock and sequencer MIDI output. Additional host MIDI capability
+   needs checking; host clock and both note-start modes are implemented.
+3. Hardware acceptance of the new routing/navigation, extended sessions,
+   multiple instances and parameter-change spikes. The final-release Store
+   benchmark follows, then public source/release and catalog update.
 
 ## Deliberately out of scope
 

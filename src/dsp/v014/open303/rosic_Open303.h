@@ -497,6 +497,14 @@ namespace rosic014
 
     /** Calculates onse output sample at a time. */
     INLINE double getSample();
+    // MPC sample-accurate adapter: use the original insert point without
+    // batching across sequencer/MIDI events or allocating an audio buffer.
+    template<class Process> double getSampleWithPreVca(Process process){
+      if(idle)return 0.0;
+      double ampGain,volumeGain;
+      const float input=static_cast<float>(renderPreVca(ampGain,volumeGain));
+      return applyVca(process(input),ampGain,volumeGain);
+    }
 
     /** An effect inserted after the filter and output chain, before the VCA, so it sees a steady level
     while the amp envelope shapes its output. It runs at the sample rate. */

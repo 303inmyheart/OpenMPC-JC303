@@ -140,3 +140,14 @@ Distribution is a GPLv3/AGPLv3 combination. Read LICENSE-AUDIT.md and retain bot
 license texts plus dependency notices. Public release artifacts must reference
 matching published source. Package output defaults to build/releases; --desktop
 is an explicit opt-in. Offline tests are not MPC CPU measurements.
+
+
+0.7.0 navigation is defined by tools/navigation.py and applied after native
+controls/Drive overlay generation by tools/group_mod_pages.py. It rebuilds
+RowTopDown screen banks from visible knobs, with Drive Model as the sole
+selector exception. Final focus rectangles use the actual placed native control
+bounds and popup heading. The SYNTH layout qlinks seed deliberately preserves
+the published CC20–35 table; it does not define the final screen banks. Existing
+wrapper patches/pins are unchanged. Do not remove that compatibility seed when
+changing the screen layout. tools/test_sequencer_skin.py verifies both bindings
+and complete label/value containment, in addition to the 176 flag-cell tests.

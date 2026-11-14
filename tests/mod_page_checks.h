@@ -46,7 +46,8 @@ void modPageChecks(){
     auto state=chunk(p);Plugin loaded;loadChunk(loaded,state);require(chunk(loaded)==state,"page/extension JC9 state failed exact roundtrip");
     require(loaded.fx->get(loaded.fx,index("oscModel014"))==1,"bypass erased saved oscillator choice");
     auto bad=state;bad.replace(bad.find("oscModsEnabled 0"),std::strlen("oscModsEnabled 0"),"oscModsEnabled 2");loadChunk(loaded,bad);require(chunk(loaded)==state,"invalid page state partially mutated project");
-    auto old=state;old.replace(0,11,"JC303-MPC-8");old.erase(old.find("SUBMODS\n"));loadChunk(loaded,old);
+    auto jc9=state;jc9.replace(0,jc9.find('\n'),"JC303-MPC-9");jc9.erase(jc9.find("DRIVEFX\n"));loadChunk(loaded,jc9);require(loaded.fx->get(loaded.fx,index("drivePreVca"))==0 && loaded.fx->get(loaded.fx,index("driveDisperse"))==0,"JC9 import enabled new drive effects");
+    auto old=state;old.replace(0,old.find('\n'),"JC303-MPC-8");old.erase(old.find("SUBMODS\n"));loadChunk(loaded,old);
     for(int i=603;i<610;++i)require(loaded.fx->get(loaded.fx,i)==1,"old JC8 project did not retain enabled page defaults");
     require(loaded.fx->get(loaded.fx,index("lfoContour014"))==.5f && loaded.fx->get(loaded.fx,index("accentSweep014"))==0,"JC8 migration did not neutralize new effects");
     std::puts("Independent Circuit/Osc/Filter/four-slot bypass, retained values, LFO depth isolation, phase/sync/contour, Accent Sweep/Reverse Gate, JC9 roundtrip and JC8 migration PASS");

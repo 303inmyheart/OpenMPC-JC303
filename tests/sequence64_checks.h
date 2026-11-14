@@ -106,11 +106,11 @@ void sequence64Checks(){
     plugin.units("seqGridVibrato16",1);std::string state=chunk(plugin);Plugin loaded;loadChunk(loaded,state);
     require(chunk(loaded)==state,"full JC9 project failed exact roundtrip");
     auto broken=state.substr(0,state.size()-5);loadChunk(loaded,broken);require(chunk(loaded)==state,"truncated 64-step state partially changed the plugin");
-    auto v6=state;v6.replace(0,11,"JC303-MPC-6");v6.erase(v6.find("KEYSCALE "));
+    auto v6=state;v6.replace(0,v6.find('\n'),"JC303-MPC-6");v6.erase(v6.find("KEYSCALE "));
     loadChunk(loaded,v6);require(loaded.fx->get(loaded.fx,index("seqKeyScale"))==0,"JC6 import must default the visual guide to Off");
     loadChunk(loaded,state);
     auto invalidKey=state;invalidKey.replace(invalidKey.find("KEYSCALE "),std::string::npos,"KEYSCALE 12 2\n");loadChunk(loaded,invalidKey);require(chunk(loaded)==state,"invalid key partially changed project state");
-    auto old=state;old.replace(0,11,"JC303-MPC-5");old.erase(old.find("SEQ64\n"));loadChunk(loaded,old);
+    auto old=state;old.replace(0,old.find('\n'),"JC303-MPC-5");old.erase(old.find("SEQ64\n"));loadChunk(loaded,old);
     require(loaded.fx->get(loaded.fx,index("seqTiming"))==0,"old v5 project did not retain legacy timing");
     std::puts("64-step editor: pages, grid input, exclusive flags, active-only generation, clipboard, undo/redo, fractional swing/gates, wrap, JC9 roundtrip and JC6/JC5 migration PASS");
 }

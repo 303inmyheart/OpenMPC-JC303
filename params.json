@@ -8263,6 +8263,39 @@
       "max": 1,
       "default": 0,
       "dynamic_display": true
+    },
+    {
+      "key": "drivePreVca",
+      "name": "Drive Position",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "options": [
+        "Post VCA",
+        "Pre VCA"
+      ]
+    },
+    {
+      "key": "driveDisperse",
+      "name": "Drive Disperse",
+      "min": 0,
+      "max": 1,
+      "default": 0,
+      "dynamic_display": true
+    },
+    {
+      "key": "driveRoutingStatus",
+      "name": "Drive Routing Status",
+      "min": 0,
+      "max": 3,
+      "default": 3,
+      "live": true,
+      "options": [
+        "Post VCA",
+        "Pre VCA",
+        "Legacy: Post VCA",
+        "Drive Off"
+      ]
     }
   ]
 }

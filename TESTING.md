@@ -483,3 +483,49 @@ Installer SHA-256:
 `99135a4b3ac0287df35ae92f2f97729f84025d72f9f47bc7d3c63ec8dc88313e`.
 Actual 0.6.0 hearing, touch/Q-Link and hardware Stop acceptance is pending; follow
 [the German test guide](TESTPLAN-0.6.0-DE.md). Public release remains 0.2.3.
+
+
+## 0.7.0 — Phase 3 and knob-focused navigation (2026-11-15)
+
+Implemented Pre/Post-VCA routing and original eight-stage Disperse without
+changing IDs 0–614. JC10 appends Drive Position/Disperse; JC9 migration defaults
+to Post / Off. Legacy synthesis explicitly falls back to Post. Route changes
+use a short fade with only one neural path running.
+
+Final native ASan/UBSan/leak tests and actual ARM64/QEMU shared-object tests pass.
+A redundant full native recompilation was interrupted; final native validation
+reused current-source sanitizer DSP objects and rebuilt generated data, the
+final wrapper and both test hosts. All behavioral suites ran again. Published
+CC20–35 assignments and NRPN pass on both architectures. No audio failure is
+hidden by the interrupted build. The earlier migration fixture was corrected to
+replace the entire version line now that JC10 has a two-digit version number.
+
+Independent checks cover eight-allpass impulse phase/energy, zero bypass and
+clean reactivation. Real wet paths cover three neural models, panic, disabled
+dry preservation and transactional JC10/JC9 state. A separate nonlinear
+insert-location oracle verifies that changing Volume scales Pre-VCA output
+proportionally, while Post-VCA intentionally fails that proportionality test.
+All prior legacy/reference, 37-model, matrix, bypass, sequencer/clock/scale and
+Stop/Play UI regressions pass.
+
+Six function-key groups, all knob-only bindings plus the Drive Model exception,
+RowTopDown bank order and complete native knob/name/value bounds pass. Existing
+176 flag-cell touch ON/OFF tests remain passing; navigation does not alter their
+native action definitions. Drive's native overlay retains focus ownership,
+outside-tap dismissal and placement above page Q-Link rectangles. Geometry
+reports no findings. Offline screenshots were reviewed. Actual MPC Q-Link bank,
+frame, overlay and listening acceptance is still pending.
+
+OpenMPC portable installer/catalog checks pass with zero warnings. Required
+scripts, exact tested binary receipt, checksums and privacy scan pass. Installer:
+`JC303-MPC-0.7.0-mpc-aarch64.zip`, SHA-256
+`89b7c702414a5a3efe95ed83f94da64facd920960bc22cf415fb3c23892441fe`.
+
+Installed under standing authorization: prior 0.6.0 backed up locally; 511 plugin
+files staged/hash-verified; settings unchanged during replacement. MPC app
+restarted, service active/running and installed binary hash verified:
+`e2beacd52606c00c00838ae703e169e6c6a1fe3a208764850b05ecf48bea8d6e`.
+No manual settings/project/unrelated-plugin changes, full device reboot, Desktop
+copy, public source push/release or formal Store/CPU benchmark.
+
+See [test guide](TESTPLAN-0.7.0-DE.md) and [exact Q-Link table](QLINKS-0.7.0-DE.md).

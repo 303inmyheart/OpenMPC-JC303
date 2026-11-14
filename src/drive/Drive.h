@@ -15,6 +15,8 @@ public:
     int display(int param,char* out,int size) const;
     void beginRender();
     void setMixModulation(float amount) noexcept;
+    void setDisperse(float amount) noexcept;
+    bool processing()const noexcept;
     float process(float dry) noexcept;
     void save(std::ostream&) const;
     static bool parse(std::istream&,Settings&);

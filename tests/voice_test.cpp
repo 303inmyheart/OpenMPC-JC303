@@ -322,7 +322,7 @@ void slideRangeMigration() {
     const auto length=p.fx->dispatch(p.fx,23,0,0,&chunk,0);
     require(length>0,"missing slide migration fixture");
     std::string legacy(static_cast<char*>(chunk));
-    legacy.replace(0,std::strlen("JC303-MPC-4"),"JC303-MPC-1");
+    legacy.replace(0,legacy.find('\n'),"JC303-MPC-1");
     legacy.erase(legacy.find("seqEnabled "));
     auto start=legacy.find("slideTime ");
     auto end=legacy.find('\n',start);
@@ -343,8 +343,9 @@ void slideRangeMigration() {
 #include "matrix_checks.h"
 #include "run_mode_checks.h"
 #include "mod_page_checks.h"
+#include "drive_fx_checks.h"
 int main() {
-    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); sequence64Checks(); scaleChecks(); playbackUiChecks(); matrixChecks(); runModeChecks(); modPageChecks(); }
+    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); sequence64Checks(); scaleChecks(); playbackUiChecks(); matrixChecks(); runModeChecks(); modPageChecks(); driveFxChecks(); }
     catch(const std::exception& e) { std::fprintf(stderr,"FAIL: %s\n",e.what()); return 1; }
     std::puts("JC303 behavioural tests PASSED");
     return 0;

@@ -1,5 +1,6 @@
 // MPC integration: GPL-3.0-only; linked v0.14 DSP has file-specific MIT/AGPL notices.
 #include "ModernVoice.h"
+#include "drive/Drive.h"
 #include "dsp/v014/open303/rosic_Open303.h"
 #include <cmath>
 #include <array>
@@ -20,7 +21,7 @@ void ModernVoice::configureMatrix(const float* m,const float* pages){
 }
 double ModernVoice::driveModulation()const{return impl->voice.getLfoOverdriveMod();}
 void ModernVoice::allNotesOff(){impl->voice.allNotesOff();}
-double ModernVoice::sample(){return impl->voice.getSample();}
+double ModernVoice::sample(GuitarDrive* insert){return insert?impl->voice.getSampleWithPreVca([insert](float x){return insert->process(x);}):impl->voice.getSample();}
 void ModernVoice::configure(const float* p,const float* x,const float* pages,const float* extensions){
  auto& v=impl->voice;const bool mods=p[8]>=.5f;
  const bool circuit=mods&&pages[0]>.5f,oscillator=mods&&pages[1]>.5f,filter=mods&&pages[2]>.5f;

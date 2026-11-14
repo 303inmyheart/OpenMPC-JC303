@@ -67,6 +67,7 @@ notices.write_text('\n\n'.join([
     (ROOT/'LICENSE').read_text(),
     'New DSP file-specific AGPL-3.0-or-later notices apply; see corresponding source.\n'+(ROOT/'src/dsp/v014/open303/LICENSE-AGPL-3.0').read_text(),
     'Open303 engine — MIT\n'+(ROOT/'src/dsp/open303/LICENSE').read_text(),
+    'Disperser adaptation — midilab/jc303 src/JC303.h, GPL-3.0-only; uses original dfl014 dispersion filter. AllPass2p extraction by Laurent de Soras has a file-specific WTFPL notice retained in the corresponding source.',
     'Aciduino sequencer and harmonizer — MIT\n'+(ROOT/'src/sequencer/LICENSE').read_text(),
     'MPC wrapper — MIT\n'+(build.MPC/'LICENSE').read_text(),
     'RTNeural — BSD-3-Clause\n'+(ROOT/'vendor/RTNeural/LICENSE').read_text(),

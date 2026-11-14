@@ -26,7 +26,7 @@ void matrixChecks(){
     for(auto pair:{std::pair<const char*,const char*>{"matrixAmount2 -0.370000005","matrixAmount2 nan"},{"RUNMODE 0","RUNMODE 3"},{"matrixDest1 13","matrixDest1 14"}}){
         auto bad=state;auto pos=bad.find(pair.first);require(pos!=std::string::npos,"matrix malformed fixture missing");bad.replace(pos,std::strlen(pair.first),pair.second);loadChunk(restored,bad);require(chunk(restored)==state,"malformed matrix partially changed project");
     }
-    auto old=state;old.replace(0,11,"JC303-MPC-7");old.erase(old.find("MATRIX\n"));loadChunk(restored,old);
+    auto old=state;old.replace(0,old.find('\n'),"JC303-MPC-7");old.erase(old.find("MATRIX\n"));loadChunk(restored,old);
     require(restored.fx->get(restored.fx,index("matrixAmount2"))==.5f && restored.fx->get(restored.fx,index("matrixSource3"))==0,"JC7 migration did not reset new routes");
     require(restored.fx->get(restored.fx,index("matrixDest1"))==restored.fx->get(restored.fx,index("lfoDestination"))*2/13,"JC7 migration lost existing LFO destination");
     restored.units("matrixDest1",2);require(restored.fx->get(restored.fx,index("lfoDestination"))==1,"new LFO destination failed old alias feedback");

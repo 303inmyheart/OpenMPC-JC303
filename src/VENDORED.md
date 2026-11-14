@@ -145,3 +145,17 @@ so another slot cannot re-enable a bypassed LFO route by modulating its depth.
 Original matrix arithmetic and license notices are unchanged. Phase, key sync,
 contour, Accent Sweep and global Reverse Gate call the existing upstream setters.
 Independent Circuit/Osc/Filter defaults and saved switches live in the adapter.
+
+
+## 0.7.0 Drive extensions
+
+DriveDisperser adapts the pinned upstream src/JC303.h Disperser (GPL-3.0-only),
+using the already vendored dfl014 DispersionFilter / AllPass2p with their original
+file-specific notices. Eight stages, Q=1, two-octave spread, 150–3000 Hz corner
+and logarithmic smoothing are retained. The sixteen-sample update cadence
+continues across host/MIDI block splits. No new external dependency is added.
+
+The v0.14 Open303 header adds an MPC-only inlined single-sample insert adapter
+using its existing renderPreVca/applyVca helpers. This keeps sequencer/MIDI
+sample timing and the original insertion location without allocations or
+double neural processing. Existing sample()/post-VCA path is unchanged by default.

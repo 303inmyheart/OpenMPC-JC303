@@ -180,7 +180,7 @@ void presetBrowserChecks() {
     // Sound-only / sequencer 0.1.0 chunks must default to dry Init.
     p.fx->dispatch(p.fx,23,0,0,&chunk,0);
     std::string old(static_cast<char*>(chunk));
-    old.replace(0,std::strlen("JC303-MPC-4"),"JC303-MPC-3");old.erase(old.find("drive "));
+    old.replace(0,old.find('\n'),"JC303-MPC-3");old.erase(old.find("drive "));
     restored.fx->dispatch(restored.fx,24,0,old.size()+1,old.data(),0);
     require(restored.fx->get(restored.fx,index("driveEnabled"))==0 &&
             restored.fx->dispatch(restored.fx,3,0,0,nullptr,0)==0,"old project must load as dry Init");

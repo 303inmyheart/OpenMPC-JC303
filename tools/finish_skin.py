@@ -8,6 +8,7 @@ import os
 import math
 from pathlib import Path
 import random
+from navigation import LOCATION
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
@@ -76,10 +77,9 @@ def background(index,tab):
     line(d,[(252,87),(420,87)],GREEN,4)
     badge_right=1140 if index==0 else 1210
     badge_left=badge_right-240
-    page_index=3 if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY') else 1 if tab['name'] in ('ENGINE','FILTER','MATRIX1','MATRIX2','MATRIX3','MATRIX4') else index
-    caption='MODS / '+tab['name'] if tab['name'] in ('ENGINE','FILTER','MATRIX1','MATRIX2','MATRIX3','MATRIX4') else f'{index+1:02d} / {tab["name"]}'
-    if tab['name'] in ('ARTIC','SEQTOOLS','SEQLIVE','SEQKEY'):
-        caption='SEQUENCE / '+{'ARTIC':'ARTIC','SEQTOOLS':'TOOLS','SEQLIVE':'LIVE','SEQKEY':'KEY'}[tab['name']]
+    page_index,sub,group=LOCATION[tab['name']]
+    title={'MODS':'CIRCUIT','ENGINE':'OSC','SEQTOOLS':'TOOLS','SEQLIVE':'LIVE','SEQKEY':'KEY'}.get(tab['name'],tab['name'])
+    caption=group if sub==0 and tab['name']!='MODS' else f'{group} / {title}'
     text(d,(badge_right-16,49),caption,20,'#EEF3E5','rm')
     for n in range(6):
         x=badge_right-6*16+n*16
@@ -130,21 +130,16 @@ def background(index,tab):
         section(d,74,259,1126,'PATTERN GENERATOR')
     elif index==5:
         section(d,74,126,1126,'NEURAL DRIVE / 37 MODELS')
-        # Printed signal-flow legend describes the existing audio path.
-        for x,label in [(156,'303 VOICE'),(455,'AMP / PEDAL'),(754,'DRY / WET'),(1053,'OUTPUT')]:
-            box(d,(x-90,533,x+90,570),None,'#77866A',4)
-            text(d,(x,551),label,13,INK)
-        for x in (265,564,863):
-            line(d,[(x,551),(x+75,551)],MUTED,2)
-            line(d,[(x+68,546),(x+75,551),(x+68,556)],MUTED,2)
     elif index==6:
         section(d,74,246,1126,'MODS ON / LEGACY KEEPS THE PREVIOUS SOUND')
     elif index==7:
         section(d,74,198,1126,'ENGINE: JC303 0.14 / MODS ON')
     if tab['name'].startswith('MATRIX'):
         text(d,(640,594),'JC303 0.14 ENGINE + MODS REQUIRED   /   OVERDRIVE MODULATES DRIVE DRY / WET',12,MUTED)
-    if tab['name'] in ('MODS','ENGINE','FILTER'):
+    if tab['name']=='FILTER':
         box(d,(535,24,765,99),PAPER,'#647358',5)
+    if tab['name']=='SETUP':text(d,(640,590),'GLOBAL SETTINGS / SWITCHES BY TOUCH / SOUND PARAMETERS KEEP THEIR VALUES',12,MUTED)
+    if tab['name']=='LEGACY':text(d,(640,585),'ORIGINAL ENGINE ONLY / MODERN FILTERS ARE ON MODS - FILTER',12,MUTED)
     save(im,SKIN/f'sh_bg_{index}.png')
 
 

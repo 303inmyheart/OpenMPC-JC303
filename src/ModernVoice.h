@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 // MPC adapter around upstream v0.14 DSP. Opaque to avoid mixing old/new headers.
+class GuitarDrive;
 class ModernVoice {
 public:
     static constexpr int First=66, Count=20;
@@ -16,7 +17,7 @@ public:
     void pitchBend(double semitones);
     void tempo(double bpm);
     void allNotesOff();
-    double sample();
+    double sample(GuitarDrive* preVca=nullptr);
 private:
     struct Impl;
     std::unique_ptr<Impl> impl;

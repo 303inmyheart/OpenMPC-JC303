@@ -8,7 +8,7 @@ An Acid / TB-303-style instrument for **Gen2 MPCs (aarch64), MPC OS 3.10.1+**, b
 
 > **Release status: the public download is still 0.2.3.**
 > **The new synthesis, 64-step sequencer, key/scale guide and updated screenshots below are a preview for the NEXT release. They are not included in the current 0.2.3 download.**
-> The maintainer confirmed **0.5.0** works on Live III. Installed development candidate **0.6.0** adds independent MODS bypasses, extended LFO controls, Accent Sweep and global Reverse Gate; hardware acceptance is pending. There is no public release date or new binary release yet.
+> The maintainer confirmed **0.5.0** works on Live III. Installed development candidate **0.7.0** includes independent MODS bypasses, extended LFO/Circuit, Drive Pre-VCA/Disperse and revised navigation/Q-Links; hardware acceptance is pending. There is no public release date or new binary release yet.
 
 The project/installed name is **JC303 MPC**, the catalog display name is **JC303**. The repository URL and plugin identity remain unchanged.
 
@@ -29,7 +29,7 @@ The maintainer confirmed this release on Live III / MPC OS 3.10.1. Gen1/ARM32 an
 
 ## Next release preview — not in 0.2.3
 
-The following changes are implemented in local development builds through **0.6.0** (0.6.0 device acceptance pending) and are planned for the next public release:
+The following changes are implemented in local development builds through **0.7.0** (0.7.0 device acceptance pending) and are planned for the next public release:
 
 - **JC303 v0.14 synthesis:** eight filters, TB-303 / Alpha Juno / Phaseshaper oscillators, Circuit square, sub oscillator and filter-shaping controls. ENGINE and FILTER are subpages of MODS.
 - **64-step piano roll:** four 16-step pages, touch note/octave entry, a selected-step frame and moving playhead line.
@@ -44,7 +44,7 @@ The maintainer confirmed the corrected pitch and ARTIC/front-lane touch controls
 
 **New in local candidate 0.5.0, for the next release:** four-slot modulation matrix (LFO, envelope, two selectable-source slots), eight source choices and fourteen destinations. Native MODS subpages expose source, destination, amount and status. SEQUENCE → TOOLS adds **Host Transport**, **Note Gate/Hold** and latched **Note Trigger**, plus an automatable STOP trigger with a Q-Link binding. Note modes follow MPC tempo without transposing the pattern; loaded projects wait for a new note. The maintainer confirmed 0.5.0 works.
 
-**Added in local candidate 0.6.0, next release only:** a global MODS master plus independent Circuit/Osc/Filter/four-slot bypasses that retain their settings; LFO start phase, key sync and contour; Accent Sweep and global Reverse Gate. The hardware-Stop MIDI path clears latched note playback without changing the selected mode. Hardware acceptance is pending; see the [0.6.0 test guide](TESTPLAN-0.6.0-DE.md). Pre-VCA/Disperse, preset management and optional sequencer extras remain on the [roadmap](ROADMAP.md).
+**Added in local candidate 0.6.0, next release only:** a global MODS master plus independent Circuit/Osc/Filter/four-slot bypasses that retain their settings; LFO start phase, key sync and contour; Accent Sweep and global Reverse Gate. The hardware-Stop MIDI path clears latched note playback without changing the selected mode. Hardware acceptance is pending; see the [0.6.0 test guide](TESTPLAN-0.6.0-DE.md). **New in 0.7.0, next release only:** Drive Pre/Post-VCA and Disperse; six logical function keys; global Setup and a separate Legacy page. Matrix moves beneath LFO, Generate beneath Sequence. Q-Links follow visible knob groups; only Drive Model is an additional selector binding. All switches remain touch controls. Existing IDs and MIDI CC mappings are preserved. See the [0.7.0 test guide](TESTPLAN-0.7.0-DE.md). Preset management, optional sequencer extras and release validation remain on the [roadmap](ROADMAP.md).
 
 Microtuning and additional external MIDI/macro controls are no longer planned. Existing MIDI note input, pad playing, recording and Q-Links remain.
 
@@ -64,7 +64,7 @@ These are offline renders of the actual native skin using values queried from th
 |---|---|
 | ![Unreleased oscillator models](docs/screenshots/engine.png) | ![Unreleased filter models](docs/screenshots/filter.png) |
 
-![Next release preview: 64-step piano roll with A Minor guide](docs/screenshots/sequence-next-release-0.4.2.png)
+![Next release preview: 64-step piano roll with A Minor guide](docs/screenshots/sequence-next-release-0.7.0.png)
 
 **Next release: 64 steps on four pages. This image shows page 1–16; the other page buttons are 17–32, 33–48 and 49–64.**
 
@@ -84,7 +84,11 @@ These are offline renders of the actual native skin using values queried from th
 |---|---|
 | ![MATRIX1 development preview](docs/screenshots/matrix1.png) | ![MATRIX3 development preview](docs/screenshots/matrix3.png) |
 
-The interface images show the local development skin through 0.6.0. They are not included in the public 0.2.3 release.
+| Next release: SETUP | Next release: LEGACY |
+|---|---|
+| ![SETUP development preview](docs/screenshots/setup.png) | ![LEGACY development preview](docs/screenshots/legacy.png) |
+
+The interface images show the local development skin through 0.7.0. They are not included in the public 0.2.3 release.
 
 ## Installation and use
 
