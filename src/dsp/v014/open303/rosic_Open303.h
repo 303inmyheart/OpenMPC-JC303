@@ -1185,8 +1185,13 @@ namespace rosic014
     double smoothedCutoff = exp2(cutoffSmoother.getSample(log2(cutoff)));
     double instCutoff = smoothedCutoff * (1.0 + muteMorph * (muteCutoffFactor - 1.0));  // mute: darker tone
     instCutoff *= pow(2.0, tmp1+tmp2+mod.cutoffOctaves);
-    filter.setCutoff(instCutoff);
-    diodeFilter.setCutoff(instCutoff);
+    // These two setters rebuild coefficients. Keep the sounding and incoming
+    // filter current through the switch fade; inactive models need no work.
+    // Skip the whole setter so its cached cutoff and coefficients stay paired.
+    if(currentFilterType == dfl014::FILTER_TEEBEE || pendingFilterType == dfl014::FILTER_TEEBEE)
+      filter.setCutoff(instCutoff);
+    if(currentFilterType == dfl014::FILTER_DIODE || pendingFilterType == dfl014::FILTER_DIODE)
+      diodeFilter.setCutoff(instCutoff);
     ms20Filter.setCutoff(instCutoff);
     junoFilter.setCutoff(instCutoff);
     waspFilter.setCutoff(instCutoff);

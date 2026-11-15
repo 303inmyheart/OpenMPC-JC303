@@ -8,7 +8,7 @@ An Acid / TB-303-style instrument for **Gen2 MPCs (aarch64), MPC OS 3.10.1+**, b
 
 > **Release status: the public download is still 0.2.3.**
 > **The new synthesis, 64-step sequencer, key/scale guide and updated screenshots below are a preview for the NEXT release. They are not included in the current 0.2.3 download.**
-> The maintainer confirmed **0.5.0** works on Live III. Installed development candidate **0.7.0** includes independent MODS bypasses, extended LFO/Circuit, Drive Pre-VCA/Disperse and revised navigation/Q-Links; hardware acceptance is pending. There is no public release date or new binary release yet.
+> The maintainer confirmed **0.5.0** works on Live III. Installed development candidate **0.7.3** includes independent MODS bypasses, extended LFO/Circuit, Drive Pre-VCA/Disperse and revised navigation/Q-Links, plus CPU optimizations; hardware acceptance is pending. There is no public release date or new binary release yet.
 
 The project/installed name is **JC303 MPC**, the catalog display name is **JC303**. The repository URL and plugin identity remain unchanged.
 
@@ -102,7 +102,7 @@ Published-source build instructions are in [BUILDING.md](BUILDING.md). Instructi
 
 The published 0.2.3 Store benchmark is **WARN** (p99 16.5%, maximum 24.6%); see [PERFORMANCE.md](PERFORMANCE.md). This historical result does not describe 0.4.2 or the upcoming matrix.
 
-Development builds are checked with native ASan/UBSan/leak tests, actual ARM64 shared-object tests under QEMU, state/timing/scale oracles and skin/installer validation. QEMU checks are not hardware benchmarks. The formal benchmark for the next release is reserved for its completed release build.
+Development builds are checked with native ASan/UBSan/leak tests, actual ARM64 shared-object tests under QEMU, state/timing/scale oracles and skin/installer validation. QEMU checks are not hardware benchmarks. The maintainer then authorized hardware benchmarks of the completed 0.7.0 candidate and optimization comparisons. Local 0.7.3 measures **WARN** in both the standard run (p99 31.5%, maximum 39.0%) and the additional all-parameter stress (p99 31.5%, maximum 44.5%). The baseline stress was FAIL (188.5% / 201.7%). These are per-core audio-block measurements, not the MPC project CPU meter. All baseline and intermediate failures remain in [the comparison report](benchmarks/0.7.3/README.md). No new public release has been published.
 
 ## Roadmap and license
 

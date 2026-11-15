@@ -542,3 +542,50 @@ Same installed/installer binary, hash verified. Temporary copies cleaned; MPC
 app/services/settings/projects were not modified. No report was attached to a
 new installer and no public release/push was performed. Baseline must remain
 unchanged during subsequent optimization.
+
+
+## 0.7.3 — CPU optimization and verified deployment (2026-11-15)
+
+Accumulated changes since 0.7.0: coalesce square waveshaper table requests,
+apply only the active engine's final requested table before rendering, collect
+derived sequencer display differences in the idle notification worker, replace
+618-key linear lookup with an immutable allocation-free index, and skip unused
+TeeBee/Diode cutoff coefficient rebuilds while maintaining sounding/incoming
+models during switch fades. IDs, state, UI, quality and undo depth are unchanged.
+
+Native ASan/UBSan/leak host and full behavior suites pass. Interrupted earlier
+runs were retained under private interrupted filenames; the final current-source
+host/voice binaries were run to completion again. Exact final ARM64 shared-object
+host and full behavior suites pass under QEMU; tested receipt matches raw binary
+SHA-256 `c6fc0ade6c59be9f750ab71c21a2b08c3868d0b81b33023d5e3051f71903fd39`.
+Native and real Live III old/new comparisons each cover **917504 bit-identical
+samples** against installed 0.7.0: drive/bypass/step/scale setter bursts, all eight
+filter models, moving cutoff/bias, Hi-Fi/FM/saturation and live model changes.
+Filter cases include note-off/retrigger segments. These finite comparisons do
+not replace listening or touchscreen acceptance.
+
+Native grid 176 flag-cell hit/ON/OFF tests, knob-only navigation/frame checks,
+Drive popup focus/dismissal and geometry pass. Final TUI.json and Q-Links.json
+are byte-identical to installed 0.7.0. No interaction/layout change was intended.
+
+Explicitly authorized real Live III measurements use the unchanged pinned
+OpenMPC host and thresholds. Standard: **WARN, p99 31.5%, max 39.0%**. Additional
+full 348-parameter stress: **WARN, p99 31.5%, max 44.5%** (baseline0.7.0 FAIL at
+188.5% / 201.7%). Full sweep stage alone: mean13.4%, p99 26.4%, max44.5%; overall
+p99 comes from the release tail. All raw baseline/intermediate failures remain
+in [the complete comparison](benchmarks/0.7.3/README.md). Per-core block-budget
+CPU figures are distinct from the MPC project meter. WARN remains WARN.
+
+OpenMPC Installer/catalog/checksum/privacy validation passes with zero warnings.
+Installer `JC303-MPC-0.7.3-mpc-aarch64.zip`, SHA-256:
+`cde5060fef5b8abb51714a401ff743a60cd24e26656c8642b65ee5c77d3d8fd3`.
+Package carries the conservative additional full-stress WARN report.
+
+Installed under standing authorization: 0.7.0 backed up locally, 511 files
+staged and hash-verified, settings unchanged during replacement; only the MPC
+application restarted, active/running confirmed. Installed stripped SHA-256
+matches the package and both hardware benchmark runs:
+`1354f721127c8c945f450958a539a7852e3d27002717ae8b476fc000feb34de9`.
+No global settings/project/unrelated-plugin writes, full device reboot, Desktop
+copy, public source push or release. Hearing/touch acceptance remains pending;
+see [the short German test guide](TESTPLAN-0.7.3-DE.md).

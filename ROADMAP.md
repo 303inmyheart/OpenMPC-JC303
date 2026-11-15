@@ -1,6 +1,6 @@
 # JC303 MPC and MPC porting roadmap
 
-Status: 2026-11-14. Target: Gen2 MPCs (aarch64), MPC OS 3.10.1+.
+Status: 2026-11-15. Target: Gen2 MPCs (aarch64), MPC OS 3.10.1+.
 Hardware testing has been performed on MPC Live III only.
 
 ## Published release
@@ -33,6 +33,7 @@ Development milestones since 0.2.3:
 | 0.5.0 | Four-slot matrix with native MODS pages, 8 source choices / 14 destinations, expanded LFO destination; Host Transport / Note Gate-Hold / latched Note Trigger and automatable Q-Link STOP | Installed; maintainer confirmed it works; next release only |
 | 0.6.0 | Independent Circuit/Osc/Filter/four-slot bypass, LFO phase/key sync/contour, Accent Sweep/global Reverse Gate, hardware-Stop MIDI regression | Installed for testing; hardware acceptance pending; next release only |
 | 0.7.0 | Pre/Post-VCA routing, Disperse, six logical function keys, knob-only row banks plus Drive model, native-bound focus frames | Installed for testing; hardware acceptance pending; next release only |
+| 0.7.3 | Coalesced waveshaper/view updates, constant-time parameter lookup, inactive-filter coefficient work avoided; unchanged sound quality and UI | Installed; standard and extra full-stress WARN; native/ARM64 and exact real-device audio pass; hearing/touch acceptance pending; next release only |
 
 The 64-step editor includes:
 
@@ -51,8 +52,13 @@ The 64-step editor includes:
 Native ASan/UBSan/leak checks, actual ARM64 shared-object tests under QEMU,
 independent timing/scale oracles, native-skin checks and OpenMPC Installer
 validation pass. These are distinct from the maintainer's real-device tests.
-**No formal/store benchmark has been run for these development builds.** It is
-reserved for the completed release build. Matching source and release metadata
+The maintainer explicitly authorized benchmarks of completed 0.7.0 and the
+subsequent optimization comparisons. Local 0.7.3 is WARN in both the standard
+run (31.5% p99 / 39.0% max) and the additional all-parameter stress
+(31.5% / 44.5%); baseline full stress was FAIL (188.5% / 201.7%). See the
+[complete comparison and preserved failures](benchmarks/0.7.3/README.md).
+These are per-core audio-block measurements, not the project CPU meter.
+Matching source and release metadata
 must be published together before a new public binary release.
 
 ## Local 0.5.0 candidate: matrix and note-start modes
@@ -107,6 +113,14 @@ See [the 0.6.0 test guide](TESTPLAN-0.6.0-DE.md). Not publicly released.
 
 See [the 0.7.0 test guide](TESTPLAN-0.7.0-DE.md). Not publicly released.
 
+## Local 0.7.3: CPU optimization
+
+Square-table requests and derived sequencer feedback are coalesced; parameter
+lookup uses an immutable table; inactive TeeBee/Diode coefficient rebuilds are
+skipped while both endpoints of model switches remain current. Sound quality,
+parameter IDs, saved state, undo depth and the 0.7.0 interface are preserved.
+See [measurements](benchmarks/0.7.3/README.md). Not publicly released.
+
 ## Remaining planned JC303 work
 
 1. Original factory JSON sounds/banks and practical preset import/export and
@@ -116,7 +130,8 @@ See [the 0.7.0 test guide](TESTPLAN-0.7.0-DE.md). Not publicly released.
    needs checking; host clock and both note-start modes are implemented.
 3. Hardware acceptance of the new routing/navigation, extended sessions,
    multiple instances and parameter-change spikes. The final-release Store
-   benchmark follows, then public source/release and catalog update.
+   measurements for 0.7.3 are recorded; any changed release binary needs its own
+   matching benchmark, followed by public source/release and catalog update.
 
 ## Deliberately out of scope
 

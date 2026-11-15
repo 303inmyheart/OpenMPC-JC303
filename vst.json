@@ -2,7 +2,7 @@
   "name": "JC303 MPC",
   "vendor": "midilab",
   "uid": "JcM3",
-  "version": 702,
+  "version": 703,
   "so": "jc303_mpc.so",
   "params": "params.json",
   "layout": "layout.conf",
