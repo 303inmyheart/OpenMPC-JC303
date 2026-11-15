@@ -26,7 +26,7 @@ def generate():
     add('seqTriggerStatus','Sequencer Start Status',0,4,0,['Sequencer Off','Host Transport','Waiting for Note','Note Gate Running','Note Trigger Running'],live=True)
     add('seqTriggerStop','Stop Note Sequencer',0,1,0,['Off','Stop'],momentary=True,debounce_ms=250)
     for key,name in [('circuitEnabled','Circuit Mods'),('oscModsEnabled','Oscillator Mods'),('filterModsEnabled','Filter Mods'),*[(f'modSlot{i}Enabled',f'Matrix Slot {i}') for i in range(1,5)]]:
-        add(key,name,0,1,1,['Off','On'])
+        add(key,name,0,1,0,['Off','On'])
     add('lfoPhase014','LFO Start Phase',0,1,0,dynamic_display=True)
     add('lfoSync014','LFO Key Sync',0,1,0,['Off','On'])
     add('lfoContour014','LFO Contour',-1,1,0,dynamic_display=True)

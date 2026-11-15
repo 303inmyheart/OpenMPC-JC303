@@ -1,5 +1,20 @@
 #pragma once
 void modPageChecks(){
+    {
+        Plugin fresh(false);
+        require(fresh.fx->get(fresh.fx,index("switchModState"))==0,"new instance MODS master must be off");
+        for(int i=603;i<610;++i)require(fresh.fx->get(fresh.fx,i)==0,"new instance submodule must be off");
+        fresh.fx->dispatch(fresh.fx,2,0,7,nullptr,0); // Existing LFO factory sound must retain its routing.
+        require(fresh.fx->get(fresh.fx,index("switchModState"))==1 && fresh.fx->get(fresh.fx,index("modSlot1Enabled"))==1,"factory LFO preset lost its enabled routing");
+        fresh.fx->dispatch(fresh.fx,2,0,0,nullptr,0);
+        require(fresh.fx->get(fresh.fx,index("switchModState"))==0,"Init did not reset MODS master");
+        for(int i=603;i<610;++i)require(fresh.fx->get(fresh.fx,i)==0,"Init did not reset submodule switches");
+        fresh.units("switchModState",1);
+        for(int i=603;i<610;++i)fresh.fx->set(fresh.fx,i,(i%2)?1:0);
+        auto saved=chunk(fresh);Plugin restored(false);loadChunk(restored,saved);
+        require(chunk(restored)==saved,"new off defaults overwrote saved per-page switch settings");
+    }
+
     auto sound=[](const char* page,bool on,const char* knob,float value){
         Plugin p;p.units("engine014",1);p.units("switchModState",1);p.units("cutoff",.45);p.units("envmod",.55);
         p.units(page,on);p.units(knob,value);p.note(0x90,48,127);return p.render(4096);

@@ -34,6 +34,7 @@ Development milestones since 0.2.3:
 | 0.6.0 | Independent Circuit/Osc/Filter/four-slot bypass, LFO phase/key sync/contour, Accent Sweep/global Reverse Gate, hardware-Stop MIDI regression | Installed for testing; hardware acceptance pending; next release only |
 | 0.7.0 | Pre/Post-VCA routing, Disperse, six logical function keys, knob-only row banks plus Drive model, native-bound focus frames | Installed for testing; hardware acceptance pending; next release only |
 | 0.7.3 | Coalesced waveshaper/view updates, constant-time parameter lookup, inactive-filter coefficient work avoided; unchanged sound quality and UI | Installed; standard and extra full-stress WARN; native/ARM64 and exact real-device audio pass; hearing/touch acceptance pending; next release only |
+| 0.7.4 | New instances/Init default all eight MODS switches to Off; Circuit page reminder points to SETUP master; saved/factory routing preserved | Installed; native/ARM64/UI/catalog pass; hearing/touch acceptance pending; next release only; matching final release benchmark required |
 
 The 64-step editor includes:
 

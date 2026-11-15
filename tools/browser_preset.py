@@ -31,6 +31,7 @@ try:
     assert size>0
     chunk=C.string_at(ptr,size)
     assert chunk.startswith(b'JC303-MPC-10\n') and b'preset 0\n' in chunk
+    assert get(effect,8)==0 and all(get(effect,i)==0 for i in range(603,610)), 'Init must disable every MODS switch'
     uid=int.from_bytes(cfg['uid'].encode(),'big')
     text=xpl.xpl(cfg['name'],cfg['vendor'],f'%payload-path%/{folder}/{cfg["so"]}',
                  uid,cfg['version'],chunk,preset='Init')

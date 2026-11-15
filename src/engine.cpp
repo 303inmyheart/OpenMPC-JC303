@@ -37,7 +37,7 @@ struct Voice {
     ModernVoice modern;
     std::array<float,ModernVoice::Count> extra{};
     std::array<float,matrixparam::Count> matrix{};
-    std::array<float,pageparam::Count> pages{1,1,1,1,1,1,1};
+    std::array<float,pageparam::Count> pages{};
     std::array<float,extmod::Count> extensions{};
     std::array<float,drivefx::Count> driveFx{};
     int lastRoutingStatus=-1,route=0,routeTarget=0;
@@ -129,7 +129,7 @@ struct Voice {
     }
     void loadPreset(int index) {
         if(index<0 || index>=presetCount || index==preset) return;
-        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();pages.fill(1);extensions.fill(0);driveFx.fill(0);
+        stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();pages.fill(index==0?0.f:1.f);extensions.fill(0);driveFx.fill(0);
         for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
         switch(index) {
         case 1: values[Wave]=0;values[Cutoff]=.35f;values[EnvMod]=.6f;values[Decay]=.45f;break;

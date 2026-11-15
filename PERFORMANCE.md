@@ -1,6 +1,6 @@
 # JC303 MPC performance
 
-Current local candidate **0.7.3**: standard OpenMPC run **WARN**, p99 **31.5%**,
+Most recent measured candidate **0.7.3**: standard OpenMPC run **WARN**, p99 **31.5%**,
 maximum **39.0%**. Additional full 348-parameter stress is also **WARN**,
 p99 **31.5%**, maximum **44.5%**; 0.7.0 was FAIL at **188.5% / 201.7%**.
 The sweep stage itself improves from 160.4% mean to 13.4% mean. These are
@@ -8,6 +8,8 @@ single-core audio-block measurements on the actual Live III, not project-meter
 percentages. No quality reduction. See [complete reports](benchmarks/0.7.3/README.md),
 including all intermediate failures and exact binary hashes. This candidate is
 not yet publicly released; historical public 0.2.3 remains WARN at 16.5% / 24.6%.
+The subsequent 0.7.4 defaults/UI update has a different binary and needs a new
+matching benchmark before public release; do not reuse the 0.7.3 CPU metadata.
 
 ## Historical JC303 0.2.1 — Live III performance comparison
 

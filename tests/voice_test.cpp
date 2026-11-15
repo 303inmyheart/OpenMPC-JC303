@@ -90,7 +90,9 @@ int index(const char* key) {
 }
 struct Plugin {
     Effect* fx = VSTPluginMain(host);
-    Plugin() { require(fx && fx->magic==0x56737450,"VST2 entry failed"); fx->dispatch(fx,0,0,0,nullptr,0); units("engine014",0); units("seqTiming",0); }
+    // Existing DSP oracles exercise enabled submodules explicitly. Pass false
+    // to check the real untouched defaults instead of that historical setup.
+    Plugin(bool enablePages=true) { require(fx && fx->magic==0x56737450,"VST2 entry failed"); fx->dispatch(fx,0,0,0,nullptr,0); units("engine014",0); units("seqTiming",0); if(enablePages)for(int i=603;i<610;++i)fx->set(fx,i,1); }
     ~Plugin() { fx->dispatch(fx,1,0,0,nullptr,0); }
     void set(const char* key,float value) { fx->set(fx,index(key),value); }
     void units(const char* key,float value) {

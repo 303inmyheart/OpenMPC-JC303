@@ -138,6 +138,9 @@ def background(index,tab):
         text(d,(640,594),'JC303 0.14 ENGINE + MODS REQUIRED   /   OVERDRIVE MODULATES DRIVE DRY / WET',12,MUTED)
     if tab['name']=='FILTER':
         box(d,(535,24,765,99),PAPER,'#647358',5)
+    if tab['name']=='MODS':
+        box(d,(800,558,1180,590),DARK,'#526145',4)
+        text(d,(990,574),'ENABLE MODS MASTER IN SETUP',16,GREEN)
     if tab['name']=='SETUP':text(d,(640,590),'GLOBAL SETTINGS / SWITCHES BY TOUCH / SOUND PARAMETERS KEEP THEIR VALUES',12,MUTED)
     if tab['name']=='LEGACY':text(d,(640,585),'ORIGINAL ENGINE ONLY / MODERN FILTERS ARE ON MODS - FILTER',12,MUTED)
     save(im,SKIN/f'sh_bg_{index}.png')

@@ -589,3 +589,42 @@ matches the package and both hardware benchmark runs:
 No global settings/project/unrelated-plugin writes, full device reboot, Desktop
 copy, public source push or release. Hearing/touch acceptance remains pending;
 see [the short German test guide](TESTPLAN-0.7.3-DE.md).
+
+
+## 0.7.4 — MODS Off defaults and SETUP reminder (2026-11-15)
+
+New instances and the exported MPC-browser Init now default the global MODS
+master, Circuit/Osc/Filter and all four matrix/LFO-slot enable switches to Off.
+Generated parameter defaults and engine initialization agree. Loading Init after
+a factory sound also resets the seven page/slot switches; existing non-Init
+factory sounds preserve their enabled routing. Saved JC9/JC10 switch settings
+are restored exactly, and older chunks without SUBMODS still migrate with their
+historically enabled pages. No DSP equations, IDs, state format or routing change.
+
+MODS / CIRCUIT now prints **ENABLE MODS MASTER IN SETUP** beneath its status
+readout. Preview reviewed: the message is outside control/value/Q-Link regions.
+Native TUI actions and Q-Link maps are byte-identical to 0.7.3. Geometry, 176
+flag-cell touch/action regressions, knob-only banks and popup focus checks pass.
+Actual MPC visual/input acceptance remains pending.
+
+Native ASan/UBSan/leak and full ARM64 shared-object/QEMU suites pass, including
+explicit raw-instance defaults, Init reset, LFO factory preservation, mixed-page
+state roundtrip and JC8 historical migration regressions. DSP oracles explicitly
+enable submodules in their shared legacy fixture so they still exercise active
+mods; the separate default checks opt out of that setup. Browser Init export
+checks all eight real VST switch values before serializing the .xpl.
+Raw tested ARM64 SHA-256: `f1b6ede599b0bf69a0cb9c81d077a4dbaa6b6f28a6093eaa0b7a6d509158d7ec`.
+
+OpenMPC Installer/catalog/checksum/privacy validation passes, zero warnings.
+Installer `JC303-MPC-0.7.4-mpc-aarch64.zip`, SHA-256:
+`3e5607ff51c8bb0daa63755c1fe8eedf1788b4b364df9c00a3553918dddffeb2`.
+No 0.7.3 CPU report is attached to this changed binary. A matching final release
+benchmark remains required; no new development benchmark was run.
+
+Installed under standing authorization: previous 0.7.3 backed up locally, 511
+plugin files staged/hash-verified, settings unchanged during replacement, MPC
+application restarted and active/running confirmed. Installed stripped SHA-256:
+`d5ba7dde3800cba43e66593b79797823b3094724b985e39a4b43704365f0ed11`.
+No global settings/project/unrelated-plugin changes, full device reboot, Desktop
+copy, public push or release. Hearing/touch acceptance pending; see
+[the German test guide](TESTPLAN-0.7.4-DE.md).
