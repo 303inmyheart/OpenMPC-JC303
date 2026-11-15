@@ -248,11 +248,25 @@ struct Voice {
     }
 };
 
+// Immutable, allocation-free lookup. The wrapper supplies string keys for
+// every numeric read/write; a linear scan multiplied the cost of large edits.
+constexpr unsigned keySlots=2048;
+unsigned keyHash(const char* key){unsigned h=2166136261u;for(;*key;++key){h^=static_cast<unsigned char>(*key);h*=16777619u;}return h;}
+const std::array<int,keySlots>& parameterIndex(){
+    static const auto table=[](){
+        std::array<int,keySlots> result{};result.fill(-1);
+        for(int i=0;i<NPARAMS;++i){unsigned slot=keyHash(PARAMS[i].key)&(keySlots-1);while(result[slot]>=0)slot=(slot+1)&(keySlots-1);result[slot]=i;}
+        return result;
+    }();
+    return table;
+}
 int indexOf(const char* key) {
-    for (int i = 0; i < NPARAMS; ++i) if (!std::strcmp(key, PARAMS[i].key)) return i;
+    const auto& table=parameterIndex();unsigned slot=keyHash(key)&(keySlots-1);
+    for(unsigned probe=0;probe<keySlots;++probe){int i=table[slot];if(i<0)return -1;if(!std::strcmp(key,PARAMS[i].key))return i;slot=(slot+1)&(keySlots-1);}
     return -1;
 }
 void* create(const char*) {
+    (void)parameterIndex(); // construct lookup before any real-time call
     try { return new Voice; } catch (...) { return nullptr; }
 }
 void destroy(void* instance) { delete static_cast<Voice*>(instance); }
