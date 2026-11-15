@@ -38,6 +38,19 @@ required upgrade steps.
 3. Further performance work and extended real-project/multiple-instance testing.
    A changed release binary needs a fresh matching benchmark.
 
+## Next packaging revision
+
+- Add the explicit `"format": "vst2"` field to Akai plugin.json.
+- Adopt/review the current OpenMPC install.sh and uninstall.sh templates;
+  the current difference is the backup filename stem calculation.
+- Review the latest OpenMPC contribution rules and validator before every
+  future MPC plugin release, pin the reviewed tooling and resolve new findings.
+- Keep published 0.7.4 assets/tag unchanged. Packaging changes use a new version
+  with matching checks and final-binary benchmark evidence.
+
+These follow the three advisory findings documented in
+[catalog PR911](https://github.com/open-mpc/mpc-vst-plugins/pull/911).
+
 ## Deliberately out of scope
 
 - Microtuning / AnaMark .tun file import.
