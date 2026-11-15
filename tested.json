@@ -12,5 +12,13 @@
     "firmware": "3.10.1",
     "date": "2026-11-13",
     "notes": "Maintainer confirmed Candidate 5 during playback with and without amp, native model-overlay layering and outside-tap dismissal; authorized submission of this exact release candidate."
+  },
+  {
+    "id": "jc303-mpc",
+    "version": "0.7.4",
+    "device": "MPC Live III (Gen2)",
+    "firmware": "3.10.1",
+    "date": "2026-11-15",
+    "notes": "Exact released ARM64 binary exercised on real hardware with the official OpenMPC benchmark: standard WARN p99 34.6%, max 38.3%; additional full-parameter stress WARN p99 33.5%, max 43.0%. Maintainer supplied current SETUP capture showing all MODS switches Off and earlier 0.7 interface captures. Earlier feature milestones were maintainer-tested; extended sessions and full latest-build touch acceptance are not claimed."
   }
 ]

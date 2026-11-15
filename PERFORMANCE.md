@@ -1,15 +1,20 @@
 # JC303 MPC performance
 
-Most recent measured candidate **0.7.3**: standard OpenMPC run **WARN**, p99 **31.5%**,
-maximum **39.0%**. Additional full 348-parameter stress is also **WARN**,
-p99 **31.5%**, maximum **44.5%**; 0.7.0 was FAIL at **188.5% / 201.7%**.
-The sweep stage itself improves from 160.4% mean to 13.4% mean. These are
-single-core audio-block measurements on the actual Live III, not project-meter
-percentages. No quality reduction. See [complete reports](benchmarks/0.7.3/README.md),
-including all intermediate failures and exact binary hashes. This candidate is
-not yet publicly released; historical public 0.2.3 remains WARN at 16.5% / 24.6%.
-The subsequent 0.7.4 defaults/UI update has a different binary and needs a new
-matching benchmark before public release; do not reuse the 0.7.3 CPU metadata.
+Release **0.7.4**, exact final ARM64 binary on MPC Live III / OS 3.10.1:
+
+| Test | p99 | Max | Verdict |
+|---|---:|---:|---|
+| Standard OpenMPC | 34.6% | 38.3% | WARN |
+| Additional full-parameter stress | 33.5% | 43.0% | WARN |
+
+The installer records the standard result. See [exact final-release evidence](benchmarks/0.7.4/README.md).
+These are single-core audio-block measurements, not the MPC project meter.
+Baseline 0.7.0 full stress was FAIL 188.5%/201.7%; its unchanged reports and all
+intermediate failures remain available. [0.7.3 optimization details](benchmarks/0.7.3/README.md)
+explain the changes without reducing audio quality; tested native and actual-device
+comparisons each covered 917504 bit-identical samples. The final 0.7.4 adds MODS-Off
+Init defaults and a printed SETUP reminder. No 0.7.3 report is reused for0.7.4.
+Historical public 0.2.3 was WARN 16.5%/24.6%; it is a different feature set and binary.
 
 ## Historical JC303 0.2.1 — Live III performance comparison
 

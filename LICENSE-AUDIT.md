@@ -1,6 +1,6 @@
-> This audit describes the upcoming v0.14-based release. The current public 0.2.3 release remains GPL-3.0-only. The newer adapted DSP source and notices will be published with the next binary release.
+> This audit applies to the v0.14-based JC303 MPC 0.7.4 release. The older 0.2.3 release remains GPL-3.0-only. Matching adapted DSP source and notices are included at the release tag.
 
-# JC303 MPC 0.3.0 license audit
+# JC303 MPC 0.7.4 license audit
 
 Pinned new upstream: midilab/jc303 v0.14.0,
 `b0ff26011f80e45c7796cad7b29fbc7f347b9337` (2026-11-14).

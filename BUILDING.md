@@ -67,12 +67,12 @@ CPU. Package only after both suites pass.
 
 The packager uses OpenMPC release.py, validates the portable catalog format,
 archive integrity and every checksum, then writes the installation-only ZIP to
-`~/Schreibtisch`. It refuses to overwrite an existing ZIP. Source, screenshots,
+`build/releases/` by default. Desktop copies require the explicit `--desktop`
+option. Source, screenshots,
 compilers, test executables and debug logs are excluded from the installer.
 It does not install, restart MPC, or publish a GitHub release. Packaging uses
-`--catalog --require-portable --expect-id --expect-repo`. `--no-desktop` keeps
-CI artifacts under build/releases. A device benchmark can be attached with
-`--bench benchmarks/0.2.3/bench.txt` only when its binary SHA-256 matches exactly;
+`--catalog --require-portable --expect-id --expect-repo`. `--no-desktop` explicitly selects the default artifact location. A device benchmark can be attached with
+`--bench benchmarks/0.7.4/bench-standard.txt` only when its binary SHA-256 matches exactly;
 FAIL results are rejected. A rebuilt binary needs a fresh measurement instead
 of silently inheriting a previous build’s CPU result.
 
@@ -86,8 +86,8 @@ excluded from Git. QEMU tries the local ARM64 runtime, then
 ## Artwork and documentation
 
 `browser_tile.py` draws the 270x110 Sounds tile before gen_vst.py. After skin
-generation, finish_skin.py draws the six panels, 128-frame 92x92 rotary strips,
-switches, selectors and step outlines at 3x resolution. skin_focus.py computes
+generation, finish_skin.py draws the native page backgrounds, 128-frame 92x92 rotary strips,
+switches, selectors and step outlines at 3x resolution. group_mod_pages.py computes
 Q-Link frames from complete native control bounds, including names and displays.
 The generated skin folder is cleaned before rebuilding, to avoid stale assets.
 
@@ -100,8 +100,9 @@ python3 tools/build.py skin
 python3 tools/render_readme.py
 ```
 
-The README previews query the built plugin for displayed values. They approximate
-MPC host fonts with DejaVu and do not claim to be hardware screenshots.
+`render_readme.py` produces offline previews and overwrites the screenshot names.
+The published README/gallery now use reviewed real Live III captures instead;
+do not replace those with offline renders when preparing a release.
 
 ## Performance
 

@@ -628,3 +628,30 @@ application restarted and active/running confirmed. Installed stripped SHA-256:
 No global settings/project/unrelated-plugin changes, full device reboot, Desktop
 copy, public push or release. Hearing/touch acceptance pending; see
 [the German test guide](TESTPLAN-0.7.4-DE.md).
+
+
+## Final 0.7.4 release evidence (2026-11-15)
+
+Maintainer explicitly requested public release and confirmed a new empty project.
+Zero loaded VST2 mappings checked. Exact installed d5ba7d… ARM64 binary benchmarked
+with the unchanged official host: standard **WARN34.6p99/38.3max**, additional
+full-parameter stress **WARN33.5/43.0**. Both complete reports are retained in
+[benchmarks/0.7.4](benchmarks/0.7.4/README.md). No development result was relabelled
+or reused for this final measurement. Temporary files cleaned; no device service,
+project or settings changes for benchmarking/publication.
+
+Final installer repackages the same tested library/skin with its matching standard
+CPU metadata; the original development archive above had no CPU metadata. Final
+installer SHA-256: `db9c184441cb48a0299d043d437b502df14c06c92b435c8b718b766f9531702a`.
+All archive checksums, portable catalog checks (zero warnings), installed binary
+hash match and personal-path/IP/private-key scans pass. Corresponding adapted
+source, dependencies, build scripts and both GPL/AGPL texts are included in the
+release-tag source. No runtime/source change after the passing native/ARM64 tests.
+
+The maintainer supplied18 earlier0.7 hardware captures and a new0.7.4 SETUP capture.
+Eighteen reviewed screenshots published with PNG metadata removed and every pixel
+unchanged; latest SETUP replaces the older SETUP. Only generic track/preset names
+are visible. Six selected screenshots are in README; full gallery is separate.
+Older captures are explicitly labelled as predating the final printed reminder
+and Off defaults. Device originals remain untouched. Full latest-build manual
+acceptance and extended sessions remain distinct from these recorded checks.
