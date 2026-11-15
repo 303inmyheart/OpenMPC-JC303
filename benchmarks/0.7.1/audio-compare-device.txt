@@ -1,0 +1,7 @@
+test0: 65536 samples bit-identical under drive/bypass/step/scale bursts
+test1: 65536 samples bit-identical under drive/bypass/step/scale bursts
+test2: 65536 samples bit-identical under drive/bypass/step/scale bursts
+test3: 65536 samples bit-identical under drive/bypass/step/scale bursts
+test4: 65536 samples bit-identical under drive/bypass/step/scale bursts
+test5: 65536 samples bit-identical under drive/bypass/step/scale bursts
+393216 samples compared; exact old/new audio PASS

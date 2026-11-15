@@ -51,6 +51,7 @@ struct Voice {
     std::array<float, voiceParams> values{};
     std::array<bool, 128> held{};
     double lastPitchMod=0;
+    double legacyShaperDesired=36.9,legacyShaperApplied=36.9;
     bool silenced = false;
     bool sustainArmed = true;
 
@@ -98,7 +99,7 @@ struct Voice {
         case Feedback: core.setFeedbackHighpass(mod ? exponential(x, 350, 100) : 150); break;
         case Attack: core.setNormalAttack(mod ? exponential(x, 0.3, 3000) : 3); break;
         case Slide: core.setSlideTime(mod ? linear(x, 2, 1000) : 60); break;
-        case Shaper: core.setTanhShaperDrive(mod ? linear(x, 25, 80) : 36.9); break;
+        case Shaper: legacyShaperDesired=mod ? linear(x,25,80) : 36.9; break;
         case Filter: core.setFilterType(mod ? static_cast<rosic::FilterType>(static_cast<int>(x)) : rosic::FILTER_TEEBEE); break;
         case FilterDrive: core.setFilterDrive(mod ? 9 * x : 0); break;
         case Bass: core.setPassbandCompensation(mod ? x : 0.1); break;
@@ -413,6 +414,10 @@ int get(void* instance, const char* key, char* out, int size) {
 void render(void* instance, mpc_sample_t* out, int frames) {
     auto& v = *static_cast<Voice*>(instance);
     v.drive.setMixModulation(v.isModern()&&v.values[Mod]>=.5f?static_cast<float>(v.modern.driveModulation()):0.0f);
+    // Only the active voice's final table is needed. All intermediate parameter
+    // writes before this block remain visible through the unchanged saved values.
+    if(!v.isModern() && v.legacyShaperDesired!=v.legacyShaperApplied){v.core.setTanhShaperDrive(v.legacyShaperDesired);v.legacyShaperApplied=v.legacyShaperDesired;}
+    if(v.isModern())v.modern.prepareRender();
     v.drive.beginRender();
     v.routeTarget=v.isModern()&&v.driveFx[0]>.5f;
     if(!v.drive.processing() || v.silenced){v.route=v.routeTarget;v.routeGain=1;}

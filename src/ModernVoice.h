@@ -17,6 +17,7 @@ public:
     void pitchBend(double semitones);
     void tempo(double bpm);
     void allNotesOff();
+    void prepareRender();
     double sample(GuitarDrive* preVca=nullptr);
 private:
     struct Impl;

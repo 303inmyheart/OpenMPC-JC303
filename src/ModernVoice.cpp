@@ -5,7 +5,7 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
-struct ModernVoice::Impl { rosic014::Open303 voice; std::array<float,22> old{};std::array<float,Count> extra{};std::array<float,9> matrix{};std::array<float,3> pages{1,1,1};std::array<float,5> extensions{};bool extConfigured=false;bool matrixConfigured=false;bool configured=false; Impl(){voice.setSampleRate(44100);} };
+struct ModernVoice::Impl { rosic014::Open303 voice; std::array<float,22> old{};std::array<float,Count> extra{};std::array<float,9> matrix{};std::array<float,3> pages{1,1,1};std::array<float,5> extensions{};double shaperDesired=36.9,shaperApplied=36.9;bool extConfigured=false;bool matrixConfigured=false;bool configured=false; Impl(){voice.setSampleRate(44100);} };
 ModernVoice::ModernVoice():impl(std::make_unique<Impl>()){}
 ModernVoice::~ModernVoice()=default;
 void ModernVoice::noteOn(int n,int v,bool mute,bool hammer,bool reverse,double gateSamples){impl->voice.noteOn(n,v,0,mute,hammer,reverse,gateSamples);}
@@ -21,6 +21,7 @@ void ModernVoice::configureMatrix(const float* m,const float* pages){
 }
 double ModernVoice::driveModulation()const{return impl->voice.getLfoOverdriveMod();}
 void ModernVoice::allNotesOff(){impl->voice.allNotesOff();}
+void ModernVoice::prepareRender(){if(impl->shaperDesired!=impl->shaperApplied){impl->voice.setTanhShaperDrive(impl->shaperDesired);impl->shaperApplied=impl->shaperDesired;}}
 double ModernVoice::sample(GuitarDrive* insert){return insert?impl->voice.getSampleWithPreVca([insert](float x){return insert->process(x);}):impl->voice.getSample();}
 void ModernVoice::configure(const float* p,const float* x,const float* pages,const float* extensions){
  auto& v=impl->voice;const bool mods=p[8]>=.5f;
@@ -45,7 +46,7 @@ void ModernVoice::configure(const float* p,const float* x,const float* pages,con
  if(old(11,true))v.setFeedbackHighpass(circuit?exp(350,100,p[11]):150);
  if(old(12,true))v.setNormalAttack(circuit?exp(.3,3000,p[12]):3);
  if(old(13,true))v.setSlideTime(circuit?linear(2,1000,p[13]):60);
- if(old(14,true)){v.setTanhShaperDrive(circuit?linear(25,80,p[14]):36.9);v.setPulseSag(rosic014::Open303::sagForSquareDrive(circuit?p[14]:.25));}
+ if(old(14,true)){impl->shaperDesired=circuit?linear(25,80,p[14]):36.9;v.setPulseSag(rosic014::Open303::sagForSquareDrive(circuit?p[14]:.25));}
  if(changed(Filter))v.setFilterType(static_cast<dfl014::FilterType>(static_cast<int>(mods&&filter?e(Filter):0)));
  if(changed(Saturation))v.setFilterDrive(mods&&filter?e(Saturation):0);
  if(old(17,true))v.setPassbandCompensation(circuit?p[17]:.1);

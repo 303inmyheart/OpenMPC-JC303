@@ -19,7 +19,7 @@ class MpcSequence : public LegacyMpcSequence {
     std::array<float,NPARAMS> shown{};
     std::array<Step,64> clipboard{};
     std::array<Step,16> pageClipboard{};
-    bool haveCopy=false,havePageCopy=false;
+    bool haveCopy=false,havePageCopy=false,viewsPending=false;
     int current=0,status=0;
     int startMode=0,lastTriggerStatus=-1,framesLeft=0;
     std::array<bool,128> triggerHeld{};
@@ -45,7 +45,13 @@ class MpcSequence : public LegacyMpcSequence {
         if(n<16){auto s=LegacyMpcSequence::stepAt(n);Step r;r.note=s.note;r.rest=s.rest;r.accent=s.accent;r.slide=s.slide;r.tie=s.tie;return r;}
         return seq.getTrackData().step[n];
     }
-    void changedViews(){
+    // Canonical getters always read the actual pattern. Derived notification
+    // diffs are needed only when the existing idle worker drains them, not once
+    // for every cell in a burst. This also works without any audio processing.
+    void changedViews(){viewsPending=true;}
+    void refreshViews(){
+        if(!viewsPending)return;
+        viewsPending=false;
         // Notify only actual changes. Repainting every alias for a single cell
         // edit needlessly blocks the host UI and its audio workers.
         auto refresh=[this](int p){float x=get(p);if(x!=shown[p]){shown[p]=x;dirty[p]=true;}};
@@ -349,6 +355,7 @@ public:
     }
     bool tileOn(int p)const{return p>=TileFirst&&p<TileFirst+16&&p-TileFirst==selected()%16;}
     int changed(char*out,int size){
+        refreshViews();
         const int ts=triggerStatus();if(ts!=lastTriggerStatus){lastTriggerStatus=ts;dirty[runparam::Status]=true;}
         for(int p=first;p<NPARAMS;++p)if(dirty[p]){dirty[p]=false;std::snprintf(out,size,"%s",PARAMS[p].key);return 1;}
         return LegacyMpcSequence::changed(out,size);
