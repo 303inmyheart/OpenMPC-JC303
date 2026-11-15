@@ -32,9 +32,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential python3-pil g++-13-aarch64-linux-gnu binutils-aarch64-linux-gnu qemu-user
-      - name: Apply the tested engine/host patch
+      - name: Apply the tested float ABI and async host patches
         working-directory: mpc-vst-plugins
-        run: git apply ../port/patches/mpc-float32.patch
+        run: |
+          git apply ../port/patches/mpc-float32.patch
+          git apply ../port/patches/mpc-async-revision-cache.patch
       - name: Build native, ARM64 and native MPC skin
         working-directory: port
         run: python3 tools/build.py all
