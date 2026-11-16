@@ -38,6 +38,12 @@ required upgrade steps.
 3. Further performance work and extended real-project/multiple-instance testing.
    A changed release binary needs a fresh matching benchmark.
 
+## Plugin Manager artwork
+
+- JC303 has no image in the OpenMPC Plugin Manager (VST), reported by the
+  maintainer. Investigate the manager/catalog image binding and cache. This is
+  separate from the working MPC Sounds-browser tile; do not mark it fixed yet.
+
 ## Next packaging revision
 
 - Add the explicit `"format": "vst2"` field to Akai plugin.json.
