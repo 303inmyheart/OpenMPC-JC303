@@ -46,4 +46,4 @@ are retained, so stored model identities and existing sounds are unchanged.
 | 36 | Compact Fuzz | LittleBigMuff HighGainPedal | `LittleBigMuff_HighGainPedal.json` |
 | 37 | Vintage Fuzz | BigMuff V6 T3 S5 | `BigMuff_V6_T3_S5.json` |
 
-Provenance and licenses: [src/VENDORED.md](src/VENDORED.md) and [README](README.md#license-and-credits).
+Provenance and licenses: [src/VENDORED.md](../src/VENDORED.md) and [README](../README.md#license-and-credits).

@@ -1,6 +1,6 @@
-> This audit applies to the v0.14-based JC303 MPC 0.7.4 release. The older 0.2.3 release remains GPL-3.0-only. Matching adapted DSP source and notices are included at the release tag.
+> This audit applies to the v0.14-based JC303 MPC 1.0.0 release. The older 0.2.3 release remains GPL-3.0-only. Matching adapted DSP source and notices are included at the release tag.
 
-# JC303 MPC 0.7.4 license audit
+# JC303 MPC licences
 
 Pinned new upstream: midilab/jc303 v0.14.0,
 `b0ff26011f80e45c7796cad7b29fbc7f347b9337` (2026-11-14).
@@ -43,3 +43,6 @@ separate grant of rights from any upstream author.
 its Aciduino MIT attribution. Its JUCE dependency has been removed; no JUCE code,
 D16 source, D16 artwork or reference screenshot is distributed. Existing combined
 GPLv3/AGPLv3 distribution notices and corresponding-source obligations remain.
+
+Original factory sounds: 18 unmodified upstream JSON presets, GPL-3.0-only;
+source and conversion attribution are in [factory/NOTICE.md](../factory/NOTICE.md).

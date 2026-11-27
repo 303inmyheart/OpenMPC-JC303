@@ -112,7 +112,7 @@ other DSP keeps its previous flags, and sanitizers use -O1. No fast-math,
 downsampling, smaller network or silence gate is used. The fixed 44.1 kHz path
 is checked sample for sample against LinInterp(1) for all 37 models.
 
-[PERFORMANCE.md](PERFORMANCE.md) documents the isolated real-device measurements.
+[Performance evidence](docs/PERFORMANCE.md) documents the isolated real-device measurements.
 `tools/model_bench.c` reuses the pinned OpenMPC benchmark host/timer. It loads a
 private .so copy and never attaches to MPC or installs anything. Device access,
 temporary-file writes and any service operations require the owner's separate
@@ -121,7 +121,7 @@ authorization; the build/test commands above are entirely local.
 For an unpublished revised skin candidate, `--desktop-name` selects a distinct
 ZIP basename without overwriting an earlier candidate. The manifest version stays
 fixed until publication; published release assets must never be replaced.
-[STORE.md](STORE.md) describes the exact package/publication/catalog gates.
+The current [OpenMPC release guide](https://github.com/open-mpc/mpc-vst-plugins/blob/main/docs/RELEASING.md) describes publication and catalog requirements.
 
 model_overlay.py converts the model chooser into a known native full-screen
 CustomComponent overlay using KnobOverlay focus dismissal. Its visual backdrop
@@ -138,7 +138,7 @@ opaque interface. JC303-MPC-5 stores 20 appended engine controls; versions 1–4
 restore Legacy. Old VST parameter indices 0–65 remain unchanged, including the
 previous implicit driveModel__open flag, now declared explicitly before new keys.
 
-Distribution is a GPLv3/AGPLv3 combination. Read LICENSE-AUDIT.md and retain both
+Distribution is a GPLv3/AGPLv3 combination. Read docs/LICENSES.md and retain both
 license texts plus dependency notices. Public release artifacts must reference
 matching published source. Package output defaults to build/releases; --desktop
 is an explicit opt-in. Offline tests are not MPC CPU measurements.

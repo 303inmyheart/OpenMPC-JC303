@@ -1,4 +1,4 @@
-# JC303 MPC 0.7.0 – Navigation und Q-Links
+# JC303 MPC – Navigation und Q-Links
 
 Bänke in Bildschirmreihenfolge. Nur sichtbare Drehregler; Drive MODEL ist die einzige Auswahl-Ausnahme. Schalter/Taster bleiben ohne Q-Links.
 

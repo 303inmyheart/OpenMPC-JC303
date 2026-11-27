@@ -126,4 +126,4 @@ remain. Key/scale snapping is a future decision; current scales are a visual gui
   checksums. Native and ARM64 tests precede packaging.
 - Development installation and hardware acceptance are separate from a public release.
 - The v0.14 port combines GPLv3 and file-specific AGPLv3 parts; existing MIT/BSD
-  notices remain. See LICENSE-AUDIT.md and src/VENDORED.md in the matching source.
+  notices remain. See docs/LICENSES.md and src/VENDORED.md in the matching source.

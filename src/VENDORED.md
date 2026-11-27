@@ -106,7 +106,7 @@ JC303-MPC-1/2/3/4 state selects the legacy engine, preserving old filter indices
 including Diode Octave. JC303-MPC-5 adds the engine choice and 19 sound controls.
 All old VST indices, including the implicit popup flag at 65, are retained.
 
-Licensing is now a combined GPLv3/AGPLv3 distribution: see LICENSE-AUDIT.md and
+Licensing is now a combined GPLv3/AGPLv3 distribution: see docs/LICENSES.md and
 src/dsp/v014/open303/LICENSE-AGPL-3.0. The old MIT/GPL/BSD notices stay in place;
 no file is silently relicensed by the directory layout or namespace change.
 
