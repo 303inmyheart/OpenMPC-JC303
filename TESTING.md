@@ -1,3 +1,37 @@
+## Final JC303 1.0.0 benchmark (2026-11-27)
+
+Installed stripped ARM64 SHA256
+`ca9761e252390f79e21daff2765f39dcdc95adb520aeff2edc472b32b89e38c8`.
+The maintainer confirmed a new empty MPC project; zero loaded VST2 mappings
+verified. Standard WARN 34.4% p99 / 37.5% maximum; full stress WARN 33.9% /
+38.2%. Exact source, command, environment and raw reports are retained under
+[benchmarks/1.0.0](benchmarks/1.0.0/README.md). No previous report was relabelled.
+Tutorial and changelog are packaged with the plugin; the English help is in its
+native UI. Both are documentation/skin changes; the benchmarked SO is unchanged.
+One migrated preset copy and plugin loading in the prepared 0.7.4 project test
+were confirmed. Exhaustive project/settings/menu coverage is not claimed.
+
+## Authorized Live III installation — 1.0.0 (2026-11-27)
+
+Installed using the packaged current OpenMPC installer. Previous folders backed
+up; 541 installed files and 30 native presets hash-verified. Manufacturer
+migration completed without duplicate plugin entries; unrelated settings are
+unchanged. Geonkick's remembered sample-folder setting was retained. The MPC
+application restarted once for both updates and is running.
+Hearing, touch and historical-project reopening still need user acceptance.
+No benchmark has been run for this new binary; historical results below retain
+their original scope.
+
+## Prepared 1.0.0 candidate — local checks only (2026-11-27)
+
+Native sanitizer and actual ARM64/QEMU checks, current catalog validation
+(zero warnings), isolated old-vendor migration/repeated install/uninstall,
+foreign-id safety and package checksum/privacy checks pass. See
+[VENDOR-UPDATE.md](VENDOR-UPDATE.md) for scope and limitations.
+No device installation, project-reopen acceptance or new hardware benchmark
+has been performed. The hardware records below remain tied to their original
+versions and exact binaries.
+
 # Verification — updated 2026-11-13
 
 ## 0.2.3 Gen2 catalog release candidate

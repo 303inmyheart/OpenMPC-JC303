@@ -9,7 +9,8 @@ from PIL import Image,ImageDraw,ImageFont
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(Path(os.environ.get('MPC_VST',ROOT.parent/'mpc-vst-plugins'))/'tools'))
 import shadow_skin as s
-skin=ROOT/'build/skin/midilab - VST - JC303 MPC/Plugin Skins'
+cfg=json.loads((ROOT/'vst.json').read_text())
+skin=ROOT/'build/skin'/f"{cfg['vendor']} - VST - {cfg['name']}"/'Plugin Skins'
 p=skin/'TUI.json';doc=json.loads(p.read_text());pd=doc['pageData'];defs=pd['componentDefinitions']['localComponentDefinitions']
 lookup={d['key']:d['value'] for d in defs}
 params=json.loads((ROOT/'params.json').read_text())['params'];ids={q['key']:i for i,q in enumerate(params)}

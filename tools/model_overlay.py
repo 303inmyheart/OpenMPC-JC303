@@ -9,7 +9,8 @@ import json
 from pathlib import Path
 from PIL import Image,ImageDraw,ImageFont
 ROOT=Path(__file__).resolve().parents[1]
-SKIN=ROOT/'build/skin/midilab - VST - JC303 MPC/Plugin Skins'
+cfg=json.loads((ROOT/'vst.json').read_text())
+SKIN=ROOT/'build/skin'/f"{cfg['vendor']} - VST - {cfg['name']}"/'Plugin Skins'
 NAME='jc303 model overlay'
 
 def bounds(x,y,w,h):

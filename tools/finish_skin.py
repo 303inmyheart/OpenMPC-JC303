@@ -15,7 +15,8 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(Path(os.environ.get('MPC_VST',ROOT.parent/'mpc-vst-plugins'))/'tools'))
 import shadow_skin as shadow
-SKIN=ROOT/'build/skin/midilab - VST - JC303 MPC/Plugin Skins'
+cfg=json.loads((ROOT/'vst.json').read_text())
+SKIN=ROOT/'build/skin'/f"{cfg['vendor']} - VST - {cfg['name']}"/'Plugin Skins'
 S=3
 PAPER='#B5BAB1'
 INK='#202820'

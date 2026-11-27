@@ -14,9 +14,10 @@ git clone https://github.com/open-mpc/mpc-vst-plugins.git ../mpc-vst-plugins
 git -C ../mpc-vst-plugins checkout ef05a26c6e59f1bfd3ef2023e6a9d8b371b61310
 git -C ../mpc-vst-plugins apply "$PWD/patches/mpc-float32.patch"
 git -C ../mpc-vst-plugins apply "$PWD/patches/mpc-async-revision-cache.patch"
+git -C ../mpc-vst-plugins apply "$PWD/patches/mpc-engine-program-bank.patch"
 ```
 
-Use that commit and apply both included patches once, in that order, to a clean checkout. The
+Use that commit and apply the three included patches once, in that order, to a clean checkout. The
 patch supplies the float engine ABI, stepped Q-Link feedback and host loop
 metadata this port expects. It includes the new audio_format.h file. The second
 patch supplies the async UI path and opt-in ASYNC_IDLE_NOTIFY: stopped-input
@@ -27,8 +28,8 @@ Native test hosts allow async callbacks to drain; callback counters are atomic.
 Release templates/checks are pinned separately to the current catalog revision:
 
 ```sh
-git clone https://github.com/open-mpc/mpc-vst-plugins.git ../mpc-vst-plugins-release-tools
-git -C ../mpc-vst-plugins-release-tools checkout a2dd2b78a19c4cd46257c09eb9a485a155ab2968
+git clone https://github.com/open-mpc/mpc-vst-plugins.git ../mpc-vst-plugins-release-tools-20261127
+git -C ../mpc-vst-plugins-release-tools-20261127 checkout 132b0db05c3903f1aeb37a5021a0b556811eb55a
 ```
 
 This keeps the tested wrapper patch/base stable while using current catalog
@@ -149,6 +150,21 @@ RowTopDown screen banks from visible knobs, with Drive Model as the sole
 selector exception. Final focus rectangles use the actual placed native control
 bounds and popup heading. The SYNTH layout qlinks seed deliberately preserves
 the published CC20–35 table; it does not define the final screen banks. Existing
-wrapper patches/pins are unchanged. Do not remove that compatibility seed when
+wrapper ABI and async pins are unchanged. The additional engine-program-bank
+patch expands the native menu independently of historical preset automation. Do not remove that compatibility seed when
 changing the screen layout. tools/test_sequencer_skin.py verifies both bindings
 and complete label/value containment, in addition to the 176 flag-cell tests.
+
+## Original factory bank (1.0.0 candidate)
+
+`tools/factory_presets.py` compiles the 18 pinned upstream JSON sounds into
+immutable numeric tables. The engine exposes 30 VST programs through the
+engine-program-bank wrapper patch; parameter 64 keeps its original twelve
+choices and normalized range. No parameter identities were added or shifted.
+The JSON source, attribution and conversion rules live under `factory/` and
+`tools/factory_presets.py`. `tools/browser_preset.py` exports all 30 real XPL
+states with matching UID, version and VST bank count and verifies mapped
+values and full roundtrips. Factory-load audio, sequence/tuning retention,
+edited project recall and host echoes are exercised by `tests/factory_checks.h`
+in both sanitizer and actual ARM64 VST tests. Older versions reject states
+selecting the new factory program indices; keep original project backups.

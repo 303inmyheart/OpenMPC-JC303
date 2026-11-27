@@ -346,8 +346,9 @@ void slideRangeMigration() {
 #include "run_mode_checks.h"
 #include "mod_page_checks.h"
 #include "drive_fx_checks.h"
+#include "factory_checks.h"
 int main() {
-    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); sequence64Checks(); scaleChecks(); playbackUiChecks(); matrixChecks(); runModeChecks(); modPageChecks(); driveFxChecks(); }
+    try { referenceTest(); statesAndMidi(); modulationStress(); hostUiSync(); waveformSweep(); slideRangeMigration(); sequenceChecks(); driveChecks(); modernChecks(); sequence64Checks(); scaleChecks(); playbackUiChecks(); matrixChecks(); runModeChecks(); modPageChecks(); driveFxChecks(); factoryChecks(); }
     catch(const std::exception& e) { std::fprintf(stderr,"FAIL: %s\n",e.what()); return 1; }
     std::puts("JC303 behavioural tests PASSED");
     return 0;

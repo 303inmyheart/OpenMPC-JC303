@@ -1,7 +1,22 @@
 # JC303 MPC and MPC porting roadmap
 
-Status: 2026-11-15. Target: Gen2 MPCs (aarch64), MPC OS 3.10.1+.
+Status: 2026-11-27. Target: Gen2 MPCs (aarch64), MPC OS 3.10.1+.
 Hardware testing has been performed on MPC Live III only.
+
+## Release 1.0.0
+
+- All 18 original v0.14 factory sounds added; 30 native MPC programs and XPLs.
+- Manufacturer 303inmyheart; standard installer retires the matching old folder.
+  User XPL headers are not converted automatically: see PRESET-MIGRATION.md.
+- English PRESET INFO opens the plain-language guide on every page. Tutorial
+  and changelog are included in the release ZIP, alongside the plugin.
+- One historical preset copy was confirmed to load. The maintainer also
+  reported plugin loading in the old-0.7.4-project test. Full saved-setting,
+  all-project and all-menu acceptance is not implied by these reports.
+- Final exact-binary Live III benchmark: standard WARN 34.4% p99 / 37.5% max;
+  extra full stress WARN 33.9% / 38.2%. See benchmarks/1.0.0/README.md.
+- Local native/ARM64, skin, preset and installer checks pass; current catalog
+  validation has zero warnings. Tutorial and measured installer accompany the release.
 
 ## Release 0.7.4
 
@@ -29,33 +44,51 @@ required upgrade steps.
 - Real Live III captures in the [gallery](docs/GALLERY.md); current SETUP confirms
   Off defaults, older captures document the shared 0.7 interface.
 
+## Preset migration follow-up
+
+- Keep the confirmed header-copy path and manual tutorial documented. Verify
+  native Save-as from an old project as the simpler route for nontechnical users.
+- A guided opt-in file converter remains future work. Never overwrite original
+  user presets or change their encoded sound data automatically.
+- Extend testing across older projects/presets and collect exact error reports.
+
 ## Deferred JC303 work
 
-1. Original factory JSON sounds/banks and practical preset import/export and
-   management. Deferred by the maintainer.
+1. Original factory bank is implemented for 1.0.0; user JSON bank import/export
+   and management remain deferred. Exhaustive listening to all 18 factory sounds
+   and extended project tests remain validation work.
 2. Optional sequencer extras: pitch-only/rhythm-only randomization, internal/MIDI
    clock and sequencer MIDI output. External host MIDI capability needs review.
 3. Further performance work and extended real-project/multiple-instance testing.
    A changed release binary needs a fresh matching benchmark.
 
+## Deferred issue: Sounds → Instruments thumbnail navigation
+
+- Reported on MPC Live III / MPC OS 3.10.1: after loading a sound, tapping
+  the already selected plugin thumbnail does not reopen its preset/kit list.
+- The maintainer confirms the same behavior in **Geonkick MPC and JC303 MPC**;
+  **Hype works** in the comparison test. The shared cause remains unconfirmed.
+- Workaround confirmed for Geonkick: use the arrows beside the current preset
+  at the bottom of Sounds, or the native MPC preset selector inside the plugin.
+- Deferred at the maintainer's request: the same failure was also confirmed
+  with other external plugins, while Hype works. No port-specific fix is claimed.
+- This concerns Sounds-browser navigation, not opening the plugin editor.
+  It is separate from missing artwork in the OpenMPC Plugin Manager.
+
 ## Plugin Manager artwork
 
 - JC303 has no image in the OpenMPC Plugin Manager (VST), reported by the
   maintainer. Investigate the manager/catalog image binding and cache. This is
-  separate from the working MPC Sounds-browser tile; do not mark it fixed yet.
+  separate from the Sounds-browser navigation issue above; do not mark it fixed yet.
 
-## Next packaging revision
+## Packaging policy
 
-- Add the explicit `"format": "vst2"` field to Akai plugin.json.
-- Adopt/review the current OpenMPC install.sh and uninstall.sh templates;
-  the current difference is the backup filename stem calculation.
-- Review the latest OpenMPC contribution rules and validator before every
-  future MPC plugin release, pin the reviewed tooling and resolve new findings.
-- Keep published 0.7.4 assets/tag unchanged. Packaging changes use a new version
-  with matching checks and final-binary benchmark evidence.
-
-These follow the three advisory findings documented in
-[catalog PR911](https://github.com/open-mpc/mpc-vst-plugins/pull/911).
+- Implemented in 1.0.0: explicit format:vst2, current reviewed installer and
+  uninstaller templates, release helpers pinned132b0db05c3903f1aeb37a5021a0b556811eb55a.
+- Recheck the current contribution rules and validator before future releases.
+- Published 0.7.4 assets/tag remain immutable; every new binary needs its own
+  matching tests and final benchmark. Future notes must lead with breaking
+  preset/project changes, so Plugin Manager's shortened What's new retains them.
 
 ## Deliberately out of scope
 
@@ -68,10 +101,10 @@ remain. Key/scale snapping is a future decision; current scales are a visual gui
 
 ## Other ports
 
-1. **Geonkick MPC** — local 0.0.13 prototype installed on Live III; development
-   paused while the JC303 update is completed. Three layers/nine oscillators,
-   waveform/envelope display and touch point editing exist. Further validation,
-   interface refinement and release work remain. Curve points receive no Q-Links.
+1. **Geonkick MPC** — 1.0 is published; 1.0.1 manufacturer correction is
+   installed for testing. Next: equivalent preset/project migration checks,
+   English in-plugin instructions and tutorial/release notes. Curve points
+   receive no Q-Links.
    Upstream: https://github.com/quamplex/geonkick
 2. **Fire** — queued; source/license/dependency and ARM64 feasibility review.
    Upstream: https://github.com/jerryuhoo/Fire

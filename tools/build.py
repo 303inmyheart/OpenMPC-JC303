@@ -12,6 +12,7 @@ import subprocess
 import sys
 import embed_models
 import sequence_spec
+import factory_presets
 
 ROOT = Path(__file__).resolve().parents[1]
 MPC = Path(os.environ.get('MPC_VST', ROOT.parent / 'mpc-vst-plugins')).resolve()
@@ -44,8 +45,11 @@ def compiler(target, language):
 
 def prepare():
     sequence_spec.generate()
+    factory_presets.generate(ROOT)
     if 'ASYNC_IDLE_FEEDBACK' not in (MPC/'wrapper/vst2_wrap.c').read_text():
         raise SystemExit('Apply patches/mpc-async-revision-cache.patch to MPC_VST; see BUILDING.md.')
+    if 'ENGINE_PROGRAM_COUNT' not in (MPC/'wrapper/vst2_wrap.c').read_text():
+        raise SystemExit('Apply patches/mpc-engine-program-bank.patch to MPC_VST; see BUILDING.md.')
     if not (MPC/'wrapper/audio_format.h').exists():
         raise SystemExit('Apply patches/mpc-float32.patch to MPC_VST first; see BUILDING.md.')
     run([sys.executable, MPC/'tools/gen_vst.py', ROOT/'vst.json', '--params-h'])
@@ -83,6 +87,14 @@ def build(target, sanitize=False):
     return objects
 
 def skin():
+    # Isolate generated legacy skins so postprocessors cannot select an old
+    # vendor folder through a broad glob during a manufacturer migration.
+    import tempfile
+    for legacy in json.loads((ROOT/'release.json').read_text()).get('retire',[]):
+        previous=ROOT/'build/skin'/legacy
+        if previous.exists():
+            backup=Path(tempfile.mkdtemp(prefix='retired-skins-',dir=ROOT/'build'))
+            shutil.move(str(previous),str(backup/legacy))
     (ROOT/'build').mkdir(exist_ok=True)
     run(['gcc','-O2','-I'+str(MPC/'tools/vendor/force-shadow/tools'),
          MPC/'tools/shadow_art.c','-lm','-o',ROOT/'build/shadow_art'])
@@ -95,6 +107,7 @@ def skin():
     run([sys.executable, ROOT/'tools/model_overlay.py'])
     run([sys.executable, ROOT/'tools/browser_preset.py'])
     run([sys.executable, ROOT/'tools/group_mod_pages.py'])
+    run([sys.executable, ROOT/'tools/preset_help.py'])
     run([sys.executable, ROOT/'tools/test_sequencer_skin.py'])
     folder=next((ROOT/'build/skin').glob('*/Plugin Skins/TUI.json')).parent
     run([sys.executable, MPC/'tools/studio.py','preview',folder,'-o', ROOT/'build/preview_%d.png'])

@@ -12,6 +12,7 @@ extern "C" {
 #include "MatrixParams.h"
 #include "ModSettings.h"
 #include "DriveFxParams.h"
+#include "factory_sounds.h"
 #include <array>
 #include <algorithm>
 #include <cmath>
@@ -45,7 +46,8 @@ struct Voice {
     int lastMatrixStatus=-1;
     MpcSequence sequence{core};
     GuitarDrive drive;
-    static constexpr int presetParam=64, presetCount=12;
+    static constexpr int presetParam=64, legacyPresetCount=12, presetCount=12+factorySoundCount;
+    static_assert(presetCount==ENGINE_PROGRAM_COUNT);
     int preset=0,lastDriveStatus=0;
     std::array<bool,NPARAMS> dirty{};
     std::array<float, voiceParams> values{};
@@ -129,6 +131,30 @@ struct Voice {
     }
     void loadPreset(int index) {
         if(index<0 || index>=presetCount || index==preset) return;
+        if(index>=legacyPresetCount) {
+            // Original factory sounds leave the user's sequence and tuning intact.
+            stop();
+            const auto& sound=factorySounds[index-legacyPresetCount];
+            GuitarDrive::Settings driveSettings;
+            for(unsigned j=0;j<sound.count;++j) {
+                const auto [i,x]=sound.values[j];
+                if(i<voiceParams) values[i]=x;
+                else if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count) extra[i-ModernVoice::First]=x;
+                else if(i>=matrixparam::First && i<matrixparam::First+matrixparam::Count) matrix[i-matrixparam::First]=x;
+                else if(i>=pageparam::First && i<pageparam::End) pages[i-pageparam::First]=x;
+                else if(i>=extmod::First && i<extmod::End) extensions[i-extmod::First]=x;
+                else if(i>=drivefx::First && i<drivefx::First+drivefx::Count) driveFx[i-drivefx::First]=x;
+                else if(i==GuitarDrive::Enable) driveSettings.enabled=x;
+                else if(i==GuitarDrive::Model) driveSettings.model=static_cast<int>(x);
+                else if(i==GuitarDrive::Level) driveSettings.level=x;
+                else if(i==GuitarDrive::Mix) driveSettings.mix=x;
+            }
+            drive.load(driveSettings);preset=index;applyAll();
+            routeTarget=isModern()&&driveFx[0]>.5f;
+            for(int i=0;i<NPARAMS;++i)
+                if(!PARAMS[i].string_display && !PARAMS[i].momentary)dirty[i]=true;
+            return;
+        }
         stop();sequence.legacyReset();drive.load({});resetExtra(false);resetMatrix();pages.fill(index==0?0.f:1.f);extensions.fill(0);driveFx.fill(0);
         for(int i=0;i<voiceParams;++i) values[i]=PARAMS[i].def;
         switch(index) {
@@ -297,6 +323,11 @@ void midi(void* instance, const uint8_t* msg, int length) {
 }
 void set(void* instance, const char* key, const char* text) {
     auto& v = *static_cast<Voice*>(instance);
+    if(!std::strcmp(key,"__program_load")) {
+        char* end=nullptr;long index=std::strtol(text,&end,10);
+        if(end!=text && !*end && index>=0 && index<Voice::presetCount)v.loadPreset(static_cast<int>(index));
+        return;
+    }
     if (!std::strcmp(key, "state")) { v.restore(text); return; }
     if (!std::strcmp(key, "transport")) { if (text[0] == '0') {v.sequence.stop();v.stop();} return; }
     const int i = indexOf(key);
@@ -340,6 +371,12 @@ void set(void* instance, const char* key, const char* text) {
 int get(void* instance, const char* key, char* out, int size) {
     if (!out || size < 1) return 0;
     auto& v = *static_cast<Voice*>(instance);
+    if(!std::strcmp(key,"__program_index"))return std::snprintf(out,size,"%d",v.preset);
+    if(!std::strncmp(key,"__program_name:",15)) {
+        char* end=nullptr;long index=std::strtol(key+15,&end,10);
+        if(end==key+15 || *end || index<0 || index>=Voice::presetCount)return 0;
+        return std::snprintf(out,size,"%s",index<Voice::legacyPresetCount?PARAMS[Voice::presetParam].opts[index]:factorySounds[index-Voice::legacyPresetCount].name);
+    }
     if (!std::strcmp(key, "state")) {
         std::ostringstream state;
         state.precision(9);
@@ -375,7 +412,7 @@ int get(void* instance, const char* key, char* out, int size) {
     if(i==matrixparam::matrixSource1)return std::snprintf(out,size,"LFO (fixed)");
     if(i==matrixparam::matrixSource2)return std::snprintf(out,size,"Env (fixed)");
     if(i>=ModernVoice::First && i<ModernVoice::First+ModernVoice::Count)return std::snprintf(out,size,"%.9g",v.extra[i-ModernVoice::First]);
-    if(i==Voice::presetParam) return std::snprintf(out,size,"%d",v.preset);
+    if(i==Voice::presetParam) return std::snprintf(out,size,"%d",v.preset<Voice::legacyPresetCount?v.preset:0);
     if(i>=GuitarDrive::First && i<=GuitarDrive::Status) return std::snprintf(out,size,"%.9g",v.drive.get(i));
     if (i >= voiceParams) return v.sequence.text(i,out,size);
     if (i >= 0) return std::snprintf(out, size, "%.9g", v.values[i]);

@@ -1,11 +1,15 @@
 {
-  "version": "0.7.4",
+  "version": "1.0.0",
   "id": "jc303-mpc",
   "repo": "303inmyheart/OpenMPC-JC303",
   "license": "GPL-3.0-only AND AGPL-3.0-or-later",
-  "tools_ref": "a2dd2b78a19c4cd46257c09eb9a485a155ab2968",
+  "tools_ref": "132b0db05c3903f1aeb37a5021a0b556811eb55a",
   "asset_pattern": "JC303-MPC-*-mpc-aarch64.zip",
   "requires": "Gen2 MPC (aarch64), MPC OS 3.10.1 or newer",
-  "about": "JC303 MPC: v0.14 synthesis and matrix, 64-step sequencer, Pre/Post-VCA neural Drive with Disperse, organized native pages and knob-focused Q-Links.",
-  "tag": "jc303-mpc-v0.7.4"
+  "about": "JC303 MPC: v0.14 synthesis and matrix, 64-step sequencer, Pre/Post-VCA neural Drive with Disperse, 30 native MPC programs including 18 original factory sounds, and knob-focused Q-Links.",
+  "tag": "jc303-mpc-v1.0.0",
+  "tools_dir": "mpc-vst-plugins-release-tools-20261127",
+  "retire": [
+    "midilab - VST - JC303 MPC"
+  ]
 }

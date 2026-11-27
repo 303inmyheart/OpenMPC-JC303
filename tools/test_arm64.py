@@ -52,6 +52,6 @@ for source,name in [(framework_test.source(build,dest),'host_test'),(build.ROOT/
               'four-slot modulation matrix, all source/target routes, bipolar/Overdrive routing and old-state migration',
               'independent Circuit/Osc/Filter/four-slot bypass, phase/key sync/contour, Accent Sweep/Reverse Gate and JC9/JC8 migration',
               'Host Transport, Note Gate/Hold and latched Note Trigger sample/timing/state checks',
-              '12 MPC browser programs, dry Init, edited state restore and wet VST audio'],
+              '30 MPC browser programs, 18 original factory sounds, unchanged legacy preset automation, dry Init, sequence/tuning preservation, edited state restore and wet VST audio'],
     'environment': 'QEMU ARM64, offline only; no hardware benchmark',
 },indent=2)+'\n')

@@ -136,7 +136,7 @@ void allModelsChecks() {
 
 void presetBrowserChecks() {
     Plugin p;
-    require(p.fx->programs==12,"MPC browser requires a non-empty VST program bank");
+    require(p.fx->programs==ENGINE_PROGRAM_COUNT,"MPC browser requires a non-empty VST program bank");
     char name[64]{};
     p.fx->dispatch(p.fx,5,0,0,name,0);
     require(std::string(name)=="Init","new dry plugin must show Init in the MPC browser");

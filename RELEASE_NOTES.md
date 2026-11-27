@@ -1,57 +1,45 @@
-# JC303 MPC 0.2.3 — Gen2
+# JC303 MPC 1.0.0 — Gen2 MPC
 
-Native 303-style acid synth for **Gen2 MPCs (aarch64), MPC OS 3.10.1+**.
-Hardware testing has been performed on **MPC Live III only**.
+## What's new
 
-This release adds Gen2 package metadata, current catalog templates/checks,
-neutral visible drive-model names and native overlay model selection.
-The normal page frames remain present; the model list opens on a native overlay
-above the page. Candidate 5 removes a full-screen touch-consuming Image so that
-outside taps can reach native dismissal. The maintainer confirmed open/select/outside-tap-close on Live III / OS 3.10.1. Earlier 0.2.3 candidates are superseded.
+IMPORTANT: Manufacturer changed from midilab to 303inmyheart. Older personal MPC presets may be rejected as "not for this plugin". Keep originals and use migrated copies; updating the plugin does not convert your user presets.
 
-The synth, sequencer, 37 embedded drive models, twelve native presets, Acid skin,
-Sounds tile and project compatibility are retained. Model order, filenames,
-weights, parameter indices, UID and installed folder are unchanged.
+Adds all 18 original JC303 v0.14 factory sounds: 30 native MPC programs in total. Existing parameter identities and the twelve-choice legacy preset automation range remain unchanged.
 
-## Requirements
+## Before updating: personal presets
 
-- A Gen2 MPC running MPC OS 3.10.1 or later; Gen1 ARM32 devices are unsupported.
-- Preferences → Enhancements → External Plugin Support enabled.
-- No ROMs, model downloads or network connection needed at runtime.
+**Back up your presets and projects first.** The standard installer updates the
+plugin and removes its previous matching-id vendor folder; it does **not**
+convert personal `.xpl` headers. An old preset can still name `midilab` and be
+rejected by MPC before the plugin reads its sound state. Keep the original and
+create a compatible copy with updated manufacturer and installed-file metadata;
+leave the encoded sound payload and UID unchanged.
 
-## Install
+[Migration instructions](https://github.com/303inmyheart/OpenMPC-JC303/blob/jc303-mpc-v1.0.0/PRESET-MIGRATION.md)
 
-Import `JC303-MPC-0.2.3-mpc-aarch64.zip` into OpenMPC Installer. Keep the ZIP
-intact. For the official 3.10.1 folder route, copy its
-`portable/midilab - VST - JC303 MPC` folder into a drive's `VST2 Plugins` folder.
-The archive includes `plugin.json`/`file64`, the native skin, Sounds artwork,
-Init .xpl, license notices, scripts, manifest and checksums. Full instructions
-are in `INSTALL.md` inside the ZIP. Save the current project before installation.
+Corrected-copy loading was confirmed on Live III for one historical JC3
+preset. Broader historical preset/project acceptance still needs verification.
 
-The instrument remains **JC303 MPC** so existing projects retain its identity.
+## Hardware and CPU
 
-## CPU result — WARN
+Final exact ARM64 binary tested on MPC Live III / MPC OS 3.10.1:
 
-The official OpenMPC benchmark ran on a real MPC Live III / MPC OS 3.10.1,
-one fast core, 44.1 kHz, 128 samples, ten audio seconds per stage:
+| Benchmark | Worst p99 | Worst block | Verdict |
+|---|---:|---:|---|
+| Standard OpenMPC | 34.4% | 37.5% | WARN |
+| Additional full-parameter stress | 33.9% | 38.2% | WARN |
 
-- Worst p99: **16.5%** of a core; worst block: **24.6%**.
-- Verdict: **WARN**, because the random Q-Link stress stage exceeds the 15% PASS p99 threshold.
-- This is below the WARN limits (p99 35%, worst 80%); no FAIL result is hidden.
-- These are isolated audio-thread measurements, not the MPC's overall CPU meter.
-- Multiple instances and busy projects need additional testing.
+These are audio-block budget percentages on one A76 core, not the MPC project
+CPU meter. WARN is not PASS and does not establish multi-instance capacity.
+[Full reports](https://github.com/303inmyheart/OpenMPC-JC303/tree/jc303-mpc-v1.0.0/benchmarks/1.0.0).
+Native ASan/UBSan, actual ARM64/QEMU VST checks, 30 preset-state exports and
+installer migration checks passed; current catalog validation has zero warnings.
+One historical user-preset conversion and loading in the prepared 0.7.4 project
+test were confirmed by the maintainer. This does not claim all old projects,
+all factory sounds or all menu interactions were exhaustively hardware tested.
 
-Native ASan/UBSan/leak tests, actual ARM64 shared-object tests under QEMU,
-ZIP integrity and catalog validation pass. The catalog checker reports zero
-warnings; that does not change the separate CPU WARN result.
+## Included tutorial
 
-## Hardware confirmation
-
-The maintainer confirmed this exact Candidate 5 installer during playback on
-MPC Live III / MPC OS 3.10.1, including amp operation, overlay layering and
-outside-tap dismissal, and authorized release/submission. Root tested.json
-records that version separately from 0.2.2. Other Gen2 models are not claimed
-as hardware-tested.
-
-Source and full credits: https://github.com/303inmyheart/OpenMPC-JC303
-License: **GPL-3.0-only**, with retained third-party license notices.
+PRESET-MIGRATION.md and CHANGELOG.md are included inside the installed plugin
+folder as well as the source repository. PRESET INFO opens the plain-language
+English guide inside the plugin. No converter runs automatically.

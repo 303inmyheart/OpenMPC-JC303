@@ -27,7 +27,7 @@ ap.add_argument('--desktop',action='store_true',help='Explicitly copy installer 
 ap.add_argument('--bench',type=Path,help='official device bench JSON/text for this binary')
 a=ap.parse_args()
 assert build.CFG['version']==int(VERSION.split('.')[0])*10000+int(VERSION.split('.')[1])*100+int(VERSION.split('.')[2])
-RELEASE_TOOLS=Path(os.environ.get('MPC_RELEASE_TOOLS',ROOT.parent/'mpc-vst-plugins-release-tools')).resolve()
+RELEASE_TOOLS=Path(os.environ.get('MPC_RELEASE_TOOLS',ROOT.parent/CONFIG.get('tools_dir','mpc-vst-plugins-release-tools'))).resolve()
 if not (RELEASE_TOOLS/'tools/release.py').exists():raise SystemExit('Missing release tools; see BUILDING.md.')
 ref=subprocess.check_output(['git','-C',str(RELEASE_TOOLS),'rev-parse','HEAD'],text=True).strip()
 if ref!=CONFIG['tools_ref']:raise SystemExit('Release tools must be pinned to '+CONFIG['tools_ref'])
@@ -63,7 +63,7 @@ build.run([strip,'--strip-unneeded',binary])
 
 notices=destination/'LICENSES.txt'
 notices.write_text('\n\n'.join([
-    'JC303 MPC development port — combined GPLv3 / AGPLv3\nBased on midilab/jc303 v0.14.0, commit b0ff26011f80e45c7796cad7b29fbc7f347b9337; legacy engine 25d0ed1dab6d0edffc0e28c7d68c170a8af71aee.\nSource: https://github.com/303inmyheart/OpenMPC-JC303',
+    f'JC303 MPC {VERSION} — combined GPLv3 / AGPLv3\nBased on midilab/jc303 v0.14.0, commit b0ff26011f80e45c7796cad7b29fbc7f347b9337; legacy engine 25d0ed1dab6d0edffc0e28c7d68c170a8af71aee.\nSource: https://github.com/303inmyheart/OpenMPC-JC303',
     (ROOT/'LICENSE').read_text(),
     'New DSP file-specific AGPL-3.0-or-later notices apply; see corresponding source.\n'+(ROOT/'src/dsp/v014/open303/LICENSE-AGPL-3.0').read_text(),
     'Open303 engine — MIT\n'+(ROOT/'src/dsp/open303/LICENSE').read_text(),
@@ -94,10 +94,39 @@ build.run([sys.executable,RELEASE_TOOLS/'tools/release.py',
            '--version',VERSION,'--id',CONFIG['id'],'--license',CONFIG['license'],
            '--repo',CONFIG['repo'],
            '--extra',str(notices)+':LICENSES.txt',
+           '--extra',str(ROOT/'PRESET-MIGRATION.md')+':PRESET-MIGRATION.md',
+           '--extra',str(ROOT/'CHANGELOG.md')+':CHANGELOG.md',
            '--about',CONFIG['about'],
-           '--requires',CONFIG['requires'],*bench_args,
+           '--requires',CONFIG['requires'],*[v for folder in CONFIG.get('retire',[]) for v in ('--retire',folder)],*bench_args,
            '-o',release_dir])
 release=release_dir/f'JC303-MPC-{VERSION}-mpc-aarch64.zip'
+if a.bench:
+    # The upstream CPU prose still assumes Gen1. Correct documentation only;
+    # retain the reviewed installer/uninstaller templates byte for byte.
+    with zipfile.ZipFile(release) as z:
+        entries=[(info,z.read(info.filename)) for info in z.infolist()]
+    payload={info.filename:raw for info,raw in entries}
+    top=entries[0][0].filename.split('/')[0]
+    filename=top+'/INSTALL.md';text=payload[filename].decode()
+    original='Measured on a Gen1 device (MPC Live/One/X/Force class, Cortex-A17)'
+    assert original in text
+    text=text.replace(original,'Measured on MPC Live III (Gen2, Cortex-A76 core 4, MPC OS 3.10.1)')
+    text=text.replace('As a rule of thumb, several instances run comfortably when p99 is under 15%.',
+        'These are one audio thread block-budget percentages, not the MPC project CPU meter; multi-instance capacity is not established by this result.')
+    stress_path=ROOT/'benchmarks'/VERSION/'bench.json'
+    stress=json.loads(stress_path.read_text())
+    assert stress['binary_sha256']==bench['binary_sha256'] and stress['version']==VERSION
+    text+=f"\n## Additional full-parameter stress\n\nThe separate full-parameter sweep is {stress['verdict']}: p99 {stress['p99_pct']}%, maximum {stress['max_pct']}% of one audio block. See the retained reports under benchmarks/{VERSION} in the source repository.\n\n## Read before updating: personal presets\n\nThe manufacturer changed from midilab to 303inmyheart. Older personal MPC presets may need a compatible copy; the installer does not convert user preset headers. Keep originals. PRESET-MIGRATION.md contains the tutorial and CHANGELOG.md documents the change; both are included in the installed plugin folder. PRESET INFO opens the plain-language guide inside the plugin.\n"
+    payload[filename]=text.encode()
+    checks=top+'/SHA256SUMS';rows=[]
+    for row in payload[checks].decode().splitlines():
+        _,relative=row.split('  ',1)
+        rows.append(hashlib.sha256(payload[top+'/'+relative]).hexdigest()+'  '+relative)
+    payload[checks]=('\n'.join(rows)+'\n').encode()
+    temporary=release.with_suffix('.zip.stage')
+    with zipfile.ZipFile(temporary,'w',compression=zipfile.ZIP_DEFLATED) as z:
+        for info,_ in entries:z.writestr(info,payload[info.filename])
+    temporary.replace(release)
 build.run([sys.executable,RELEASE_TOOLS/'tools/catalog_check.py',release,'--catalog','--require-portable',
            '--expect-id',CONFIG['id'],'--expect-repo',CONFIG['repo']])
 with zipfile.ZipFile(release) as archive:
@@ -114,6 +143,13 @@ with zipfile.ZipFile(release) as archive:
     assert not any(name.endswith('0000-Default.xpl') for name in archive.namelist())
     manifest=json.loads(archive.read(top+'/mpc-plugin.json'))
     assert manifest['arch']=='aarch64' and manifest['id']=='jc303-mpc'
+    assert manifest['manufacturer']==build.CFG['vendor'] and manifest['retire']==CONFIG['retire']
+    akai=json.loads(archive.read(top+'/portable/'+folder+'/plugin.json'))
+    assert akai['format']=='vst2' and akai['manufacturer']==build.CFG['vendor'] and akai['file64']==build.CFG['so']
+    assert archive.read(top+'/portable/'+folder+'/PRESET-MIGRATION.md')==(ROOT/'PRESET-MIGRATION.md').read_bytes()
+    assert archive.read(top+'/portable/'+folder+'/CHANGELOG.md')==(ROOT/'CHANGELOG.md').read_bytes()
+    assert sum(name.endswith('.xpl') for name in archive.namelist())==30
+    assert top+'/portable/'+folder+'/Factory-Licenses.txt' in archive.namelist()
     assert sum(name.endswith('.so') for name in archive.namelist())==1
     assert not any(name.endswith(('.o','.cpp','.c','.py','.log','.ttf')) for name in archive.namelist())
     for line in archive.read(top+'/SHA256SUMS').decode().splitlines():

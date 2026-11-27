@@ -1,0 +1,33 @@
+--- a/wrapper/vst2_wrap.c
++++ b/wrapper/vst2_wrap.c
+@@ -1011,3 +1011,5 @@
+  * program is one of its options (or whole numbers), so the current one is whatever the engine reports. */
+-#if defined(NPRESETS)
++#if defined(ENGINE_PROGRAM_COUNT)
++#define NUM_PROGRAMS ENGINE_PROGRAM_COUNT
++#elif defined(NPRESETS)
+ #define NUM_PROGRAMS NPRESETS
+@@ -1020,3 +1022,6 @@
+ static int get_program(wrap_t *w) {
+-#if defined(PROG_PARAM)
++#if defined(ENGINE_PROGRAM_COUNT)
++    char text[32];
++    return eng_get(w,"__program_index",text,sizeof text)>0?atoi(text):0;
++#elif defined(PROG_PARAM)
+     const param_t *pp = &PARAMS[PROG_PARAM];
+@@ -1032,3 +1037,6 @@
+                                                                               * (JUCE does at load) keeps any edits */
+-#if defined(NPRESETS)
++#if defined(ENGINE_PROGRAM_COUNT)
++    char text[32];snprintf(text,sizeof text,"%d",idx);eng_set(w,"__program_load",text);
++    for(int i=0;i<NPARAMS;i++)__atomic_store_n(&w->changed[i],!popup_is(i),__ATOMIC_RELEASE);
++#elif defined(NPRESETS)
+     for (int i = 0; i < PRESETS[idx].n; i++) {
+@@ -1051,3 +1059,6 @@
+     if (idx < 0 || idx >= NUM_PROGRAMS) return;
+-#if defined(NPRESETS)
++#if defined(ENGINE_PROGRAM_COUNT)
++    char key[48],text[128];snprintf(key,sizeof key,"__program_name:%d",idx);
++    if(eng_get(w,key,text,sizeof text)>0)copy_str(out,text,24);
++#elif defined(NPRESETS)
+     (void)w;
