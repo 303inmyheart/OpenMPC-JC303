@@ -31,6 +31,14 @@ MPC writes when saving a plugin preset. Converting its metadata is a file task
 on a computer, not a synthesizer setting or a Q-Link control. Ask for help if
 you are not comfortable editing it; keep the original and encoded sound data.
 
+## Recommended: the Python converter
+
+Use the [common preset converter](docs/PRESET-CONVERTER.md) for both JC303 MPC
+and Geonkick MPC. It previews the changes, creates separate compatible copies
+and leaves your original files and encoded sounds unchanged. It runs on your
+computer; the plugin installer does not convert personal presets automatically.
+Manual XML editing below is an alternative, not a requirement.
+
 ## Keep the original; migrate a copy
 
 1. Before updating, back up your own presets and projects outside the installed
@@ -48,10 +56,9 @@ you are not comfortable editing it; keep the original and encoded sound data.
    preset. Reopen the native preset list and load the compatible copy.
 5. Check the sound before saving further edits. Keep your original backup.
 
-A guided opt-in migration utility is still planned; the current plugin update
-only migrates installed plugin folders and declared plugin settings. It is not
-a bulk user-preset converter. If editing XML is unfamiliar, keep the original
-and ask for help rather than changing the encoded state.
+The separate Python converter handles the supported XPL header changes. The
+plugin installer only migrates installed plugin folders/settings; it does not
+run the converter. Keep originals and check the copied sounds on the MPC.
 
 ## Validation scope
 

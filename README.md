@@ -24,6 +24,13 @@ convert a copy of an old `.xpl` on a computer, while keeping the original and
 sound data unchanged. **PRESET INFO** in the plugin opens the English guide.
 The tutorial and [changelog](CHANGELOG.md) are included in the installer ZIP.
 
+## Convert older presets
+
+**[Python converter and step-by-step instructions](docs/PRESET-CONVERTER.md)** —
+works for both JC303 MPC and Geonkick MPC. It previews changes and creates new
+copies; originals and encoded sound data stay unchanged. Run it on your computer,
+then copy the results to the MPC. The plugin installer does not run it for you.
+
 ## Features
 
 - **v0.14 synthesis:** eight filter models; TB-303, Alpha Juno and Phaseshaper oscillators; Circuit square, sub oscillator and filter shaping. The legacy engine remains available for older projects.

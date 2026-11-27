@@ -38,6 +38,9 @@ jobs:
           git apply ../port/patches/mpc-float32.patch
           git apply ../port/patches/mpc-async-revision-cache.patch
           git apply ../port/patches/mpc-engine-program-bank.patch
+      - name: Preset converter safety tests
+        working-directory: port
+        run: python3 -m unittest discover -s tests -p test_preset_converter.py -v
       - name: Build native, ARM64 and native MPC skin
         working-directory: port
         run: python3 tools/build.py all
